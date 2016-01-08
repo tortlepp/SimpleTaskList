@@ -53,7 +53,7 @@
         <description>Compile and execute program</description>
         <java classname="${class.main}" fork="true" dir="${dir.dist}" classpath="${dir.dist}/${file.jar}">
             <!-- <jvmarg value="-Duser.language=fr" /> -->
-            <!-- <arg value="C:\todo.txt" /> -->
+            <arg value="C:\todo.txt" />
         </java>
     </target>
     

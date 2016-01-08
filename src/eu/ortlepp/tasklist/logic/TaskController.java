@@ -25,11 +25,21 @@ public class TaskController {
     private final ObservableList<Task> tasklist;
 
 
+    /** A list of all contexts. */
+    private final ObservableList<String> contexts;
+
+
+    /** A list of all projects. */
+    private final ObservableList<String> projects;
+
+
     /**
      * Initialize the task list, an empty list ist created.
      */
     public TaskController() {
         tasklist = FXCollections.observableArrayList();
+        contexts = FXCollections.observableArrayList();
+        projects = FXCollections.observableArrayList();
     }
 
 
@@ -41,6 +51,54 @@ public class TaskController {
      */
     public ObservableList<Task> getTaskList() {
         return tasklist;
+    }
+
+
+
+    /**
+     * Getter for the context list. Gives other classes / objects access to the list.
+     *
+     * @return The context list
+     */
+    public ObservableList<String> getContextList() {
+        return contexts;
+    }
+
+
+
+    /**
+     * Add a new context to the context list. The context is only added if it is not yet in the list.
+     *
+     * @param context The context to add
+     */
+    private void addContext(String context) {
+        if (!contexts.contains(context)) {
+            contexts.add(context);
+        }
+    }
+
+
+
+    /**
+     * Getter for the project list. Gives other classes / objects access to the list.
+     *
+     * @return The project list
+     */
+    public ObservableList<String> getProjectList() {
+        return projects;
+    }
+
+
+
+    /**
+     * Add a new project to the project list. The project is only added if it is not yet in the list.
+     *
+     * @param project The project to add
+     */
+    private void addProject(String project) {
+        if (!projects.contains(project)) {
+            projects.add(project);
+        }
     }
 
 
@@ -134,8 +192,10 @@ public class TaskController {
         for (String element : elements) {
             if (element.matches("\\+\\S+")) {
                 task.addToProject(element.substring(1));
+                addProject(element.substring(1));
             } else if (element.matches("@\\S+")) {
                 task.addToContext(element.substring(1));
+                addContext(element.substring(1));
             } else if (element.matches("\\S+:\\S+")) {
                 String[] meta = element.split(":");
                 task.addToMetadata(meta[0], meta[1]);

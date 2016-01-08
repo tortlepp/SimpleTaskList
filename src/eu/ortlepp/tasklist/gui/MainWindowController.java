@@ -12,8 +12,12 @@ import eu.ortlepp.tasklist.gui.components.ListTableCell;
 import eu.ortlepp.tasklist.gui.components.PriorityTableCell;
 import eu.ortlepp.tasklist.logic.TaskController;
 import eu.ortlepp.tasklist.model.Task;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
@@ -35,6 +39,11 @@ public class MainWindowController {
     /** Button to open a new task list. */
     @FXML
     private Button btnOpen;
+
+
+    /** Button to save a task list. */
+    @FXML
+    private Button btnSave;
 
 
     /** Button to add a new task to the list. */
@@ -65,6 +74,21 @@ public class MainWindowController {
     /** Button to open the info dialog. */
     @FXML
     private Button btnInfo;
+
+
+    /** CheckBox to filter done / not yet done tasks. */
+    @FXML
+    private CheckBox chkbxDone;
+
+
+    /** ComboBox to filter which context(s) are shown. */
+    @FXML
+    private ComboBox<String> cbxContext;
+
+
+    /** ComboBox to filter which project(s) are shown. */
+    @FXML
+    private ComboBox<String> cbxProject;
 
 
     /** Table to show the task list. */
@@ -133,13 +157,27 @@ public class MainWindowController {
      */
     @FXML
     private void initialize() {
+        /* Initialize buttons with icons and tooltips */
         initButton(btnOpen, "open.png", "tooltip.button.open");
+        initButton(btnSave, "save.png", "tooltip.button.save");
         initButton(btnNew, "new.png", "tooltip.button.new");
         initButton(btnEdit, "edit.png", "tooltip.button.edit");
         initButton(btnDone, "done.png", "tooltip.button.done");
         initButton(btnDelete, "delete.png", "tooltip.button.delete");
         initButton(btnSettings, "settings.png", "tooltip.button.settings");
         initButton(btnInfo, "info.png", "tooltip.button.info");
+
+        /* Initialize context filter */
+        tasks.getContextList().add(0, translations.getString("filter.context.all"));
+        tasks.getContextList().add(1, translations.getString("filter.context.without"));
+        cbxContext.setItems(tasks.getContextList());
+        cbxContext.getSelectionModel().clearAndSelect(0);
+
+        /* Initialize project filter */
+        tasks.getProjectList().add(0, translations.getString("filter.project.all"));
+        tasks.getProjectList().add(1, translations.getString("filter.project.without"));
+        cbxProject.setItems(tasks.getProjectList());
+        cbxProject.getSelectionModel().clearAndSelect(0);
 
         /* Custom renderers for nonstandard table cells */
         columnStatus.setCellFactory(CheckBoxTableCell.forTableColumn(columnStatus));
@@ -155,7 +193,35 @@ public class MainWindowController {
         columnDescription.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
         columnContext.setCellValueFactory(cellData -> cellData.getValue().contextProperty());
         columnProject.setCellValueFactory(cellData -> cellData.getValue().projectProperty());
-        tableTasks.setItems(tasks.getTaskList());
+
+        /* Wrap task list in filtered list to enable filtering */
+        FilteredList<Task> filteredTasks = new FilteredList<>(tasks.getTaskList(), p -> true);
+
+
+        chkbxDone.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            filteredTasks.setPredicate(task -> {
+                return filterTableItem(task);
+            });
+        });
+
+
+        cbxContext.valueProperty().addListener((observable, oldValue, newValue) -> {
+            filteredTasks.setPredicate(task -> {
+                return filterTableItem(task);
+            });
+        });
+
+        cbxProject.valueProperty().addListener((observable, oldValue, newValue) -> {
+            filteredTasks.setPredicate(task -> {
+                return filterTableItem(task);
+            });
+        });
+
+        /* Wrap filtered list in sorted list to enable sorting */
+        SortedList<Task> sortedTasks = new SortedList<>(filteredTasks);
+        sortedTasks.comparatorProperty().bind(tableTasks.comparatorProperty());
+
+        tableTasks.setItems(sortedTasks);
     }
 
 
@@ -207,6 +273,16 @@ public class MainWindowController {
         if (file != null && file.exists()) {
             tasks.loadTaskList(file.getAbsolutePath());
         }
+    }
+
+
+
+    /**
+     * Handle a click on the "save" button: TBD.
+     */
+    @FXML
+    private void handleBtnSaveClick() {
+        System.out.println("SAVE");
     }
 
 
@@ -282,6 +358,59 @@ public class MainWindowController {
             //TODO
             System.err.println("LOADING FILE FAILED");
         }
+    }
+
+
+
+    /**
+     * Filter an item (= task) in the table and check if should be visible or hidden.
+     *
+     * @param item The item (= task) to check
+     * @return Result of the check; true = show item in table, false = hide item
+     */
+    private boolean filterTableItem(Task item) {
+        boolean done = true;
+        /* Only show done tasks when check box is checked */
+        if (!chkbxDone.isSelected() && item.isDone()) {
+            done = false;
+        }
+
+        String selectedContext = cbxContext.getSelectionModel().getSelectedItem();
+        boolean context = false;
+
+        /* Show task when "All Contexts" is selected or when "Without Context" is selected and task has no context or when task has context that matches selected context */
+        if (selectedContext.equals(translations.getString("filter.context.all"))) {
+            context = true;
+        } else if (selectedContext.equals(translations.getString("filter.context.without")) && item.getContext().isEmpty()) {
+            context = true;
+        } else {
+            for (String itemContext : item.getContext()) {
+                if (itemContext.equals(selectedContext)) {
+                    context = true;
+                    break;
+                }
+            }
+        }
+
+        String selectedProject = cbxProject.getSelectionModel().getSelectedItem();
+        boolean project = false;
+
+        /* Show task when "All Projects" is selected or when "Without Project" is selected and task has no project or when task has project that matches selected project */
+        if (selectedProject.equals(translations.getString("filter.project.all"))) {
+            project = true;
+        } else if (selectedProject.equals(translations.getString("filter.project.without")) && item.getProject().isEmpty()) {
+            project = true;
+        } else {
+            for (String itemProject : item.getProject()) {
+                if (itemProject.equals(selectedProject)) {
+                    project = true;
+                    break;
+                }
+            }
+        }
+
+        /* Combine the three filters and get final filter result */
+        return done && context && project;
     }
 
 }

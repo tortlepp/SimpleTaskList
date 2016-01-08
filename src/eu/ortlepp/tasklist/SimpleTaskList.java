@@ -49,8 +49,8 @@ public final class SimpleTaskList extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("SimpleTaskList");
         this.primaryStage.setResizable(true);
-        this.primaryStage.setMinWidth(700);
-        this.primaryStage.setMinHeight(500);
+        this.primaryStage.setMinWidth(800);
+        this.primaryStage.setMinHeight(600);
         initWindow();
     }
 
