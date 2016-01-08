@@ -1,6 +1,7 @@
 package eu.ortlepp.tasklist;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
@@ -13,10 +14,13 @@ import javafx.stage.Stage;
 
 /**
  * Main class for the application, contains the main method. Starts the application and loads the main window.
+ *
+ * @author Thorsten Ortlepp
  */
 public final class SimpleTaskList extends Application {
 
 
+    /** ResourceBundle with translated captions, tooltips and messages. */
     public static final String TRANSLATION = "eu.ortlepp.tasklist.i18n.tasklist";
 
 
@@ -41,7 +45,7 @@ public final class SimpleTaskList extends Application {
      * @param primaryStage The stage for the window, contains all components of the window
      */
     @Override
-    public void start(Stage primaryStage) {
+    public void start(final Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("SimpleTaskList");
         this.primaryStage.setResizable(true);
@@ -64,8 +68,12 @@ public final class SimpleTaskList extends Application {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("eu/ortlepp/tasklist/fxml/mainwindow.fxml"), bundle);
             BorderPane window = (BorderPane) loader.load();
 
-            /* Initialize the controller */
+            /* Initialize the controller, pass file to open to the controller */
+            List<String> params = getParameters().getRaw();
+            String file = (params.size() > 0) ? params.get(0) : "";
             MainWindowController controller = loader.getController();
+            controller.setStage(primaryStage);
+            controller.loadTaskList(file);
 
             /* Show the window */
             Scene scene = new Scene(window);

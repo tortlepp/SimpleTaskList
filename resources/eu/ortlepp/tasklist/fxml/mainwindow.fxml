@@ -7,14 +7,14 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="700.0" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.ortlepp.tasklist.gui.MainWindowController">
    <center>
-      <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableTasks" editable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn prefWidth="75.0" text="%caption.table.priority" />
-          <TableColumn prefWidth="75.0" text="%caption.table.creation" />
-            <TableColumn prefWidth="75.0" text="%caption.table.completion" />
-            <TableColumn prefWidth="75.0" text="%caption.table.description" />
-            <TableColumn prefWidth="75.0" text="%caption.table.context" />
-            <TableColumn prefWidth="75.0" text="%caption.table.project" />
+            <TableColumn fx:id="columnStatus" prefWidth="75.0" />
+          <TableColumn fx:id="columnPriority" prefWidth="75.0" text="%caption.table.priority" />
+          <TableColumn fx:id="columnDue" prefWidth="75.0" text="%caption.table.due" />
+            <TableColumn fx:id="columnDescription" prefWidth="75.0" text="%caption.table.description" />
+            <TableColumn fx:id="columnContext" prefWidth="75.0" text="%caption.table.context" />
+            <TableColumn fx:id="columnProject" prefWidth="75.0" text="%caption.table.project" />
         </columns>
       </TableView>
    </center>

@@ -6,6 +6,7 @@
     <property name="dir.bin" location="bin" />
     <property name="dir.resorces" location="resources" />
     <property name="dir.dist" location="dist" />
+    <property name="dir.doc" location="doc" />
     <property name="class.main" value="eu.ortlepp.tasklist.SimpleTaskList" />
     <property name="file.jar" value="SimpleTaskList.jar" />
 
@@ -15,6 +16,7 @@
         <description>Delete directories</description>
         <delete dir="${dir.bin}" />
         <delete dir="${dir.dist}" />
+        <delete dir="${dir.doc}" />
     </target>
 
 
@@ -23,7 +25,7 @@
         <description>Complie sources</description>
         <delete dir="${dir.bin}" />
         <mkdir dir="${dir.bin}" />
-        <javac srcdir="${dir.src}" destdir="${dir.bin}" includeantruntime="false" />
+        <javac srcdir="${dir.src}" destdir="${dir.bin}" includeantruntime="false" excludes="**/package-info.java" />
     </target>
 
 
@@ -51,7 +53,17 @@
         <description>Compile and execute program</description>
         <java classname="${class.main}" fork="true" dir="${dir.dist}" classpath="${dir.dist}/${file.jar}">
             <!-- <jvmarg value="-Duser.language=fr" /> -->
+            <!-- <arg value="C:\todo.txt" /> -->
         </java>
+    </target>
+    
+    
+    <!-- Documentation -->
+    <target name="javadoc">
+        <description>Generate Javadoc</description>
+        <delete dir="${dir.doc}" />
+        <mkdir dir="${dir.doc}" />
+        <javadoc packagenames="eu.ortlepp.tasklist.*" sourcepath="${dir.src}" destdir="${dir.doc}" author="true" version="false" use="true" private="true" windowtitle="SimpleTaskList" />
     </target>
 
 </project> 
