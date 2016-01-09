@@ -8,8 +8,11 @@ import java.util.ResourceBundle;
 
 import eu.ortlepp.tasklist.SimpleTaskList;
 import eu.ortlepp.tasklist.gui.components.DateTableCell;
+import eu.ortlepp.tasklist.gui.components.DescriptionTableCell;
 import eu.ortlepp.tasklist.gui.components.ListTableCell;
 import eu.ortlepp.tasklist.gui.components.PriorityTableCell;
+import eu.ortlepp.tasklist.logic.DueComperator;
+import eu.ortlepp.tasklist.logic.PriorityComperator;
 import eu.ortlepp.tasklist.logic.TaskController;
 import eu.ortlepp.tasklist.model.Task;
 import javafx.collections.transformation.FilteredList;
@@ -183,6 +186,7 @@ public class MainWindowController {
         columnStatus.setCellFactory(CheckBoxTableCell.forTableColumn(columnStatus));
         columnPriority.setCellFactory(column -> new PriorityTableCell());
         columnDue.setCellFactory(column -> new DateTableCell());
+        columnDescription.setCellFactory(column -> new DescriptionTableCell());
         columnContext.setCellFactory(column -> new ListTableCell());
         columnProject.setCellFactory(column -> new ListTableCell());
 
@@ -194,23 +198,28 @@ public class MainWindowController {
         columnContext.setCellValueFactory(cellData -> cellData.getValue().contextProperty());
         columnProject.setCellValueFactory(cellData -> cellData.getValue().projectProperty());
 
+        /* Custom comperators to achieve a correct sorting */
+        columnPriority.setComparator(new PriorityComperator());
+        columnDue.setComparator(new DueComperator());
+
         /* Wrap task list in filtered list to enable filtering */
         FilteredList<Task> filteredTasks = new FilteredList<>(tasks.getTaskList(), p -> true);
 
-
+        /* Listener to filter by done / not yet done */
         chkbxDone.selectedProperty().addListener((observable, oldValue, newValue) -> {
             filteredTasks.setPredicate(task -> {
                 return filterTableItem(task);
             });
         });
 
-
+        /* Listener to filter by context */
         cbxContext.valueProperty().addListener((observable, oldValue, newValue) -> {
             filteredTasks.setPredicate(task -> {
                 return filterTableItem(task);
             });
         });
 
+        /* Listener to filter by project */
         cbxProject.valueProperty().addListener((observable, oldValue, newValue) -> {
             filteredTasks.setPredicate(task -> {
                 return filterTableItem(task);
@@ -222,6 +231,13 @@ public class MainWindowController {
         sortedTasks.comparatorProperty().bind(tableTasks.comparatorProperty());
 
         tableTasks.setItems(sortedTasks);
+
+        /* Sort columns */
+        tableTasks.getSortOrder().add(columnPriority);
+        tableTasks.getSortOrder().add(columnDue);
+
+        /* Resizing the table: expand columns to full width */
+        tableTasks.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
 
