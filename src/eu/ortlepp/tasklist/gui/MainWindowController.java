@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import eu.ortlepp.tasklist.SimpleTaskList;
@@ -18,7 +19,10 @@ import eu.ortlepp.tasklist.model.Task;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
@@ -277,10 +281,10 @@ public class MainWindowController {
     private void handleBtnOpenClick() {
         /* Initialize dialog */
         FileChooser openDialog = new FileChooser();
-        openDialog.setTitle(translations.getString("dialog.title.open"));
+        openDialog.setTitle(translations.getString("dialog.open.title"));
         openDialog.getExtensionFilters().addAll(
-                new ExtensionFilter(translations.getString("dialog.filetype.text"), "*.txt"),
-                new ExtensionFilter(translations.getString("dialog.filetype.all"), "*.*"));
+                new ExtensionFilter(translations.getString("dialog.open.filetype.text"), "*.txt"),
+                new ExtensionFilter(translations.getString("dialog.open.filetype.all"), "*.*"));
 
         /* Show dialog */
         File file = openDialog.showOpenDialog(stage);
@@ -324,11 +328,13 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "done" button: TBD.
+     * Handle a click on the "done" button: If a task is selected mark this task as done.
      */
     @FXML
     private void handleBtnDoneClick() {
-        System.out.println("DONE");
+        if (tableTasks.getSelectionModel().getSelectedIndex() != -1) {
+            tableTasks.getSelectionModel().getSelectedItem().setDone(true);
+        }
     }
 
 
@@ -338,7 +344,32 @@ public class MainWindowController {
      */
     @FXML
     private void handleBtnDeleteClick() {
-        System.out.println("DELETE");
+        if (tableTasks.getSelectionModel().getSelectedIndex() != -1) {
+
+            /* Confirmation dialog */
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle(translations.getString("dialog.delete.title"));
+            alert.setHeaderText(translations.getString("dialog.delete.header"));
+            alert.setContentText(translations.getString("dialog.delete.content"));
+            Optional<ButtonType> choice = alert.showAndWait();
+
+            /* Confirm deleting of the task */
+            if (choice.get() == ButtonType.OK){
+                int deleteTaskId = tableTasks.getSelectionModel().getSelectedItem().getTaskId();
+                int deleteListId = -1;
+
+                /* Find the correct task */
+                for (int i = 0; i < tasks.getTaskList().size(); i++) {
+                    if (tasks.getTaskList().get(i).getTaskId() == deleteTaskId) {
+                        deleteListId = i;
+                        break;
+                    }
+                }
+
+                /* Delete task from list */
+                tasks.getTaskList().remove(deleteListId);
+            }
+        }
     }
 
 

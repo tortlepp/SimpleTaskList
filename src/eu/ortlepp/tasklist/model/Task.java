@@ -24,6 +24,13 @@ import javafx.beans.value.ObservableValue;
  */
 public class Task {
 
+    /** Static ID counter for task IDs; always contains the value of the last used task ID. */
+    private static int id;
+
+
+    /** Internal ID to identify the task. */
+    private final int taskId;
+
 
     /** The priority of the task. An uppercase letter A - Z. */
     private StringProperty priority;
@@ -73,6 +80,10 @@ public class Task {
     public Task() {
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+        /* Set task ID */
+        id++;
+        taskId = id;
+
         /* Initialize with default values */
         priority = new SimpleStringProperty("");
         done = new SimpleBooleanProperty(false);
@@ -86,6 +97,26 @@ public class Task {
 
         /* Listener for changes */
         done.addListener(new DoneListener());
+    }
+
+
+
+    /**
+     * Reset the ID counter to 0. Use only when a task list is (re)initialized!
+     */
+    public static void resetId() {
+        id = 0;
+    }
+
+
+
+    /**
+     * Returns the internal ID of the task.
+     *
+     * @return The internal ID of the task
+     */
+    public int getTaskId() {
+        return taskId;
     }
 
 

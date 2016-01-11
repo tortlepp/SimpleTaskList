@@ -118,6 +118,7 @@ public class TaskController {
                 List<String> lines = Files.readAllLines(Paths.get(file), StandardCharsets.UTF_8);
 
                 tasklist.clear();
+                Task.resetId();
 
                 for (String line : lines) {
 
