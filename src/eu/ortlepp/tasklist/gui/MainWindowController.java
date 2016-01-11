@@ -389,7 +389,11 @@ public class MainWindowController {
      */
     @FXML
     private void handleBtnInfoClick() {
-        System.out.println("INFO");
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle(translations.getString("dialog.about.title"));
+        alert.setHeaderText(translations.getString("dialog.about.header"));
+        alert.setContentText(translations.getString("dialog.about.content"));
+        alert.showAndWait();
     }
 
 
