@@ -57,8 +57,16 @@ public class Task {
     private ObjectProperty<List<String>> project;
 
 
+    /** The List of all projects as string. */
+    private StringProperty projectString;
+
+
     /** A list of all contexts of the task. */
     private ObjectProperty<List<String>> context;
+
+
+    /** The list of all contexts as string. */
+    private StringProperty contextString;
 
 
     /** The description / text of the task. */
@@ -91,7 +99,9 @@ public class Task {
         completion = new SimpleObjectProperty<LocalDate>(LocalDate.MIN);
         due = new SimpleObjectProperty<LocalDate>(LocalDate.MIN);
         project = new SimpleObjectProperty<List<String>>(new ArrayList<String>());
+        projectString = new SimpleStringProperty(listToString(getProject()));
         context = new SimpleObjectProperty<List<String>>(new ArrayList<String>());
+        contextString = new SimpleStringProperty(listToString(getContext()));
         description = new SimpleStringProperty("");
         metadata = new SimpleMapProperty<String, String>();
 
@@ -121,8 +131,10 @@ public class Task {
         due = new SimpleObjectProperty<LocalDate>(task.getDue());
         project = new SimpleObjectProperty<List<String>>(new ArrayList<String>());
         project.get().addAll(task.getProject());
+        projectString = new SimpleStringProperty(listToString(getProject()));
         context = new SimpleObjectProperty<List<String>>(new ArrayList<String>());
         context.get().addAll(task.getContext());
+        contextString = new SimpleStringProperty(listToString(getContext()));
         description = new SimpleStringProperty(task.getDescription());
         metadata = new SimpleMapProperty<String, String>();
         for (String key : task.getMetadata().keySet()) {
@@ -367,12 +379,23 @@ public class Task {
 
 
     /**
+     * Remove all items from the list of projects of the task.
+     */
+    public void clearProject() {
+        project.get().clear();
+        projectString.set("");
+    }
+
+
+
+    /**
      * Setter for the list of projects of the task. Adds one item to the list.
      *
      * @param project One project of the task
      */
     public void addToProject(final String project) {
         this.project.get().add(project);
+        this.projectString.set(listToString(getProject()));
     }
 
 
@@ -389,6 +412,17 @@ public class Task {
 
 
     /**
+     * Property for a string of all projects of the task.
+     *
+     * @return A string of all projects of the task as property
+     */
+    public StringProperty projectStringProperty() {
+        return projectString;
+    }
+
+
+
+    /**
      * Getter for the list of contexts of the task.
      *
      * @return A list of contexts of the task
@@ -400,12 +434,23 @@ public class Task {
 
 
     /**
+     * Remove all items from the list of contexts of the task.
+     */
+    public void clearContext() {
+        context.get().clear();
+        contextString.set("");
+    }
+
+
+
+    /**
      * Setter for the list of contexts of the task. Adds one item to the list.
      *
      * @param project One context of the task
      */
     public void addToContext(final String context) {
         this.context.get().add(context);
+        this.contextString.set(listToString(getContext()));
     }
 
 
@@ -417,6 +462,17 @@ public class Task {
      */
     public ObjectProperty<List<String>> contextProperty() {
         return context;
+    }
+
+
+
+    /**
+     * Property for a string of all contexts of the task.
+     *
+     * @return A string of all contexts of the task as property
+     */
+    public StringProperty contextStringProperty() {
+        return contextString;
     }
 
 
@@ -481,6 +537,28 @@ public class Task {
     }
 
 
+
+    /**
+     * Convert a list of string into a single string. After each list item a line break is inserted into the string.
+     *
+     * @param list The list to be converted into a string
+     * @return The created string; each list item is separated by a line break
+     */
+    private String listToString(List<String> list) {
+        StringBuilder text = new StringBuilder();
+
+        /* One item per "line" */
+        for (int i = 0; i < list.size(); i++) {
+            if (i > 0) {
+                text.append(System.lineSeparator());
+            }
+            text.append(list.get(i));
+        }
+
+        return text.toString();
+    }
+
+
     ///// ----- Inner classes ----- \\\\\
 
 
@@ -518,7 +596,5 @@ public class Task {
         }
 
     }
-
-
 
 }

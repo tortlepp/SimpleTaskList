@@ -3,7 +3,6 @@ package eu.ortlepp.tasklist.gui;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.PropertyResourceBundle;
@@ -12,7 +11,6 @@ import java.util.ResourceBundle;
 import eu.ortlepp.tasklist.SimpleTaskList;
 import eu.ortlepp.tasklist.gui.components.DateTableCell;
 import eu.ortlepp.tasklist.gui.components.DescriptionTableCell;
-import eu.ortlepp.tasklist.gui.components.ListTableCell;
 import eu.ortlepp.tasklist.gui.components.PriorityTableCell;
 import eu.ortlepp.tasklist.logic.DueComperator;
 import eu.ortlepp.tasklist.logic.PriorityComperator;
@@ -132,12 +130,12 @@ public class MainWindowController {
 
     /** Column for the table to show the context of the tasks. */
     @FXML
-    private TableColumn<Task, List<String>> columnContext;
+    private TableColumn<Task, String> columnContext;
 
 
     /** Column for the table to show the project of the tasks. */
     @FXML
-    private TableColumn<Task, List<String>> columnProject;
+    private TableColumn<Task, String> columnProject;
 
 
     /** Translated captions and tooltips for the GUI. */
@@ -207,16 +205,14 @@ public class MainWindowController {
         columnPriority.setCellFactory(column -> new PriorityTableCell());
         columnDue.setCellFactory(column -> new DateTableCell());
         columnDescription.setCellFactory(column -> new DescriptionTableCell());
-        columnContext.setCellFactory(column -> new ListTableCell());
-        columnProject.setCellFactory(column -> new ListTableCell());
 
         /* Show data from the model in the table */
         columnStatus.setCellValueFactory(cellData -> cellData.getValue().doneProperty());
         columnPriority.setCellValueFactory(cellData -> cellData.getValue().priorityProperty());
         columnDue.setCellValueFactory(cellData -> cellData.getValue().dueProperty());
         columnDescription.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
-        columnContext.setCellValueFactory(cellData -> cellData.getValue().contextProperty());
-        columnProject.setCellValueFactory(cellData -> cellData.getValue().projectProperty());
+        columnContext.setCellValueFactory(cellData -> cellData.getValue().contextStringProperty());
+        columnProject.setCellValueFactory(cellData -> cellData.getValue().projectStringProperty());
 
         /* Custom comperators to achieve a correct sorting */
         columnPriority.setComparator(new PriorityComperator());
@@ -405,14 +401,14 @@ public class MainWindowController {
                 tableTasks.getSelectionModel().getSelectedItem().setDescription(temp.getDescription());
 
                 /* Update contexts */
-                tableTasks.getSelectionModel().getSelectedItem().getContext().clear();
+                tableTasks.getSelectionModel().getSelectedItem().clearContext();
                 for (String item : temp.getContext()) {
                     tableTasks.getSelectionModel().getSelectedItem().addToContext(item);
                     tasks.addContext(item);
                 }
 
                 /* Update projects */
-                tableTasks.getSelectionModel().getSelectedItem().getProject().clear();
+                tableTasks.getSelectionModel().getSelectedItem().clearProject();
                 for (String item : temp.getProject()) {
                     tableTasks.getSelectionModel().getSelectedItem().addToProject(item);
                     tasks.addProject(item);

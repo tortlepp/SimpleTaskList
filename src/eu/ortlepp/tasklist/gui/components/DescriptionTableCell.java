@@ -23,6 +23,7 @@ public class DescriptionTableCell extends TableCell<Task, String> {
 
         if (item == null || empty) {
             setText(null);
+            setGraphic(null);
         } else {
             Text text = new Text(item);
             text.wrappingWidthProperty().bind(getTableColumn().widthProperty());
