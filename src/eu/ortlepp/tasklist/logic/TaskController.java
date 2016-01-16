@@ -71,7 +71,7 @@ public class TaskController {
      *
      * @param context The context to add
      */
-    private void addContext(String context) {
+    public void addContext(String context) {
         if (!contexts.contains(context)) {
             contexts.add(context);
         }
@@ -95,7 +95,7 @@ public class TaskController {
      *
      * @param project The project to add
      */
-    private void addProject(String project) {
+    public void addProject(String project) {
         if (!projects.contains(project)) {
             projects.add(project);
         }

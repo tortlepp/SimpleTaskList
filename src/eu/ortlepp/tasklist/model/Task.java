@@ -25,11 +25,11 @@ import javafx.beans.value.ObservableValue;
 public class Task {
 
     /** Static ID counter for task IDs; always contains the value of the last used task ID. */
-    private static int id;
+    private static long id;
 
 
     /** Internal ID to identify the task. */
-    private final int taskId;
+    private final long taskId;
 
 
     /** The priority of the task. An uppercase letter A - Z. */
@@ -102,6 +102,40 @@ public class Task {
 
 
     /**
+     * Copy constructor to "clone" a task.
+     *
+     * @param task The source task
+     */
+    public Task(Task task) {
+        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        /* Set task ID */
+        id++;
+        taskId = id;
+
+        /* Initialize with copied values */
+        priority = new SimpleStringProperty(task.getPriority());
+        done = new SimpleBooleanProperty(task.isDone());
+        creation = new SimpleObjectProperty<LocalDate>(task.getCreation());
+        completion = new SimpleObjectProperty<LocalDate>(task.getCompletion());
+        due = new SimpleObjectProperty<LocalDate>(task.getDue());
+        project = new SimpleObjectProperty<List<String>>(new ArrayList<String>());
+        project.get().addAll(task.getProject());
+        context = new SimpleObjectProperty<List<String>>(new ArrayList<String>());
+        context.get().addAll(task.getContext());
+        description = new SimpleStringProperty(task.getDescription());
+        metadata = new SimpleMapProperty<String, String>();
+        for (String key : task.getMetadata().keySet()) {
+            metadata.put(key, task.getMetadata().get(key));
+        }
+
+        /* Listener for changes */
+        done.addListener(new DoneListener());
+    }
+
+
+
+    /**
      * Reset the ID counter to 0. Use only when a task list is (re)initialized!
      */
     public static void resetId() {
@@ -115,7 +149,7 @@ public class Task {
      *
      * @return The internal ID of the task
      */
-    public int getTaskId() {
+    public long getTaskId() {
         return taskId;
     }
 
@@ -203,6 +237,17 @@ public class Task {
     /**
      * Setter for the creation date of the task.
      *
+     * @param creation The creation date of the task
+     */
+    public void setCreation(final LocalDate creation) {
+        this.creation.set(creation);
+    }
+
+
+
+    /**
+     * Setter for the creation date of the task.
+     *
      * @param creation The creation date of the task as string (expected format YYYY-MM-DD)
      */
     public void setCreation(final String creation) {
@@ -273,6 +318,17 @@ public class Task {
      */
     public LocalDate getDue() {
         return due.get();
+    }
+
+
+
+    /**
+     * Setter for the due date of the task.
+     *
+     * @param creation The due date of the task
+     */
+    public void setDue(final LocalDate due) {
+        this.due.set(due);
     }
 
 

@@ -1,10 +1,12 @@
 package eu.ortlepp.tasklist.gui;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 import eu.ortlepp.tasklist.SimpleTaskList;
@@ -19,6 +21,9 @@ import eu.ortlepp.tasklist.model.Task;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -33,7 +38,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * Controller for the main window. Handles all actions of the main window.
@@ -145,6 +152,14 @@ public class MainWindowController {
     private Stage stage;
 
 
+    /** The dialog window to add new tasks or edit existing tasks. */
+    private Stage newEditDialog;
+
+
+    /** The controller of the new / edit dialog. */
+    private NewEditDialogController newEditController;
+
+
     /**
      * Initialize controller by loading the translated captions and tooltips for the GUI components.
      */
@@ -152,6 +167,7 @@ public class MainWindowController {
         try {
             translations = ResourceBundle.getBundle(SimpleTaskList.TRANSLATION);
             tasks = new TaskController();
+            initDialogs();
         } catch (MissingResourceException ex) {
             throw new RuntimeException("Translation is not available", ex);
         }
@@ -247,6 +263,36 @@ public class MainWindowController {
 
 
     /**
+     * INitialize dialogs by loading their FXML and getting access to their controllers.
+     */
+    private void initDialogs() {
+        /* Load the translation for the GUI */
+        ResourceBundle bundle = PropertyResourceBundle.getBundle(SimpleTaskList.TRANSLATION);
+
+        /* Initialize new / edit dialog */
+        newEditDialog = new Stage();
+
+        /* Load FXML and initialize get access to the controller */
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("eu/ortlepp/tasklist/fxml/neweditdialog.fxml"), bundle);
+            Parent root = loader.load();
+            newEditDialog.setScene(new Scene(root));
+            newEditController = loader.getController();
+            newEditController.setStage(newEditDialog);
+        } catch (IOException ex) {
+            System.err.println("Initialization of the new / edit dialog failed: " + ex.getMessage());
+        }
+
+        /* Set properties of the dialog */
+        newEditDialog.initModality(Modality.APPLICATION_MODAL);
+        newEditDialog.initOwner(stage);
+        newEditDialog.initStyle(StageStyle.UTILITY);
+        newEditDialog.setResizable(false);
+    }
+
+
+
+    /**
      * Initialize a button by removing its text and displaying an icon on it.
      *
      * @param button The button to be initialized
@@ -308,21 +354,71 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "new" button: TBD.
+     * Handle a click on the "new" button: Open the new task dialog and then add one or more tasks to the list.
      */
     @FXML
     private void handleBtnNewClick() {
-        System.out.println("NEW");
+        /* Open new task dialog */
+        newEditController.setNewDialog(tasks.getContextList(), tasks.getProjectList());
+        newEditDialog.setTitle(translations.getString("dialog.new.title"));
+        newEditDialog.showAndWait();
+
+        /* If adding was not aborted */
+        if (newEditController.isSaved()) {
+            for (Task task : newEditController.getNewTasks()) {
+                /* Add task */
+                tasks.getTaskList().add(new Task(task));
+
+                /* Update context and project filters */
+                for (String item : task.getContext()) {
+                    tasks.addContext(item);
+                }
+                for (String item : task.getProject()) {
+                    tasks.addProject(item);
+                }
+            }
+        }
     }
 
 
 
     /**
-     * Handle a click on the "edit" button: TBD.
+     * Handle a click on the "edit" button: Open edit dialog and after editing update the edited task.
      */
     @FXML
     private void handleBtnEditClick() {
-        System.out.println("EDIT");
+        if (tableTasks.getSelectionModel().getSelectedIndex() != -1) {
+            /* Open edit dialog */
+            newEditController.setEditDialog(tableTasks.getSelectionModel().getSelectedItem(), tasks.getContextList(), tasks.getProjectList());
+            newEditDialog.setTitle(translations.getString("dialog.edit.title"));
+            newEditDialog.showAndWait();
+
+            /* If editing was not aborted */
+            if (newEditController.isSaved()) {
+                Task temp = newEditController.getEditedTask();
+
+                /* Update values */
+                tableTasks.getSelectionModel().getSelectedItem().setDone(temp.isDone());
+                tableTasks.getSelectionModel().getSelectedItem().setPriority(temp.getPriority());
+                tableTasks.getSelectionModel().getSelectedItem().setCreation(temp.getCreation());
+                tableTasks.getSelectionModel().getSelectedItem().setDue(temp.getDue());
+                tableTasks.getSelectionModel().getSelectedItem().setDescription(temp.getDescription());
+
+                /* Update contexts */
+                tableTasks.getSelectionModel().getSelectedItem().getContext().clear();
+                for (String item : temp.getContext()) {
+                    tableTasks.getSelectionModel().getSelectedItem().addToContext(item);
+                    tasks.addContext(item);
+                }
+
+                /* Update projects */
+                tableTasks.getSelectionModel().getSelectedItem().getProject().clear();
+                for (String item : temp.getProject()) {
+                    tableTasks.getSelectionModel().getSelectedItem().addToProject(item);
+                    tasks.addProject(item);
+                }
+            }
+        }
     }
 
 
@@ -340,7 +436,7 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "delete" button: TBD.
+     * Handle a click on the "delete" button: If a task is selected delete this task from the list.
      */
     @FXML
     private void handleBtnDeleteClick() {
@@ -355,7 +451,7 @@ public class MainWindowController {
 
             /* Confirm deleting of the task */
             if (choice.get() == ButtonType.OK){
-                int deleteTaskId = tableTasks.getSelectionModel().getSelectedItem().getTaskId();
+                long deleteTaskId = tableTasks.getSelectionModel().getSelectedItem().getTaskId();
                 int deleteListId = -1;
 
                 /* Find the correct task */
