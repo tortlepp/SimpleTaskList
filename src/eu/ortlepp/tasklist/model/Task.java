@@ -3,14 +3,13 @@ package eu.ortlepp.tasklist.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.MapProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -74,7 +73,7 @@ public class Task {
 
 
     /** Additional meta data of the task. In the todo.txt file meta data is stored as key:value. */
-    private MapProperty<String, String> metadata;
+    private HashMap<String, String> metadata;
 
 
     /** Pattern for reading dates from a string. During initialization the pattern is set to yyyy-MM-dd. */
@@ -103,7 +102,7 @@ public class Task {
         context = new SimpleObjectProperty<List<String>>(new ArrayList<String>());
         contextString = new SimpleStringProperty(listToString(getContext()));
         description = new SimpleStringProperty("");
-        metadata = new SimpleMapProperty<String, String>();
+        metadata = new HashMap<String, String>();
 
         /* Listener for changes */
         done.addListener(new DoneListener());
@@ -136,7 +135,7 @@ public class Task {
         context.get().addAll(task.getContext());
         contextString = new SimpleStringProperty(listToString(getContext()));
         description = new SimpleStringProperty(task.getDescription());
-        metadata = new SimpleMapProperty<String, String>();
+        metadata = new HashMap<String, String>();
         for (String key : task.getMetadata().keySet()) {
             metadata.put(key, task.getMetadata().get(key));
         }

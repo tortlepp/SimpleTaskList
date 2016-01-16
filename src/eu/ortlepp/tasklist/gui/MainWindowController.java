@@ -340,11 +340,14 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "save" button: TBD.
+     * Handle a click on the "save" button: Save task list to file.
      */
     @FXML
     private void handleBtnSaveClick() {
-        System.out.println("SAVE");
+        if (!tasks.writeTaskList()) {
+            //TODO
+            System.err.println("WRITING FILE FAILED");
+        }
     }
 
 

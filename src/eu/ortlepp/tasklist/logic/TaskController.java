@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +22,9 @@ import javafx.collections.ObservableList;
  */
 public class TaskController {
 
+    /** The name of the currently open file. */
+    private String filename;
+
 
     /** List to store all tasks. Each element of the list is a single task. */
     private final ObservableList<Task> tasklist;
@@ -33,6 +38,10 @@ public class TaskController {
     private final ObservableList<String> projects;
 
 
+    /** Pattern to convert dates into a string. During initialization the pattern is set to yyyy-MM-dd. */
+    private final DateTimeFormatter formatter;
+
+
     /**
      * Initialize the task list, an empty list ist created.
      */
@@ -40,6 +49,9 @@ public class TaskController {
         tasklist = FXCollections.observableArrayList();
         contexts = FXCollections.observableArrayList();
         projects = FXCollections.observableArrayList();
+        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        filename = "";
     }
 
 
@@ -131,6 +143,8 @@ public class TaskController {
                     tasklist.add(parseTask(line));
                 }
 
+                filename = file;
+
                 return true;
 
               } catch (IOException ex) {
@@ -208,6 +222,86 @@ public class TaskController {
         task.setDescription(description.toString().trim());
 
         return task;
+    }
+
+
+
+    /**
+     * Write the task list to the opened todo.txt file. If no file was opened (and filename is empty) no file will be written.
+     *
+     * @return Success flag: true if writing the file was successful, false if there was an error while writing the file
+     */
+    public boolean writeTaskList() {
+        if (!filename.isEmpty()) {
+            List<String> tasks = new ArrayList<String>();
+
+            /* Convert task objects into strings */
+            for (Task task : tasklist) {
+                tasks.add(taskToString(task));
+            }
+
+            /* Write the file */
+            try {
+                Files.write(Paths.get(filename), tasks);
+                return true;
+            } catch (IOException ex) {
+                System.err.println(ex.getMessage());
+            }
+
+        } else {
+            System.err.println("No task list is open");
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Convert a task object into a formatted string. The formatted string is ready to be written to a todo.txt file.
+     *
+     * @param task The task to convert into a string
+     * @return The string in todo.txt format
+     */
+    private String taskToString(Task task) {
+        StringBuilder strBuilder = new StringBuilder();
+
+        if (!task.getPriority().isEmpty()) {
+            if (task.getPriority().equals("x")) {
+                strBuilder.append("x ");
+            } else {
+                strBuilder.append("(").append(task.getPriority()).append(") ");
+            }
+        }
+
+        if (task.isDone() && !task.getCompletion().equals(LocalDate.MIN)) {
+            strBuilder.append(task.getCompletion().format(formatter)).append(" ");
+        }
+
+        if (!task.getCreation().equals(LocalDate.MIN)) {
+            strBuilder.append(task.getCreation().format(formatter)).append(" ");
+        }
+
+        if (!task.getDescription().isEmpty()) {
+            strBuilder.append(task.getDescription()).append(" ");
+        }
+
+        for (String context : task.getContext()) {
+            strBuilder.append("@").append(context).append(" ");
+        }
+
+        for (String project : task.getProject()) {
+            strBuilder.append("+").append(project).append(" ");
+        }
+
+        if (!task.getDue().equals(LocalDate.MIN)) {
+            strBuilder.append("due:").append(task.getDue().format(formatter)).append(" ");
+        }
+
+        for (String key : task.getMetadata().keySet()) {
+            strBuilder.append(key).append(":").append(task.getMetadata().get(key)).append(" ");
+        }
+
+        return strBuilder.toString().trim();
     }
 
 }
