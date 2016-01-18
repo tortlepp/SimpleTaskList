@@ -9,6 +9,7 @@ import eu.ortlepp.tasklist.gui.MainWindowController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -22,6 +23,10 @@ public final class SimpleTaskList extends Application {
 
     /** ResourceBundle with translated captions, tooltips and messages. */
     public static final String TRANSLATION = "eu.ortlepp.tasklist.i18n.tasklist";
+
+
+    /** The current version of the program. */
+    public static final String VERSION = "Version 0.9 alpha";
 
 
     /** The stage for the window. Contains all components of the window. */
@@ -51,6 +56,7 @@ public final class SimpleTaskList extends Application {
         this.primaryStage.setResizable(true);
         this.primaryStage.setMinWidth(800);
         this.primaryStage.setMinHeight(600);
+        this.primaryStage.getIcons().add(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList.png"));
         initWindow();
     }
 
@@ -65,7 +71,7 @@ public final class SimpleTaskList extends Application {
             ResourceBundle bundle = PropertyResourceBundle.getBundle(TRANSLATION);
 
             /* Load FXML and initialize the main window */
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("eu/ortlepp/tasklist/fxml/mainwindow.fxml"), bundle);
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("eu/ortlepp/tasklist/fxml/MainWindow.fxml"), bundle);
             BorderPane window = (BorderPane) loader.load();
 
             /* Initialize the controller, pass file to open to the controller */

@@ -15,18 +15,20 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * Controller for the new task and edit task dialog window. Handles all actions of the dialog window.
  *
  * @author Thorsten Ortlepp
  */
-public class NewEditDialogController {
+public class NewEditDialogController extends AbstractDialogController {
 
 
     /** Layout container for buttons. */
@@ -47,11 +49,6 @@ public class NewEditDialogController {
     /** Button to save changes on the edited task. */
     @FXML
     private Button btnSave;
-
-
-    /** Button to cancel an edit / adding action and dismiss changes / new tasks. */
-    @FXML
-    private Button btnHide;
 
 
     /** Combo box to select the priority. */
@@ -84,10 +81,6 @@ public class NewEditDialogController {
     private ListView<String> lvProject;
 
 
-    /** The stage of the dialog. */
-    private Stage stage;
-
-
     /** Translated captions and tooltips for the GUI. */
     private ResourceBundle translations;
 
@@ -112,7 +105,8 @@ public class NewEditDialogController {
      * Initialize the dialog and its components; load the translations.
      */
     @FXML
-    private void initialize() {
+    @Override
+    protected void initialize() {
         contexts = new ArrayList<String>();
         projects = new ArrayList<String>();
         newTasks = new ArrayList<Task>();
@@ -124,16 +118,6 @@ public class NewEditDialogController {
         }
 
         cbxPriority.setItems(FXCollections.observableArrayList(translations.getString("choice.priority.no"), translations.getString("choice.priority.done"), "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
-    }
-
-
-
-    /**
-     * Handle a click on the "cancel" button: hide / close the dialog window.
-     */
-    @FXML
-    private void handleBtnHideClick() {
-        stage.hide();
     }
 
 
@@ -178,9 +162,7 @@ public class NewEditDialogController {
     @FXML
     private void handleBtnSelectContext() {
         ChoiceDialog<String> choice = new ChoiceDialog<String>(contexts.get(0), contexts);
-        choice.setTitle(translations.getString("dialog.context.select.title"));
-        choice.setHeaderText(translations.getString("dialog.context.select.header"));
-        choice.setContentText(translations.getString("dialog.context.select.content"));
+        initDialog(choice, "dialog.context.select.title", "dialog.context.select.header", "dialog.context.select.content");
         Optional<String> text = choice.showAndWait();
         if (text.isPresent()){
             lvContext.getItems().add(text.get());
@@ -195,9 +177,7 @@ public class NewEditDialogController {
     @FXML
     private void handleBtnAddContext() {
         TextInputDialog input = new TextInputDialog();
-        input.setTitle(translations.getString("dialog.context.new.title"));
-        input.setHeaderText(translations.getString("dialog.context.new.header"));
-        input.setContentText(translations.getString("dialog.context.new.content"));
+        initDialog(input, "dialog.context.new.title", "dialog.context.new.header", "dialog.context.new.content");
         Optional<String> text = input.showAndWait();
         if (text.isPresent()){
             lvContext.getItems().add(text.get());
@@ -224,9 +204,7 @@ public class NewEditDialogController {
     @FXML
     private void handleBtnSelectProject() {
         ChoiceDialog<String> choice = new ChoiceDialog<String>(projects.get(0), projects);
-        choice.setTitle(translations.getString("dialog.project.select.title"));
-        choice.setHeaderText(translations.getString("dialog.project.select.header"));
-        choice.setContentText(translations.getString("dialog.project.select.content"));
+        initDialog(choice, "dialog.project.select.title", "dialog.project.select.header", "dialog.project.select.content");
         Optional<String> text = choice.showAndWait();
         if (text.isPresent()){
             lvProject.getItems().add(text.get());
@@ -241,9 +219,7 @@ public class NewEditDialogController {
     @FXML
     private void handleBtnAddProject() {
         TextInputDialog input = new TextInputDialog();
-        input.setTitle(translations.getString("dialog.project.new.title"));
-        input.setHeaderText(translations.getString("dialog.project.new.header"));
-        input.setContentText(translations.getString("dialog.project.new.content"));
+        initDialog(input, "dialog.project.new.title", "dialog.project.new.header", "dialog.project.new.content");
         Optional<String> text = input.showAndWait();
         if (text.isPresent()){
             lvProject.getItems().add(text.get());
@@ -260,6 +236,23 @@ public class NewEditDialogController {
         if (lvProject.getSelectionModel().getSelectedIndex() != -1) {
             lvProject.getItems().remove(lvProject.getSelectionModel().getSelectedIndex());
         }
+    }
+
+
+
+    /**
+     * Initialize a dialog by setting its title, header and content and set window style to "utility dialog".
+     *
+     * @param dialog The dialog to initialize
+     * @param keyTitle Key for dialog title in the translation file
+     * @param keyHeader Key for dialog header in the translation file
+     * @param keyContent Key for dialog content in the translation file
+     */
+    private void initDialog(Dialog dialog, String keyTitle, String keyHeader, String keyContent) {
+        dialog.setTitle(translations.getString(keyTitle));
+        dialog.setHeaderText(translations.getString(keyHeader));
+        dialog.setContentText(translations.getString(keyTitle));
+        ((Stage) dialog.getDialogPane().getScene().getWindow()).initStyle(StageStyle.UTILITY);
     }
 
 
@@ -349,17 +342,6 @@ public class NewEditDialogController {
         for (int i = 2; i < source.size(); i++) {
             target.add(source.get(i));
         }
-    }
-
-
-
-    /**
-     * Setter for the stage of the dialog window.
-     *
-     * @param stage The stage of the dialog window.
-     */
-    public void setStage(Stage stage) {
-        this.stage = stage;
     }
 
 

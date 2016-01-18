@@ -121,7 +121,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="btnHide" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleBtnHideClick" prefWidth="110.0" text="%caption.button.hide" GridPane.columnIndex="2" />
+            <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleDialogHide" prefWidth="110.0" text="%caption.button.hide" GridPane.columnIndex="2" />
             <Button fx:id="btnDone" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleBtnDoneClick" prefWidth="110.0" text="%caption.button.done" />
             <Button fx:id="btnSave" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleBtnSaveClick" prefWidth="110.0" text="%caption.button.save" GridPane.columnIndex="1" />
             <Button fx:id="btnContinue" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleBtnContinueClick" prefWidth="110.0" text="%caption.button.continue" GridPane.columnIndex="1" />

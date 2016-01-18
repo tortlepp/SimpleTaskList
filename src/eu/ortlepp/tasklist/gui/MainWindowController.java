@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.MissingResourceException;
 import java.util.Optional;
-import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 import eu.ortlepp.tasklist.SimpleTaskList;
@@ -154,8 +153,16 @@ public class MainWindowController {
     private Stage newEditDialog;
 
 
+    /** The the about dialog. */
+    private Stage aboutDialog;
+
+
     /** The controller of the new / edit dialog. */
     private NewEditDialogController newEditController;
+
+
+    /** The controller of the about dialog. */
+    private AboutDialogController aboutController;
 
 
     /**
@@ -262,28 +269,47 @@ public class MainWindowController {
      * INitialize dialogs by loading their FXML and getting access to their controllers.
      */
     private void initDialogs() {
-        /* Load the translation for the GUI */
-        ResourceBundle bundle = PropertyResourceBundle.getBundle(SimpleTaskList.TRANSLATION);
-
         /* Initialize new / edit dialog */
         newEditDialog = new Stage();
+        newEditController = (NewEditDialogController) initDialog(newEditDialog, "NewEditDialog.fxml");
+        newEditController.setStage(newEditDialog);
 
-        /* Load FXML and initialize get access to the controller */
+        /* Initialize about dialog */
+        aboutDialog = new Stage();
+        aboutController = (AboutDialogController) initDialog(aboutDialog, "AboutDialog.fxml");
+        aboutController.setStage(aboutDialog);
+        aboutDialog.setTitle(translations.getString("about.title"));
+    }
+
+
+
+    /**
+     * Initialize a dialog. Load its FXML file, set up the GUI and the controller.
+     *
+     * @param dialog The stage of the dialog
+     * @param fxml The FXML file of the GUI
+     * @return The initialized controller for the dialog
+     */
+    private AbstractDialogController initDialog(Stage dialog, final String fxml) {
+        AbstractDialogController controller = null;
+
+        /* Load FXML */
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("eu/ortlepp/tasklist/fxml/neweditdialog.fxml"), bundle);
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("eu/ortlepp/tasklist/fxml/" + fxml), translations);
             Parent root = loader.load();
-            newEditDialog.setScene(new Scene(root));
-            newEditController = loader.getController();
-            newEditController.setStage(newEditDialog);
+            dialog.setScene(new Scene(root));
+            controller = loader.getController();
         } catch (IOException ex) {
-            System.err.println("Initialization of the new / edit dialog failed: " + ex.getMessage());
+            System.err.println("Initialization of dialog failed: " + ex.getMessage());
         }
 
-        /* Set properties of the dialog */
-        newEditDialog.initModality(Modality.APPLICATION_MODAL);
-        newEditDialog.initOwner(stage);
-        newEditDialog.initStyle(StageStyle.UTILITY);
-        newEditDialog.setResizable(false);
+        /* Set properties */
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(stage);
+        dialog.initStyle(StageStyle.UTILITY);
+        dialog.setResizable(false);
+
+        return controller;
     }
 
 
@@ -480,15 +506,11 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "info" button: TBD.
+     * Handle a click on the "info" button: show the info / about dialog.
      */
     @FXML
     private void handleBtnInfoClick() {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle(translations.getString("dialog.about.title"));
-        alert.setHeaderText(translations.getString("dialog.about.header"));
-        alert.setContentText(translations.getString("dialog.about.content"));
-        alert.showAndWait();
+        aboutDialog.showAndWait();
     }
 
 
