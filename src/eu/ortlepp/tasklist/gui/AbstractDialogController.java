@@ -26,10 +26,10 @@ public abstract class AbstractDialogController {
 
 
     /**
-     * Handle a click on the "cancel" button: hide / close the dialog window.
+     * Handle a click on the cancel / close button: hide / close the dialog window.
      */
     @FXML
-    private void handleDialogHide() {
+    protected void handleDialogHide() {
         stage.hide();
     }
 
