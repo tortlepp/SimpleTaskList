@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import eu.ortlepp.tasklist.SimpleTaskList;
 import eu.ortlepp.tasklist.gui.components.DateTableCell;
@@ -45,6 +46,9 @@ import javafx.stage.StageStyle;
  * @author Thorsten Ortlepp
  */
 public class MainWindowController {
+
+     /** A logger to write out events and messages to the console. */
+    private static final Logger LOGGER = Logger.getLogger(MainWindowController.class.getName());
 
 
     /** Button to open a new task list. */
@@ -300,7 +304,7 @@ public class MainWindowController {
             dialog.setScene(new Scene(root));
             controller = loader.getController();
         } catch (IOException ex) {
-            System.err.println("Initialization of dialog failed: " + ex.getMessage());
+            LOGGER.severe("Initialization of dialog failed: " + ex.getMessage());
         }
 
         /* Set properties */
