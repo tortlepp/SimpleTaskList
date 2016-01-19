@@ -60,6 +60,7 @@ public final class SimpleTaskList extends Application {
             Logger.getLogger(SimpleTaskList.class.getName()).severe("Initialization of the logger failed: " + ex.getMessage());
         }
 
+        /* Initialize main window */
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("SimpleTaskList");
         this.primaryStage.setResizable(true);

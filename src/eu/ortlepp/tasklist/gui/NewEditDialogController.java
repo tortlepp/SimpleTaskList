@@ -286,7 +286,7 @@ public class NewEditDialogController extends AbstractDialogController {
      * @param keyHeader Key for dialog header in the translation file
      * @param keyContent Key for dialog content in the translation file
      */
-    private void initDialog(Dialog dialog, String keyTitle, String keyHeader, String keyContent) {
+    public void initDialog(Dialog dialog, String keyTitle, String keyHeader, String keyContent) {
         dialog.setTitle(translations.getString(keyTitle));
         dialog.setHeaderText(translations.getString(keyHeader));
         dialog.setContentText(translations.getString(keyContent));

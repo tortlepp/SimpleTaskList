@@ -363,7 +363,7 @@ public class MainWindowController {
 
         /* Load selected file */
         if (file != null && file.exists()) {
-            tasks.loadTaskList(file.getAbsolutePath());
+            loadTaskList(file.getAbsolutePath());
         }
     }
 
@@ -375,8 +375,9 @@ public class MainWindowController {
     @FXML
     private void handleBtnSaveClick() {
         if (!tasks.writeTaskList()) {
-            //TODO
-            System.err.println("WRITING FILE FAILED");
+            Alert message = new Alert(AlertType.ERROR);
+            newEditController.initDialog(message, "dialog.write.title", "dialog.write.header", "dialog.write.content");
+            message.showAndWait();
         }
     }
 
@@ -527,8 +528,9 @@ public class MainWindowController {
      */
     public void loadTaskList(final String file) {
         if (file != null && !file.isEmpty() && !tasks.loadTaskList(file)) {
-            //TODO
-            System.err.println("LOADING FILE FAILED");
+            Alert message = new Alert(AlertType.ERROR);
+            newEditController.initDialog(message, "dialog.read.title", "dialog.read.header", "dialog.read.content");
+            message.showAndWait();
         }
     }
 
