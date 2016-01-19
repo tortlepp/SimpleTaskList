@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import eu.ortlepp.tasklist.model.Task;
 import javafx.collections.FXCollections;
@@ -21,6 +22,10 @@ import javafx.collections.ObservableList;
  * @author Thorsten Ortlepp
  */
 public class TaskController {
+
+    /** A logger to write out events and messages to the console. */
+    private static final Logger LOGGER = Logger.getLogger(TaskController.class.getName());
+
 
     /** The name of the currently open file. */
     private String filename;
@@ -148,10 +153,10 @@ public class TaskController {
                 return true;
 
               } catch (IOException ex) {
-                  System.err.println(ex.getMessage());
+                  LOGGER.severe("Error reading file " + file + ": " + ex.getMessage());
               }
         } else {
-            System.err.println("The file " + file + " does not exist");
+            LOGGER.severe("The file " + file + " does not exist");
         }
 
         return false;
@@ -245,11 +250,11 @@ public class TaskController {
                 Files.write(Paths.get(filename), tasks);
                 return true;
             } catch (IOException ex) {
-                System.err.println(ex.getMessage());
+                LOGGER.severe("Error while writing the file " + filename + ": " + ex.getMessage());
             }
 
         } else {
-            System.err.println("No task list is open");
+            LOGGER.severe("No task list is open");
         }
 
         return false;

@@ -292,7 +292,7 @@ public class Task {
     /**
      * Setter for the completion date of the task.
      *
-     * @param creation The completion date of the task as string (expected format YYYY-MM-DD)
+     * @param completion The completion date of the task as string (expected format YYYY-MM-DD)
      */
     public void setCompletion(final String completion) {
         this.completion.set(LocalDate.parse(completion, formatter));
@@ -303,7 +303,7 @@ public class Task {
     /**
      * Setter for the completion date of the task.
      *
-     * @param creation The completion date of the task
+     * @param completion The completion date of the task
      */
     public void setCompletion(final LocalDate completion) {
         this.completion.set(completion);
@@ -336,7 +336,7 @@ public class Task {
     /**
      * Setter for the due date of the task.
      *
-     * @param creation The due date of the task
+     * @param due The due date of the task
      */
     public void setDue(final LocalDate due) {
         this.due.set(due);
@@ -347,7 +347,7 @@ public class Task {
     /**
      * Setter for the due date of the task.
      *
-     * @param creation The due date of the task as string (expected format YYYY-MM-DD)
+     * @param due The due date of the task as string (expected format YYYY-MM-DD)
      */
     public void setDue(final String due) {
         this.due.set(LocalDate.parse(due, formatter));
@@ -445,7 +445,7 @@ public class Task {
     /**
      * Setter for the list of contexts of the task. Adds one item to the list.
      *
-     * @param project One context of the task
+     * @param context One context of the task
      */
     public void addToContext(final String context) {
         this.context.get().add(context);

@@ -11,7 +11,10 @@ import eu.ortlepp.tasklist.SimpleTaskList;
 import eu.ortlepp.tasklist.model.Task;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -123,6 +126,30 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
+     * Handle a click on the "cancel" button: hide / close the dialog window. Ask for confirmation if there are tasks that are not yet added to the task list.
+     */
+    @FXML
+    @Override
+    protected void handleDialogHide() {
+        boolean cancel = true;
+
+        /* Confirm canceling if there are not yet added tasks */
+        if (!newTasks.isEmpty()) {
+            Alert confirmation = new Alert(AlertType.CONFIRMATION);
+            initDialog(confirmation, "dialog.cancel.title", "dialog.cancel.header", "dialog.cancel.content");
+            Optional<ButtonType> choice = confirmation.showAndWait();
+            if (choice.get() == ButtonType.CANCEL){
+                cancel = false;
+            }
+        }
+
+        if (cancel) {
+            stage.hide();
+        }
+    }
+
+
+    /**
      * Handle a click on the "save" button: set saved and hide / close the dialog window.
      */
     @FXML
@@ -138,8 +165,16 @@ public class NewEditDialogController extends AbstractDialogController {
      */
     @FXML
     private void handleBtnContinueClick() {
-        newTasks.add(createTask());
-        resetComponents();
+
+        /* At least enter a task description */
+        if (txaDescription.getText().isEmpty()) {
+            Alert message = new Alert(AlertType.WARNING);
+            initDialog(message, "dialog.empty.title", "dialog.empty.header", "dialog.empty.content");
+            message.showAndWait();
+        } else {
+            newTasks.add(createTask());
+            resetComponents();
+        }
     }
 
 
@@ -149,7 +184,10 @@ public class NewEditDialogController extends AbstractDialogController {
      */
     @FXML
     private void handleBtnDoneClick() {
-        newTasks.add(createTask());
+        if (!txaDescription.getText().isEmpty()) {
+            newTasks.add(createTask());
+        }
+
         saved = true;
         stage.hide();
     }
@@ -248,10 +286,10 @@ public class NewEditDialogController extends AbstractDialogController {
      * @param keyHeader Key for dialog header in the translation file
      * @param keyContent Key for dialog content in the translation file
      */
-    private void initDialog(Dialog dialog, String keyTitle, String keyHeader, String keyContent) {
+    public void initDialog(Dialog dialog, String keyTitle, String keyHeader, String keyContent) {
         dialog.setTitle(translations.getString(keyTitle));
         dialog.setHeaderText(translations.getString(keyHeader));
-        dialog.setContentText(translations.getString(keyTitle));
+        dialog.setContentText(translations.getString(keyContent));
         ((Stage) dialog.getDialogPane().getScene().getWindow()).initStyle(StageStyle.UTILITY);
     }
 
@@ -290,6 +328,7 @@ public class NewEditDialogController extends AbstractDialogController {
         gpButtons.add(btnSave, 0, 0);
 
         saved = false;
+        newTasks.clear();
 
         initChoiceList(contexts, this.contexts);
         initChoiceList(projects, this.projects);

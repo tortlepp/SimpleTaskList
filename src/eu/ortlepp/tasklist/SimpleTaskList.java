@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import eu.ortlepp.tasklist.gui.MainWindowController;
 import javafx.application.Application;
@@ -51,6 +53,14 @@ public final class SimpleTaskList extends Application {
      */
     @Override
     public void start(final Stage primaryStage) {
+        /* Initialize Logging */
+        try {
+            LogManager.getLogManager().readConfiguration(this.getClass().getClassLoader().getResourceAsStream("eu/ortlepp/tasklist/properties/logging.properties"));
+        } catch (SecurityException | IOException ex) {
+            Logger.getLogger(SimpleTaskList.class.getName()).severe("Initialization of the logger failed: " + ex.getMessage());
+        }
+
+        /* Initialize main window */
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("SimpleTaskList");
         this.primaryStage.setResizable(true);
@@ -86,7 +96,7 @@ public final class SimpleTaskList extends Application {
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (IOException ex) {
-            System.err.println("Initialization of the main window failed: " + ex.getMessage());
+            Logger.getLogger(SimpleTaskList.class.getName()).severe("Initialization of the main window failed: " + ex.getMessage());
         }
     }
 

@@ -14,8 +14,8 @@ public class DueComperator implements Comparator<LocalDate> {
     /**
      * Compares two dates.
      *
-     * @param priority1 The first date
-     * @param priority2 The second date
+     * @param due1 The first date
+     * @param due2 The second date
      * @return Result of the comparison
      */
     @Override

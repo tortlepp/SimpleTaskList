@@ -3,6 +3,7 @@ package eu.ortlepp.tasklist.gui;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Logger;
 
 import eu.ortlepp.tasklist.SimpleTaskList;
 import javafx.fxml.FXML;
@@ -17,6 +18,9 @@ import javafx.scene.image.ImageView;
  * @author Thorsten Ortlepp
  */
 public class AboutDialogController extends AbstractDialogController {
+
+    /** A logger to write out events and messages to the console. */
+    private static final Logger LOGGER = Logger.getLogger(AboutDialogController.class.getName());
 
 
     /** URL of the project page. */
@@ -112,7 +116,7 @@ public class AboutDialogController extends AbstractDialogController {
         try {
             java.awt.Desktop.getDesktop().browse(new URI(url));
         } catch (IOException | URISyntaxException ex) {
-            System.err.println("Opening URL failed: " + ex.getMessage());
+            LOGGER.severe("Opening URL failed: " + ex.getMessage());
         }
     }
 
