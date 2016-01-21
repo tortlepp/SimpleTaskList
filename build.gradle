@@ -1,0 +1,27 @@
+apply plugin: 'java'
+
+// Legacy directory structure from Ant
+sourceSets {
+  main {
+    java {
+      srcDir "src"
+    }
+    resources {
+      srcDirs = ["resources"]
+    }
+  }
+}
+
+// Configure the generated JAR archive
+jar {
+  manifest {
+    attributes "Main-Class": "eu.ortlepp.tasklist.SimpleTaskList"
+  }
+  archiveName "SimpleTaskList.jar"
+}
+
+// Run the generated JAR file
+task run(type: JavaExec) {
+  classpath = jar.outputs.files
+  main = "eu.ortlepp.tasklist.SimpleTaskList"
+}

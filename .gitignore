@@ -1,6 +1,5 @@
-bin
-dist
-doc
+build
+.gradle
 .classpath
 .externalToolBuilders
 .project
