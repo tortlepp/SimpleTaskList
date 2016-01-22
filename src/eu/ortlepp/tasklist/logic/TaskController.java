@@ -1,5 +1,10 @@
 package eu.ortlepp.tasklist.logic;
 
+import eu.ortlepp.tasklist.model.Task;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -12,12 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-import eu.ortlepp.tasklist.model.Task;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 /**
- * Controller for the task lists. It manages all functionality of the list: adding tasks, editing tasks, etc. .
+ * Controller for the task lists. It manages all functionality of the list:
+ * adding tasks, editing tasks, etc. .
  *
  * @author Thorsten Ortlepp
  */
@@ -43,7 +45,10 @@ public class TaskController {
     private final ObservableList<String> projects;
 
 
-    /** Pattern to convert dates into a string. During initialization the pattern is set to yyyy-MM-dd. */
+    /**
+     * Pattern to convert dates into a string.
+     * During initialization the pattern is set to yyyy-MM-dd.
+     */
     private final DateTimeFormatter formatter;
 
 
@@ -84,7 +89,8 @@ public class TaskController {
 
 
     /**
-     * Add a new context to the context list. The context is only added if it is not yet in the list.
+     * Add a new context to the context list. The context is only added if
+     * it is not yet in the list.
      *
      * @param context The context to add
      */
@@ -108,7 +114,8 @@ public class TaskController {
 
 
     /**
-     * Add a new project to the project list. The project is only added if it is not yet in the list.
+     * Add a new project to the project list. The project is only added if
+     * it is not yet in the list.
      *
      * @param project The project to add
      */
@@ -121,11 +128,13 @@ public class TaskController {
 
 
     /**
-     * Read a todo.txt file and transform its contents into tasks. The tasks list will be cleared before and then the read tasks are added to the list.
+     * Read a todo.txt file and transform its contents into tasks. The tasks list will be
+     * cleared before and then the read tasks are added to the list.
      * If the file contains a BOM it will be omitted.
      *
      * @param file The todo.txt file to be read
-     * @return Success flag: true if reading the file was successful, false if there was an error while reading the file
+     * @return Success flag: true if reading the file was successful, false if there was an error
+     *     while reading the file
      */
     public boolean loadTaskList(final String file) {
         if (new File(file).exists()) {
@@ -152,9 +161,9 @@ public class TaskController {
 
                 return true;
 
-              } catch (IOException ex) {
-                  LOGGER.severe("Error reading file " + file + ": " + ex.getMessage());
-              }
+            } catch (IOException ex) {
+                LOGGER.severe("Error reading file " + file + ": " + ex.getMessage());
+            }
         } else {
             LOGGER.severe("The file " + file + " does not exist");
         }
@@ -201,7 +210,8 @@ public class TaskController {
         }
 
         /* creation date for tasks mared as done */
-        if (!elements.isEmpty() && task.isDone() && elements.get(0).matches("\\d{4}-\\d{2}-\\d{2}")) {
+        if (!elements.isEmpty() && task.isDone()
+                && elements.get(0).matches("\\d{4}-\\d{2}-\\d{2}")) {
             task.setCreation(elements.get(0));
             elements.remove(0);
         }
@@ -232,9 +242,11 @@ public class TaskController {
 
 
     /**
-     * Write the task list to the opened todo.txt file. If no file was opened (and filename is empty) no file will be written.
+     * Write the task list to the opened todo.txt file. If no file was opened
+     * (and filename is empty) no file will be written.
      *
-     * @return Success flag: true if writing the file was successful, false if there was an error while writing the file
+     * @return Success flag: true if writing the file was successful,
+     *     false if there was an error while writing the file
      */
     public boolean writeTaskList() {
         if (!filename.isEmpty()) {
@@ -262,7 +274,8 @@ public class TaskController {
 
 
     /**
-     * Convert a task object into a formatted string. The formatted string is ready to be written to a todo.txt file.
+     * Convert a task object into a formatted string. The formatted string is ready to be written
+     * to a todo.txt file.
      *
      * @param task The task to convert into a string
      * @return The string in todo.txt format

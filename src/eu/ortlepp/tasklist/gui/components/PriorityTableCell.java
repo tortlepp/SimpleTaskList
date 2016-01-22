@@ -5,7 +5,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.paint.Color;
 
 /**
- * A custom renderer for the priority column in the table. Some priorities are shown colored: Priority A in red, priority B in yellow, priority C in green and all other priorities in black.
+ * A custom renderer for the priority column in the table. Some priorities are shown colored:
+ * Priority A in red, priority B in yellow, priority C in green and all other priorities in black.
  * Also the content of the column is centered.
  *
  * @author Thorsten Ortlepp
@@ -13,9 +14,11 @@ import javafx.scene.paint.Color;
 public class PriorityTableCell extends TableCell<Task, String> {
 
     /**
-     * Customize the appearance of the data shown in the table. The content is centered and the font color is set.
+     * Customize the appearance of the data shown in the table. The content is centered
+     * and the font color is set.
      *
-     * @param item The item for the cell; in this case a string (a single uppercase letter or empty)
+     * @param item The item for the cell; in this case a string
+     *     (a single uppercase letter or empty)
      * @param empty Indicator if the cell contains data or is empty
      */
     @Override
@@ -31,7 +34,7 @@ public class PriorityTableCell extends TableCell<Task, String> {
         } else if (item.equals("x")) {
             /* Task marked as done */
             setTextFill(Color.BLACK);
-            setText("\u00D7");
+            setText("×");
 
         } else {
             /* Tasks with or without priority */

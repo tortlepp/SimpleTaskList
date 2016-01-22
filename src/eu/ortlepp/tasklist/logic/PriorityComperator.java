@@ -25,7 +25,9 @@ public class PriorityComperator implements Comparator<String> {
 
 
     /**
-     * Get the value of a priority. A - Z return their numeric ASCII value, empty stings return ASCII value of "Z" + 1 and x (task done) returns ASCII value of "Z" + 2.
+     * Get the value of a priority. A - Z return their numeric ASCII value,
+     * empty stings return ASCII value of "Z" + 1 and x (task done) returns
+     * ASCII value of "Z" + 2.
      *
      * @param string The string / priority
      * @return The value of the priority

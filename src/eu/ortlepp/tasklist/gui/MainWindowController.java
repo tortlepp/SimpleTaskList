@@ -1,13 +1,5 @@
 package eu.ortlepp.tasklist.gui;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.MissingResourceException;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.logging.Logger;
-
 import eu.ortlepp.tasklist.SimpleTaskList;
 import eu.ortlepp.tasklist.gui.components.DateTableCell;
 import eu.ortlepp.tasklist.gui.components.DescriptionTableCell;
@@ -16,6 +8,7 @@ import eu.ortlepp.tasklist.logic.DueComperator;
 import eu.ortlepp.tasklist.logic.PriorityComperator;
 import eu.ortlepp.tasklist.logic.TaskController;
 import eu.ortlepp.tasklist.model.Task;
+
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
@@ -40,6 +33,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.MissingResourceException;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
+
 /**
  * Controller for the main window. Handles all actions of the main window.
  *
@@ -47,7 +48,7 @@ import javafx.stage.StageStyle;
  */
 public class MainWindowController {
 
-     /** A logger to write out events and messages to the console. */
+    /** A logger to write out events and messages to the console. */
     private static final Logger LOGGER = Logger.getLogger(MainWindowController.class.getName());
 
 
@@ -170,7 +171,8 @@ public class MainWindowController {
 
 
     /**
-     * Initialize controller by loading the translated captions and tooltips for the GUI components.
+     * Initialize controller by loading the translated captions and tooltips
+     * for the GUI components.
      */
     public MainWindowController() {
         try {
@@ -221,7 +223,8 @@ public class MainWindowController {
         columnStatus.setCellValueFactory(cellData -> cellData.getValue().doneProperty());
         columnPriority.setCellValueFactory(cellData -> cellData.getValue().priorityProperty());
         columnDue.setCellValueFactory(cellData -> cellData.getValue().dueProperty());
-        columnDescription.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+        columnDescription
+                .setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
         columnContext.setCellValueFactory(cellData -> cellData.getValue().contextStringProperty());
         columnProject.setCellValueFactory(cellData -> cellData.getValue().projectStringProperty());
 
@@ -275,7 +278,8 @@ public class MainWindowController {
     private void initDialogs() {
         /* Initialize new / edit dialog */
         newEditDialog = new Stage();
-        newEditController = (NewEditDialogController) initDialog(newEditDialog, "NewEditDialog.fxml");
+        newEditController = (NewEditDialogController) initDialog(newEditDialog,
+                "NewEditDialog.fxml");
         newEditController.setStage(newEditDialog);
 
         /* Initialize about dialog */
@@ -299,7 +303,8 @@ public class MainWindowController {
 
         /* Load FXML */
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("eu/ortlepp/tasklist/fxml/" + fxml), translations);
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+                    .getResource("eu/ortlepp/tasklist/fxml/" + fxml), translations);
             Parent root = loader.load();
             dialog.setScene(new Scene(root));
             controller = loader.getController();
@@ -376,7 +381,8 @@ public class MainWindowController {
     private void handleBtnSaveClick() {
         if (!tasks.writeTaskList()) {
             Alert message = new Alert(AlertType.ERROR);
-            newEditController.initDialog(message, "dialog.write.title", "dialog.write.header", "dialog.write.content");
+            newEditController.initDialog(message, "dialog.write.title", "dialog.write.header",
+                    "dialog.write.content");
             message.showAndWait();
         }
     }
@@ -384,7 +390,8 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "new" button: Open the new task dialog and then add one or more tasks to the list.
+     * Handle a click on the "new" button: Open the new task dialog and
+     * then add one or more tasks to the list.
      */
     @FXML
     private void handleBtnNewClick() {
@@ -413,13 +420,15 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "edit" button: Open edit dialog and after editing update the edited task.
+     * Handle a click on the "edit" button: Open edit dialog and
+     * after editing update the edited task.
      */
     @FXML
     private void handleBtnEditClick() {
         if (tableTasks.getSelectionModel().getSelectedIndex() != -1) {
             /* Open edit dialog */
-            newEditController.setEditDialog(tableTasks.getSelectionModel().getSelectedItem(), tasks.getContextList(), tasks.getProjectList());
+            newEditController.setEditDialog(tableTasks.getSelectionModel().getSelectedItem(),
+                    tasks.getContextList(), tasks.getProjectList());
             newEditDialog.setTitle(translations.getString("dialog.edit.title"));
             newEditDialog.showAndWait();
 
@@ -432,7 +441,8 @@ public class MainWindowController {
                 tableTasks.getSelectionModel().getSelectedItem().setPriority(temp.getPriority());
                 tableTasks.getSelectionModel().getSelectedItem().setCreation(temp.getCreation());
                 tableTasks.getSelectionModel().getSelectedItem().setDue(temp.getDue());
-                tableTasks.getSelectionModel().getSelectedItem().setDescription(temp.getDescription());
+                tableTasks.getSelectionModel().getSelectedItem().setDescription(
+                        temp.getDescription());
 
                 /* Update contexts */
                 tableTasks.getSelectionModel().getSelectedItem().clearContext();
@@ -480,7 +490,7 @@ public class MainWindowController {
             Optional<ButtonType> choice = alert.showAndWait();
 
             /* Confirm deleting of the task */
-            if (choice.get() == ButtonType.OK){
+            if (choice.get() == ButtonType.OK) {
                 long deleteTaskId = tableTasks.getSelectionModel().getSelectedItem().getTaskId();
                 int deleteListId = -1;
 
@@ -521,15 +531,16 @@ public class MainWindowController {
 
 
     /**
-     * Load a task list from file. If the file name is null or an empty string no task list will be loaded.
-     * An error message is shown when the task list could not be opened.
+     * Load a task list from file. If the file name is null or an empty string no task list
+     * will be loaded. An error message is shown when the task list could not be opened.
      *
      * @param file File name of the task list
      */
     public void loadTaskList(final String file) {
         if (file != null && !file.isEmpty() && !tasks.loadTaskList(file)) {
             Alert message = new Alert(AlertType.ERROR);
-            newEditController.initDialog(message, "dialog.read.title", "dialog.read.header", "dialog.read.content");
+            newEditController.initDialog(message, "dialog.read.title", "dialog.read.header",
+                    "dialog.read.content");
             message.showAndWait();
         }
     }
@@ -552,10 +563,12 @@ public class MainWindowController {
         String selectedContext = cbxContext.getSelectionModel().getSelectedItem();
         boolean context = false;
 
-        /* Show task when "All Contexts" is selected or when "Without Context" is selected and task has no context or when task has context that matches selected context */
+        /* Show task when "All Contexts" is selected or when "Without Context" is selected and
+           task has no context or when task has context that matches selected context */
         if (selectedContext.equals(translations.getString("filter.context.all"))) {
             context = true;
-        } else if (selectedContext.equals(translations.getString("filter.context.without")) && item.getContext().isEmpty()) {
+        } else if (selectedContext.equals(translations.getString("filter.context.without"))
+                && item.getContext().isEmpty()) {
             context = true;
         } else {
             for (String itemContext : item.getContext()) {
@@ -569,10 +582,12 @@ public class MainWindowController {
         String selectedProject = cbxProject.getSelectionModel().getSelectedItem();
         boolean project = false;
 
-        /* Show task when "All Projects" is selected or when "Without Project" is selected and task has no project or when task has project that matches selected project */
+        /* Show task when "All Projects" is selected or when "Without Project" is selected
+           and task has no project or when task has project that matches selected project */
         if (selectedProject.equals(translations.getString("filter.project.all"))) {
             project = true;
-        } else if (selectedProject.equals(translations.getString("filter.project.without")) && item.getProject().isEmpty()) {
+        } else if (selectedProject.equals(translations.getString("filter.project.without"))
+                && item.getProject().isEmpty()) {
             project = true;
         } else {
             for (String itemProject : item.getProject()) {

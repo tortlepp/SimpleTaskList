@@ -1,14 +1,8 @@
 package eu.ortlepp.tasklist.gui;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.MissingResourceException;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
 import eu.ortlepp.tasklist.SimpleTaskList;
 import eu.ortlepp.tasklist.model.Task;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -26,8 +20,16 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.MissingResourceException;
+import java.util.Optional;
+import java.util.ResourceBundle;
+
 /**
- * Controller for the new task and edit task dialog window. Handles all actions of the dialog window.
+ * Controller for the new task and edit task dialog window.
+ * Handles all actions of the dialog window.
  *
  * @author Thorsten Ortlepp
  */
@@ -96,7 +98,10 @@ public class NewEditDialogController extends AbstractDialogController {
     private List<String> projects;
 
 
-    /** The save state of the data. Values: true = save / done was clicked, false = cancel was clicked. */
+    /**
+     * The save state of the data. Values: true = save / done was clicked,
+     * false = cancel was clicked.
+     */
     private boolean saved;
 
     /** List of all new tasks. */
@@ -120,13 +125,18 @@ public class NewEditDialogController extends AbstractDialogController {
             throw new RuntimeException("Translation is not available", ex);
         }
 
-        cbxPriority.setItems(FXCollections.observableArrayList(translations.getString("choice.priority.no"), translations.getString("choice.priority.done"), "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
+        cbxPriority.setItems(FXCollections.observableArrayList(
+                translations.getString("choice.priority.no"),
+                translations.getString("choice.priority.done"),
+                "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
+                "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     }
 
 
 
     /**
-     * Handle a click on the "cancel" button: hide / close the dialog window. Ask for confirmation if there are tasks that are not yet added to the task list.
+     * Handle a click on the "cancel" button: hide / close the dialog window.
+     * Ask for confirmation if there are tasks that are not yet added to the task list.
      */
     @FXML
     @Override
@@ -136,9 +146,10 @@ public class NewEditDialogController extends AbstractDialogController {
         /* Confirm canceling if there are not yet added tasks */
         if (!newTasks.isEmpty()) {
             Alert confirmation = new Alert(AlertType.CONFIRMATION);
-            initDialog(confirmation, "dialog.cancel.title", "dialog.cancel.header", "dialog.cancel.content");
+            initDialog(confirmation, "dialog.cancel.title", "dialog.cancel.header",
+                    "dialog.cancel.content");
             Optional<ButtonType> choice = confirmation.showAndWait();
-            if (choice.get() == ButtonType.CANCEL){
+            if (choice.get() == ButtonType.CANCEL) {
                 cancel = false;
             }
         }
@@ -161,7 +172,8 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
-     * Handle a click on the "continue" button: save the entered data and clear the input components.
+     * Handle a click on the "continue" button: save the entered data
+     * and clear the input components.
      */
     @FXML
     private void handleBtnContinueClick() {
@@ -169,7 +181,8 @@ public class NewEditDialogController extends AbstractDialogController {
         /* At least enter a task description */
         if (txaDescription.getText().isEmpty()) {
             Alert message = new Alert(AlertType.WARNING);
-            initDialog(message, "dialog.empty.title", "dialog.empty.header", "dialog.empty.content");
+            initDialog(message, "dialog.empty.title", "dialog.empty.header",
+                    "dialog.empty.content");
             message.showAndWait();
         } else {
             newTasks.add(createTask());
@@ -180,7 +193,8 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
-     * Handle a click on the "done" button: save the entered data, set saved and hide / close the dialog window.
+     * Handle a click on the "done" button: save the entered data, set saved
+     * and hide / close the dialog window.
      */
     @FXML
     private void handleBtnDoneClick() {
@@ -195,14 +209,16 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
-     * Handle a click on the "select context" button: open a selection dialog and add the selected context to the list.
+     * Handle a click on the "select context" button: open a selection dialog
+     * and add the selected context to the list.
      */
     @FXML
     private void handleBtnSelectContext() {
         ChoiceDialog<String> choice = new ChoiceDialog<String>(contexts.get(0), contexts);
-        initDialog(choice, "dialog.context.select.title", "dialog.context.select.header", "dialog.context.select.content");
+        initDialog(choice, "dialog.context.select.title", "dialog.context.select.header",
+                "dialog.context.select.content");
         Optional<String> text = choice.showAndWait();
-        if (text.isPresent()){
+        if (text.isPresent()) {
             lvContext.getItems().add(text.get());
         }
     }
@@ -210,14 +226,16 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
-     * Handle a click on the "add context" button: open an input dialog and add the inserted context to the list.
+     * Handle a click on the "add context" button: open an input dialog
+     * and add the inserted context to the list.
      */
     @FXML
     private void handleBtnAddContext() {
         TextInputDialog input = new TextInputDialog();
-        initDialog(input, "dialog.context.new.title", "dialog.context.new.header", "dialog.context.new.content");
+        initDialog(input, "dialog.context.new.title", "dialog.context.new.header",
+                "dialog.context.new.content");
         Optional<String> text = input.showAndWait();
-        if (text.isPresent()){
+        if (text.isPresent()) {
             lvContext.getItems().add(text.get());
         }
     }
@@ -237,14 +255,16 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
-     * Handle a click on the "select project" button: open a selection dialog and add the selected project to the list.
+     * Handle a click on the "select project" button: open a selection dialog
+     * and add the selected project to the list.
      */
     @FXML
     private void handleBtnSelectProject() {
         ChoiceDialog<String> choice = new ChoiceDialog<String>(projects.get(0), projects);
-        initDialog(choice, "dialog.project.select.title", "dialog.project.select.header", "dialog.project.select.content");
+        initDialog(choice, "dialog.project.select.title", "dialog.project.select.header",
+                "dialog.project.select.content");
         Optional<String> text = choice.showAndWait();
-        if (text.isPresent()){
+        if (text.isPresent()) {
             lvProject.getItems().add(text.get());
         }
     }
@@ -252,14 +272,16 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
-     * Handle a click on the "add project" button: open an input dialog and add the inserted project to the list.
+     * Handle a click on the "add project" button: open an input dialog and
+     * add the inserted project to the list.
      */
     @FXML
     private void handleBtnAddProject() {
         TextInputDialog input = new TextInputDialog();
-        initDialog(input, "dialog.project.new.title", "dialog.project.new.header", "dialog.project.new.content");
+        initDialog(input, "dialog.project.new.title", "dialog.project.new.header",
+                "dialog.project.new.content");
         Optional<String> text = input.showAndWait();
-        if (text.isPresent()){
+        if (text.isPresent()) {
             lvProject.getItems().add(text.get());
         }
     }
@@ -279,7 +301,8 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
-     * Initialize a dialog by setting its title, header and content and set window style to "utility dialog".
+     * Initialize a dialog by setting its title, header and content
+     * and set window style to "utility dialog".
      *
      * @param dialog The dialog to initialize
      * @param keyTitle Key for dialog title in the translation file
@@ -317,7 +340,8 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
-     * Set dialog to the "edit task" mode. Show the data of the currently selected task in the dialog window.
+     * Set dialog to the "edit task" mode. Show the data of the currently selected task
+     * in the dialog window.
      *
      * @param task The data of the currently selected task
      * @param contexts All existing contexts
@@ -371,7 +395,8 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
-     * Initialize a choice list with items. The first two items of the source list (all / no items) are omitted.
+     * Initialize a choice list with items. The first two items of the source list
+     * (all / no items) are omitted.
      *
      * @param source The source list with all items
      * @param target The list to be initialized

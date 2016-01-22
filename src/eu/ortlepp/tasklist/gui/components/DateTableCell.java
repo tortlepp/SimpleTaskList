@@ -1,14 +1,16 @@
 package eu.ortlepp.tasklist.gui.components;
 
+import eu.ortlepp.tasklist.model.Task;
+
+import javafx.scene.control.TableCell;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
-import eu.ortlepp.tasklist.model.Task;
-import javafx.scene.control.TableCell;
-
 /**
- * A custom renderer for date columns in the table. The date will be formatted according to the set format.
+ * A custom renderer for date columns in the table. The date will be formatted
+ * according to the set format.
  *
  * @author Thorsten Ortlepp
  */
@@ -30,7 +32,8 @@ public class DateTableCell extends TableCell<Task, LocalDate> {
 
 
     /**
-     * Customize the appearance of the data shown in the table. The date is formatted according to the format initialized in the constructor.
+     * Customize the appearance of the data shown in the table. The date is formatted
+     * according to the format initialized in the constructor.
      *
      * @param item The item for the cell; in this case a date
      * @param empty Indicator if the cell contains data or is empty

@@ -1,12 +1,5 @@
 package eu.ortlepp.tasklist.model;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -15,6 +8,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Bean for a single task. It contains all data of the task.
@@ -35,8 +35,11 @@ public class Task {
     private StringProperty priority;
 
 
-    /** The status of the task. Either it is already done (true) or not yet done (false).
-        A ChangeListener is connected to adjust priority and completion date when the status changes. */
+    /**
+     * The status of the task. Either it is already done (true) or not yet done (false).
+     * A ChangeListener is connected to adjust priority and completion date when the
+     * status changes.
+     */
     private BooleanProperty done;
 
 
@@ -76,13 +79,17 @@ public class Task {
     private HashMap<String, String> metadata;
 
 
-    /** Pattern for reading dates from a string. During initialization the pattern is set to yyyy-MM-dd. */
+    /**
+     * Pattern for reading dates from a string.
+     * During initialization the pattern is set to yyyy-MM-dd.
+     */
     private final DateTimeFormatter formatter;
 
 
 
     /**
-     * Initialize the formatter pattern. All other properties are initialized with empty or default values.
+     * Initialize the formatter pattern. All other properties are initialized with empty
+     * or default values.
      */
     public Task() {
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -522,7 +529,8 @@ public class Task {
     /**
      * Add a key-value-pair to the map of additional meta data of the task.
      * In the todo.txt file meta data is stored as key:value.
-     * If the key is due and the value is formatted as YYYY-MM-DD the meta data is not added to the map but the value stored in due as due date.
+     * If the key is due and the value is formatted as YYYY-MM-DD the meta data
+     * is not added to the map but the value stored in due as due date.
      *
      * @param key The key of the meta data
      * @param value The value of the meta data
@@ -538,7 +546,8 @@ public class Task {
 
 
     /**
-     * Convert a list of string into a single string. After each list item a line break is inserted into the string.
+     * Convert a list of string into a single string. After each list item a line break
+     * is inserted into the string.
      *
      * @param list The list to be converted into a string
      * @return The created string; each list item is separated by a line break
@@ -562,7 +571,8 @@ public class Task {
 
 
     /**
-     * Inner class: A change listener for the boolean done property. Changes the status and the completion date when done changes its value.
+     * Inner class: A change listener for the boolean done property. Changes the status
+     * and the completion date when done changes its value.
      *
      * @author Thorsten Ortlepp
      */
@@ -572,12 +582,15 @@ public class Task {
         private String lastPriority = "";
 
         /**
-         * Triggered when the value of done changes; changes priority and completion date according to the new value of done.
-         * If done becomes true the priority is set to "x" and the completion date is set to the current date.
-         * If done becomes false the priority is set back to its previous value if available, otherwise it will be just cleared. The completion date is set to the default empty value, the minimum date.
+         * Triggered when the value of done changes; changes priority and completion date
+         * according to the new value of done. If done becomes true the priority is set to
+         * "x" and the completion date is set to the current date. If done becomes false
+         * the priority is set back to its previous value if available, otherwise it will be
+         * just cleared. The completion date is set to the default empty value, the minimum date.
          */
         @Override
-        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
+                Boolean newValue) {
             if (newValue) {
                 lastPriority = getPriority();
                 setPriority("x");

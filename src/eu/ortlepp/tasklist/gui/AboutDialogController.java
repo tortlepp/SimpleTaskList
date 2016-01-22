@@ -1,16 +1,17 @@
 package eu.ortlepp.tasklist.gui;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.logging.Logger;
-
 import eu.ortlepp.tasklist.SimpleTaskList;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Logger;
 
 /**
  * Controller for the about dialog window. Handles all actions of the dialog window.

@@ -26,7 +26,8 @@ public class DueComperator implements Comparator<LocalDate> {
 
 
     /**
-     * Fix a date; the minimum date is inverted into the maximum date, all other dates remain the same.
+     * Fix a date; the minimum date is inverted into the maximum date,
+     * all other dates remain the same.
      *
      * @param date The date to be fixed
      * @return The fixed date
