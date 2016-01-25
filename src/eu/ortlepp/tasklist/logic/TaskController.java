@@ -1,5 +1,10 @@
 package eu.ortlepp.tasklist.logic;
 
+import eu.ortlepp.tasklist.model.Task;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -12,12 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-import eu.ortlepp.tasklist.model.Task;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 /**
- * Controller for the task lists. It manages all functionality of the list: adding tasks, editing tasks, etc. .
+ * Controller for the task lists. It manages all functionality of the list:
+ * adding tasks, editing tasks, etc. .
  *
  * @author Thorsten Ortlepp
  */
@@ -43,7 +45,10 @@ public class TaskController {
     private final ObservableList<String> projects;
 
 
-    /** Pattern to convert dates into a string. During initialization the pattern is set to yyyy-MM-dd. */
+    /**
+     * Pattern to convert dates into a string.
+     * During initialization the pattern is set to yyyy-MM-dd.
+     */
     private final DateTimeFormatter formatter;
 
 
@@ -84,11 +89,12 @@ public class TaskController {
 
 
     /**
-     * Add a new context to the context list. The context is only added if it is not yet in the list.
+     * Add a new context to the context list. The context is only added if
+     * it is not yet in the list.
      *
      * @param context The context to add
      */
-    public void addContext(String context) {
+    public void addContext(final String context) {
         if (!contexts.contains(context)) {
             contexts.add(context);
         }
@@ -108,11 +114,12 @@ public class TaskController {
 
 
     /**
-     * Add a new project to the project list. The project is only added if it is not yet in the list.
+     * Add a new project to the project list. The project is only added if
+     * it is not yet in the list.
      *
      * @param project The project to add
      */
-    public void addProject(String project) {
+    public void addProject(final String project) {
         if (!projects.contains(project)) {
             projects.add(project);
         }
@@ -121,18 +128,21 @@ public class TaskController {
 
 
     /**
-     * Read a todo.txt file and transform its contents into tasks. The tasks list will be cleared before and then the read tasks are added to the list.
+     * Read a todo.txt file and transform its contents into tasks. The tasks list will be
+     * cleared before and then the read tasks are added to the list.
      * If the file contains a BOM it will be omitted.
      *
      * @param file The todo.txt file to be read
-     * @return Success flag: true if reading the file was successful, false if there was an error while reading the file
+     * @return Success flag: true if reading the file was successful, false if there was an error
+     *     while reading the file
      */
     public boolean loadTaskList(final String file) {
         if (new File(file).exists()) {
 
             try {
                 /* Read file line by line */
-                List<String> lines = Files.readAllLines(Paths.get(file), StandardCharsets.UTF_8);
+                final List<String> lines =
+                        Files.readAllLines(Paths.get(file), StandardCharsets.UTF_8);
 
                 tasklist.clear();
                 Task.resetId();
@@ -140,7 +150,7 @@ public class TaskController {
                 for (String line : lines) {
 
                     /* Remove BOM if it exists */
-                    if (line.startsWith("\uFEFF")) {
+                    if (line.charAt(0) == '\uFEFF') {
                         line = line.replaceFirst("\uFEFF", "");
                     }
 
@@ -152,9 +162,9 @@ public class TaskController {
 
                 return true;
 
-              } catch (IOException ex) {
-                  LOGGER.severe("Error reading file " + file + ": " + ex.getMessage());
-              }
+            } catch (IOException ex) {
+                LOGGER.severe("Error reading file " + file + ": " + ex.getMessage());
+            }
         } else {
             LOGGER.severe("The file " + file + " does not exist");
         }
@@ -171,10 +181,10 @@ public class TaskController {
      * @return The line transformed into a data structure object
      */
     private Task parseTask(final String line) {
-        Task task = new Task();
+        final Task task = new Task();
 
         /* Split line */
-        List<String> elements = new ArrayList<String>(Arrays.asList(line.split("\\s")));
+        final List<String> elements = new ArrayList<String>(Arrays.asList(line.split("\\s")));
 
         /* priority or done */
         if (!elements.isEmpty()) {
@@ -206,10 +216,10 @@ public class TaskController {
             elements.remove(0);
         }
 
-        StringBuilder description = new StringBuilder();
+        final StringBuilder description = new StringBuilder();
 
         /* Search for projects, contexts and metadata; read description  */
-        for (String element : elements) {
+        for (final String element : elements) {
             if (element.matches("\\+\\S+")) {
                 task.addToProject(element.substring(1));
                 addProject(element.substring(1));
@@ -217,10 +227,10 @@ public class TaskController {
                 task.addToContext(element.substring(1));
                 addContext(element.substring(1));
             } else if (element.matches("\\S+:\\S+")) {
-                String[] meta = element.split(":");
+                final String[] meta = element.split(":");
                 task.addToMetadata(meta[0], meta[1]);
             } else {
-                description.append(element).append(" ");
+                description.append(element).append(' ');
             }
         }
 
@@ -232,16 +242,20 @@ public class TaskController {
 
 
     /**
-     * Write the task list to the opened todo.txt file. If no file was opened (and filename is empty) no file will be written.
+     * Write the task list to the opened todo.txt file. If no file was opened
+     * (and filename is empty) no file will be written.
      *
-     * @return Success flag: true if writing the file was successful, false if there was an error while writing the file
+     * @return Success flag: true if writing the file was successful,
+     *     false if there was an error while writing the file
      */
     public boolean writeTaskList() {
-        if (!filename.isEmpty()) {
-            List<String> tasks = new ArrayList<String>();
+        if (filename.isEmpty()) {
+            LOGGER.severe("No task list is open");
+        } else {
+            final List<String> tasks = new ArrayList<String>();
 
             /* Convert task objects into strings */
-            for (Task task : tasklist) {
+            for (final Task task : tasklist) {
                 tasks.add(taskToString(task));
             }
 
@@ -252,9 +266,6 @@ public class TaskController {
             } catch (IOException ex) {
                 LOGGER.severe("Error while writing the file " + filename + ": " + ex.getMessage());
             }
-
-        } else {
-            LOGGER.severe("No task list is open");
         }
 
         return false;
@@ -262,48 +273,49 @@ public class TaskController {
 
 
     /**
-     * Convert a task object into a formatted string. The formatted string is ready to be written to a todo.txt file.
+     * Convert a task object into a formatted string. The formatted string is ready to be written
+     * to a todo.txt file.
      *
      * @param task The task to convert into a string
      * @return The string in todo.txt format
      */
-    private String taskToString(Task task) {
-        StringBuilder strBuilder = new StringBuilder();
+    private String taskToString(final Task task) {
+        final StringBuilder strBuilder = new StringBuilder();
 
         if (!task.getPriority().isEmpty()) {
             if (task.getPriority().equals("x")) {
                 strBuilder.append("x ");
             } else {
-                strBuilder.append("(").append(task.getPriority()).append(") ");
+                strBuilder.append('(').append(task.getPriority()).append(") ");
             }
         }
 
         if (task.isDone() && !task.getCompletion().equals(LocalDate.MIN)) {
-            strBuilder.append(task.getCompletion().format(formatter)).append(" ");
+            strBuilder.append(task.getCompletion().format(formatter)).append(' ');
         }
 
         if (!task.getCreation().equals(LocalDate.MIN)) {
-            strBuilder.append(task.getCreation().format(formatter)).append(" ");
+            strBuilder.append(task.getCreation().format(formatter)).append(' ');
         }
 
         if (!task.getDescription().isEmpty()) {
-            strBuilder.append(task.getDescription()).append(" ");
+            strBuilder.append(task.getDescription()).append(' ');
         }
 
-        for (String context : task.getContext()) {
-            strBuilder.append("@").append(context).append(" ");
+        for (final String context : task.getContext()) {
+            strBuilder.append('@').append(context).append(' ');
         }
 
-        for (String project : task.getProject()) {
-            strBuilder.append("+").append(project).append(" ");
+        for (final String project : task.getProject()) {
+            strBuilder.append('+').append(project).append(' ');
         }
 
         if (!task.getDue().equals(LocalDate.MIN)) {
-            strBuilder.append("due:").append(task.getDue().format(formatter)).append(" ");
+            strBuilder.append("due:").append(task.getDue().format(formatter)).append(' ');
         }
 
-        for (String key : task.getMetadata().keySet()) {
-            strBuilder.append(key).append(":").append(task.getMetadata().get(key)).append(" ");
+        for (final String key : task.getMetadata().keySet()) {
+            strBuilder.append(key).append(':').append(task.getMetadata().get(key)).append(' ');
         }
 
         return strBuilder.toString().trim();

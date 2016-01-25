@@ -1,5 +1,6 @@
 package eu.ortlepp.tasklist.logic;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -8,7 +9,11 @@ import java.util.Comparator;
  *
  * @author Thorsten Ortlepp
  */
-public class PriorityComperator implements Comparator<String> {
+public class PriorityComperator implements Comparator<String>, Serializable {
+
+    /** Randomly generated ID for Serializable. */
+    private static final long serialVersionUID = 8070298259589601364L;
+
 
     /**
      * Compares two priorities.
@@ -18,19 +23,21 @@ public class PriorityComperator implements Comparator<String> {
      * @return Result of the comparison
      */
     @Override
-    public int compare(String priority1, String priority2) {
+    public int compare(final String priority1, final String priority2) {
         return getValue(priority1) - getValue(priority2);
     }
 
 
 
     /**
-     * Get the value of a priority. A - Z return their numeric ASCII value, empty stings return ASCII value of "Z" + 1 and x (task done) returns ASCII value of "Z" + 2.
+     * Get the value of a priority. A - Z return their numeric ASCII value,
+     * empty stings return ASCII value of "Z" + 1 and x (task done) returns
+     * ASCII value of "Z" + 2.
      *
      * @param string The string / priority
      * @return The value of the priority
      */
-    private int getValue(String string) {
+    private int getValue(final String string) {
         if (string.isEmpty()) {
             return 'Z' + 1;
         } else if (string.equals("x")) {

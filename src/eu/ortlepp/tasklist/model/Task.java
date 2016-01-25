@@ -1,12 +1,5 @@
 package eu.ortlepp.tasklist.model;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -16,6 +9,14 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Bean for a single task. It contains all data of the task.
  *
@@ -23,8 +24,8 @@ import javafx.beans.value.ObservableValue;
  */
 public class Task {
 
-    /** Static ID counter for task IDs; always contains the value of the last used task ID. */
-    private static long id;
+    /** ID counter for task IDs; always contains the value of the last used task ID. */
+    private static AtomicLong id = new AtomicLong(0);
 
 
     /** Internal ID to identify the task. */
@@ -32,64 +33,70 @@ public class Task {
 
 
     /** The priority of the task. An uppercase letter A - Z. */
-    private StringProperty priority;
+    private final StringProperty priority;
 
 
-    /** The status of the task. Either it is already done (true) or not yet done (false).
-        A ChangeListener is connected to adjust priority and completion date when the status changes. */
-    private BooleanProperty done;
+    /**
+     * The status of the task. Either it is already done (true) or not yet done (false).
+     * A ChangeListener is connected to adjust priority and completion date when the
+     * status changes.
+     */
+    private final BooleanProperty done;
 
 
     /** The creation date of the task. */
-    private ObjectProperty<LocalDate> creation;
+    private final ObjectProperty<LocalDate> creation;
 
 
     /** The completion date of the task. */
-    private ObjectProperty<LocalDate> completion;
+    private final ObjectProperty<LocalDate> completion;
 
 
     /** The due date of the task. */
-    private ObjectProperty<LocalDate> due;
+    private final ObjectProperty<LocalDate> due;
 
 
     /** A list of all projects of the task. */
-    private ObjectProperty<List<String>> project;
+    private final ObjectProperty<List<String>> project;
 
 
     /** The List of all projects as string. */
-    private StringProperty projectString;
+    private final StringProperty projectString;
 
 
     /** A list of all contexts of the task. */
-    private ObjectProperty<List<String>> context;
+    private final ObjectProperty<List<String>> context;
 
 
     /** The list of all contexts as string. */
-    private StringProperty contextString;
+    private final StringProperty contextString;
 
 
     /** The description / text of the task. */
-    private StringProperty description;
+    private final StringProperty description;
 
 
     /** Additional meta data of the task. In the todo.txt file meta data is stored as key:value. */
-    private HashMap<String, String> metadata;
+    private final Map<String, String> metadata;
 
 
-    /** Pattern for reading dates from a string. During initialization the pattern is set to yyyy-MM-dd. */
+    /**
+     * Pattern for reading dates from a string.
+     * During initialization the pattern is set to yyyy-MM-dd.
+     */
     private final DateTimeFormatter formatter;
 
 
 
     /**
-     * Initialize the formatter pattern. All other properties are initialized with empty or default values.
+     * Initialize the formatter pattern. All other properties are initialized with empty
+     * or default values.
      */
     public Task() {
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         /* Set task ID */
-        id++;
-        taskId = id;
+        taskId = id.incrementAndGet();
 
         /* Initialize with default values */
         priority = new SimpleStringProperty("");
@@ -115,12 +122,11 @@ public class Task {
      *
      * @param task The source task
      */
-    public Task(Task task) {
+    public Task(final Task task) {
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         /* Set task ID */
-        id++;
-        taskId = id;
+        taskId = id.incrementAndGet();
 
         /* Initialize with copied values */
         priority = new SimpleStringProperty(task.getPriority());
@@ -136,7 +142,7 @@ public class Task {
         contextString = new SimpleStringProperty(listToString(getContext()));
         description = new SimpleStringProperty(task.getDescription());
         metadata = new HashMap<String, String>();
-        for (String key : task.getMetadata().keySet()) {
+        for (final String key : task.getMetadata().keySet()) {
             metadata.put(key, task.getMetadata().get(key));
         }
 
@@ -150,7 +156,7 @@ public class Task {
      * Reset the ID counter to 0. Use only when a task list is (re)initialized!
      */
     public static void resetId() {
-        id = 0;
+        id.set(0);
     }
 
 
@@ -371,7 +377,7 @@ public class Task {
      *
      * @return A list of projects of the task
      */
-    public List<String> getProject() {
+    public final List<String> getProject() {
         return project.get();
     }
 
@@ -426,7 +432,7 @@ public class Task {
      *
      * @return A list of contexts of the task
      */
-    public List<String> getContext() {
+    public final List<String> getContext() {
         return context.get();
     }
 
@@ -522,7 +528,8 @@ public class Task {
     /**
      * Add a key-value-pair to the map of additional meta data of the task.
      * In the todo.txt file meta data is stored as key:value.
-     * If the key is due and the value is formatted as YYYY-MM-DD the meta data is not added to the map but the value stored in due as due date.
+     * If the key is due and the value is formatted as YYYY-MM-DD the meta data
+     * is not added to the map but the value stored in due as due date.
      *
      * @param key The key of the meta data
      * @param value The value of the meta data
@@ -538,13 +545,14 @@ public class Task {
 
 
     /**
-     * Convert a list of string into a single string. After each list item a line break is inserted into the string.
+     * Convert a list of string into a single string. After each list item a line break
+     * is inserted into the string.
      *
      * @param list The list to be converted into a string
      * @return The created string; each list item is separated by a line break
      */
-    private String listToString(List<String> list) {
-        StringBuilder text = new StringBuilder();
+    private String listToString(final List<String> list) {
+        final StringBuilder text = new StringBuilder();
 
         /* One item per "line" */
         for (int i = 0; i < list.size(); i++) {
@@ -562,7 +570,8 @@ public class Task {
 
 
     /**
-     * Inner class: A change listener for the boolean done property. Changes the status and the completion date when done changes its value.
+     * Inner class: A change listener for the boolean done property. Changes the status
+     * and the completion date when done changes its value.
      *
      * @author Thorsten Ortlepp
      */
@@ -572,12 +581,15 @@ public class Task {
         private String lastPriority = "";
 
         /**
-         * Triggered when the value of done changes; changes priority and completion date according to the new value of done.
-         * If done becomes true the priority is set to "x" and the completion date is set to the current date.
-         * If done becomes false the priority is set back to its previous value if available, otherwise it will be just cleared. The completion date is set to the default empty value, the minimum date.
+         * Triggered when the value of done changes; changes priority and completion date
+         * according to the new value of done. If done becomes true the priority is set to
+         * "x" and the completion date is set to the current date. If done becomes false
+         * the priority is set back to its previous value if available, otherwise it will be
+         * just cleared. The completion date is set to the default empty value, the minimum date.
          */
         @Override
-        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        public void changed(final ObservableValue<? extends Boolean> observable,
+               final Boolean oldValue, final  Boolean newValue) {
             if (newValue) {
                 lastPriority = getPriority();
                 setPriority("x");
