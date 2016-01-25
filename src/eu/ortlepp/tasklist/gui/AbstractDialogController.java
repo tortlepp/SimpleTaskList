@@ -19,7 +19,7 @@ public abstract class AbstractDialogController {
      *
      * @param stage The stage of the dialog window.
      */
-    public void setStage(Stage stage) {
+    public void setStage(final Stage stage) {
         this.stage = stage;
     }
 

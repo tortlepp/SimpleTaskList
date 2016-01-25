@@ -94,7 +94,7 @@ public class TaskController {
      *
      * @param context The context to add
      */
-    public void addContext(String context) {
+    public void addContext(final String context) {
         if (!contexts.contains(context)) {
             contexts.add(context);
         }
@@ -119,7 +119,7 @@ public class TaskController {
      *
      * @param project The project to add
      */
-    public void addProject(String project) {
+    public void addProject(final String project) {
         if (!projects.contains(project)) {
             projects.add(project);
         }
@@ -141,7 +141,8 @@ public class TaskController {
 
             try {
                 /* Read file line by line */
-                List<String> lines = Files.readAllLines(Paths.get(file), StandardCharsets.UTF_8);
+                final List<String> lines =
+                        Files.readAllLines(Paths.get(file), StandardCharsets.UTF_8);
 
                 tasklist.clear();
                 Task.resetId();
@@ -149,7 +150,7 @@ public class TaskController {
                 for (String line : lines) {
 
                     /* Remove BOM if it exists */
-                    if (line.startsWith("\uFEFF")) {
+                    if (line.charAt(0) == '\uFEFF') {
                         line = line.replaceFirst("\uFEFF", "");
                     }
 
@@ -180,10 +181,10 @@ public class TaskController {
      * @return The line transformed into a data structure object
      */
     private Task parseTask(final String line) {
-        Task task = new Task();
+        final Task task = new Task();
 
         /* Split line */
-        List<String> elements = new ArrayList<String>(Arrays.asList(line.split("\\s")));
+        final List<String> elements = new ArrayList<String>(Arrays.asList(line.split("\\s")));
 
         /* priority or done */
         if (!elements.isEmpty()) {
@@ -210,16 +211,15 @@ public class TaskController {
         }
 
         /* creation date for tasks mared as done */
-        if (!elements.isEmpty() && task.isDone()
-                && elements.get(0).matches("\\d{4}-\\d{2}-\\d{2}")) {
+        if (!elements.isEmpty() && task.isDone() && elements.get(0).matches("\\d{4}-\\d{2}-\\d{2}")) {
             task.setCreation(elements.get(0));
             elements.remove(0);
         }
 
-        StringBuilder description = new StringBuilder();
+        final StringBuilder description = new StringBuilder();
 
         /* Search for projects, contexts and metadata; read description  */
-        for (String element : elements) {
+        for (final String element : elements) {
             if (element.matches("\\+\\S+")) {
                 task.addToProject(element.substring(1));
                 addProject(element.substring(1));
@@ -227,10 +227,10 @@ public class TaskController {
                 task.addToContext(element.substring(1));
                 addContext(element.substring(1));
             } else if (element.matches("\\S+:\\S+")) {
-                String[] meta = element.split(":");
+                final String[] meta = element.split(":");
                 task.addToMetadata(meta[0], meta[1]);
             } else {
-                description.append(element).append(" ");
+                description.append(element).append(' ');
             }
         }
 
@@ -249,11 +249,13 @@ public class TaskController {
      *     false if there was an error while writing the file
      */
     public boolean writeTaskList() {
-        if (!filename.isEmpty()) {
-            List<String> tasks = new ArrayList<String>();
+        if (filename.isEmpty()) {
+            LOGGER.severe("No task list is open");
+        } else {
+            final List<String> tasks = new ArrayList<String>();
 
             /* Convert task objects into strings */
-            for (Task task : tasklist) {
+            for (final Task task : tasklist) {
                 tasks.add(taskToString(task));
             }
 
@@ -264,9 +266,6 @@ public class TaskController {
             } catch (IOException ex) {
                 LOGGER.severe("Error while writing the file " + filename + ": " + ex.getMessage());
             }
-
-        } else {
-            LOGGER.severe("No task list is open");
         }
 
         return false;
@@ -280,43 +279,43 @@ public class TaskController {
      * @param task The task to convert into a string
      * @return The string in todo.txt format
      */
-    private String taskToString(Task task) {
-        StringBuilder strBuilder = new StringBuilder();
+    private String taskToString(final Task task) {
+        final StringBuilder strBuilder = new StringBuilder();
 
         if (!task.getPriority().isEmpty()) {
             if (task.getPriority().equals("x")) {
                 strBuilder.append("x ");
             } else {
-                strBuilder.append("(").append(task.getPriority()).append(") ");
+                strBuilder.append('(').append(task.getPriority()).append(") ");
             }
         }
 
         if (task.isDone() && !task.getCompletion().equals(LocalDate.MIN)) {
-            strBuilder.append(task.getCompletion().format(formatter)).append(" ");
+            strBuilder.append(task.getCompletion().format(formatter)).append(' ');
         }
 
         if (!task.getCreation().equals(LocalDate.MIN)) {
-            strBuilder.append(task.getCreation().format(formatter)).append(" ");
+            strBuilder.append(task.getCreation().format(formatter)).append(' ');
         }
 
         if (!task.getDescription().isEmpty()) {
-            strBuilder.append(task.getDescription()).append(" ");
+            strBuilder.append(task.getDescription()).append(' ');
         }
 
-        for (String context : task.getContext()) {
-            strBuilder.append("@").append(context).append(" ");
+        for (final String context : task.getContext()) {
+            strBuilder.append('@').append(context).append(' ');
         }
 
-        for (String project : task.getProject()) {
-            strBuilder.append("+").append(project).append(" ");
+        for (final String project : task.getProject()) {
+            strBuilder.append('+').append(project).append(' ');
         }
 
         if (!task.getDue().equals(LocalDate.MIN)) {
-            strBuilder.append("due:").append(task.getDue().format(formatter)).append(" ");
+            strBuilder.append("due:").append(task.getDue().format(formatter)).append(' ');
         }
 
-        for (String key : task.getMetadata().keySet()) {
-            strBuilder.append(key).append(":").append(task.getMetadata().get(key)).append(" ");
+        for (final String key : task.getMetadata().keySet()) {
+            strBuilder.append(key).append(':').append(task.getMetadata().get(key)).append(' ');
         }
 
         return strBuilder.toString().trim();

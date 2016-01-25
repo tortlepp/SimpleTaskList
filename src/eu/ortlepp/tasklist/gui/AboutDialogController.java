@@ -113,7 +113,7 @@ public class AboutDialogController extends AbstractDialogController {
      *
      * @param url The URL to open
      */
-    private void openBrowser(String url) {
+    private void openBrowser(final String url) {
         try {
             java.awt.Desktop.getDesktop().browse(new URI(url));
         } catch (IOException | URISyntaxException ex) {

@@ -42,7 +42,7 @@ public final class SimpleTaskList extends Application {
      *
      * @param args Parameters for the application, currently not used
      */
-    public static void main(String... args) {
+    public static void main(final String... args) {
         launch(args);
     }
 
@@ -71,8 +71,7 @@ public final class SimpleTaskList extends Application {
         this.primaryStage.setResizable(true);
         this.primaryStage.setMinWidth(800);
         this.primaryStage.setMinHeight(600);
-        this.primaryStage.getIcons()
-                .add(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList.png"));
+        this.primaryStage.getIcons().add(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList.png"));
         initWindow();
     }
 
@@ -84,22 +83,22 @@ public final class SimpleTaskList extends Application {
     private void initWindow() {
         try {
             /* Load the translation for the GUI */
-            ResourceBundle bundle = PropertyResourceBundle.getBundle(TRANSLATION);
+            final ResourceBundle bundle = PropertyResourceBundle.getBundle(TRANSLATION);
 
             /* Load FXML and initialize the main window */
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+            final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
                     .getResource("eu/ortlepp/tasklist/fxml/MainWindow.fxml"), bundle);
-            BorderPane window = (BorderPane) loader.load();
+            final BorderPane window = (BorderPane) loader.load();
 
             /* Initialize the controller, pass file to open to the controller */
-            List<String> params = getParameters().getRaw();
-            String file = (params.size() > 0) ? params.get(0) : "";
-            MainWindowController controller = loader.getController();
+            final List<String> params = getParameters().getRaw();
+            final String file = params.isEmpty() ? "" : params.get(0);
+            final MainWindowController controller = loader.getController();
             controller.setStage(primaryStage);
             controller.loadTaskList(file);
 
             /* Show the window */
-            Scene scene = new Scene(window);
+            final Scene scene = new Scene(window);
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (IOException ex) {

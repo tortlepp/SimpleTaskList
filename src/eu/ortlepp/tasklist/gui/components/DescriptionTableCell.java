@@ -27,7 +27,7 @@ public class DescriptionTableCell extends TableCell<Task, String> {
             setText(null);
             setGraphic(null);
         } else {
-            Text text = new Text(item);
+            final Text text = new Text(item);
             text.wrappingWidthProperty().bind(getTableColumn().widthProperty());
             setGraphic(text);
         }

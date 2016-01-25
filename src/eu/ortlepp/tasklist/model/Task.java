@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Bean for a single task. It contains all data of the task.
@@ -23,8 +24,8 @@ import java.util.Map;
  */
 public class Task {
 
-    /** Static ID counter for task IDs; always contains the value of the last used task ID. */
-    private static long id;
+    /** ID counter for task IDs; always contains the value of the last used task ID. */
+    private static AtomicLong id = new AtomicLong(0);
 
 
     /** Internal ID to identify the task. */
@@ -32,7 +33,7 @@ public class Task {
 
 
     /** The priority of the task. An uppercase letter A - Z. */
-    private StringProperty priority;
+    private final StringProperty priority;
 
 
     /**
@@ -40,43 +41,43 @@ public class Task {
      * A ChangeListener is connected to adjust priority and completion date when the
      * status changes.
      */
-    private BooleanProperty done;
+    private final BooleanProperty done;
 
 
     /** The creation date of the task. */
-    private ObjectProperty<LocalDate> creation;
+    private final ObjectProperty<LocalDate> creation;
 
 
     /** The completion date of the task. */
-    private ObjectProperty<LocalDate> completion;
+    private final ObjectProperty<LocalDate> completion;
 
 
     /** The due date of the task. */
-    private ObjectProperty<LocalDate> due;
+    private final ObjectProperty<LocalDate> due;
 
 
     /** A list of all projects of the task. */
-    private ObjectProperty<List<String>> project;
+    private final ObjectProperty<List<String>> project;
 
 
     /** The List of all projects as string. */
-    private StringProperty projectString;
+    private final StringProperty projectString;
 
 
     /** A list of all contexts of the task. */
-    private ObjectProperty<List<String>> context;
+    private final ObjectProperty<List<String>> context;
 
 
     /** The list of all contexts as string. */
-    private StringProperty contextString;
+    private final StringProperty contextString;
 
 
     /** The description / text of the task. */
-    private StringProperty description;
+    private final StringProperty description;
 
 
     /** Additional meta data of the task. In the todo.txt file meta data is stored as key:value. */
-    private HashMap<String, String> metadata;
+    private final Map<String, String> metadata;
 
 
     /**
@@ -95,8 +96,7 @@ public class Task {
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         /* Set task ID */
-        id++;
-        taskId = id;
+        taskId = id.incrementAndGet();
 
         /* Initialize with default values */
         priority = new SimpleStringProperty("");
@@ -122,12 +122,11 @@ public class Task {
      *
      * @param task The source task
      */
-    public Task(Task task) {
+    public Task(final Task task) {
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         /* Set task ID */
-        id++;
-        taskId = id;
+        taskId = id.incrementAndGet();
 
         /* Initialize with copied values */
         priority = new SimpleStringProperty(task.getPriority());
@@ -143,7 +142,7 @@ public class Task {
         contextString = new SimpleStringProperty(listToString(getContext()));
         description = new SimpleStringProperty(task.getDescription());
         metadata = new HashMap<String, String>();
-        for (String key : task.getMetadata().keySet()) {
+        for (final String key : task.getMetadata().keySet()) {
             metadata.put(key, task.getMetadata().get(key));
         }
 
@@ -157,7 +156,7 @@ public class Task {
      * Reset the ID counter to 0. Use only when a task list is (re)initialized!
      */
     public static void resetId() {
-        id = 0;
+        id.set(0);
     }
 
 
@@ -378,7 +377,7 @@ public class Task {
      *
      * @return A list of projects of the task
      */
-    public List<String> getProject() {
+    public final List<String> getProject() {
         return project.get();
     }
 
@@ -433,7 +432,7 @@ public class Task {
      *
      * @return A list of contexts of the task
      */
-    public List<String> getContext() {
+    public final List<String> getContext() {
         return context.get();
     }
 
@@ -552,8 +551,8 @@ public class Task {
      * @param list The list to be converted into a string
      * @return The created string; each list item is separated by a line break
      */
-    private String listToString(List<String> list) {
-        StringBuilder text = new StringBuilder();
+    private String listToString(final List<String> list) {
+        final StringBuilder text = new StringBuilder();
 
         /* One item per "line" */
         for (int i = 0; i < list.size(); i++) {
@@ -589,8 +588,8 @@ public class Task {
          * just cleared. The completion date is set to the default empty value, the minimum date.
          */
         @Override
-        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
-                Boolean newValue) {
+        public void changed(final ObservableValue<? extends Boolean> observable,
+               final Boolean oldValue, final  Boolean newValue) {
             if (newValue) {
                 lastPriority = getPriority();
                 setPriority("x");

@@ -54,92 +54,92 @@ public class MainWindowController {
 
     /** Button to open a new task list. */
     @FXML
-    private Button btnOpen;
+    private Button buttonOpen;
 
 
     /** Button to save a task list. */
     @FXML
-    private Button btnSave;
+    private Button buttonSave;
 
 
     /** Button to add a new task to the list. */
     @FXML
-    private Button btnNew;
+    private Button buttonNew;
 
 
     /** Button to add the currently selected task. */
     @FXML
-    private Button btnEdit;
+    private Button buttonEdit;
 
 
     /** Button to mark the currently selected task as done. */
     @FXML
-    private Button btnDone;
+    private Button buttonDone;
 
 
     /** Button to delete the currently selected task from the list. */
     @FXML
-    private Button btnDelete;
+    private Button buttonDelete;
 
 
     /** Button to open the settings dialog. */
     @FXML
-    private Button btnSettings;
+    private Button buttonSettings;
 
 
     /** Button to open the info dialog. */
     @FXML
-    private Button btnInfo;
+    private Button buttonInfo;
 
 
     /** CheckBox to filter done / not yet done tasks. */
     @FXML
-    private CheckBox chkbxDone;
+    private CheckBox checkboxDone;
 
 
     /** ComboBox to filter which context(s) are shown. */
     @FXML
-    private ComboBox<String> cbxContext;
+    private ComboBox<String> comboboxContext;
 
 
     /** ComboBox to filter which project(s) are shown. */
     @FXML
-    private ComboBox<String> cbxProject;
+    private ComboBox<String> comboboxProject;
 
 
     /** Table to show the task list. */
     @FXML
-    private TableView<Task> tableTasks;
+    private TableView<Task> tableviewTasks;
 
 
     /** Column for the table to show the status (done / not yet done) of the tasks. */
     @FXML
-    private TableColumn<Task, Boolean> columnStatus;
+    private TableColumn<Task, Boolean> tablecolumnStatus;
 
 
     /** Column for the table to show the priorities of the tasks. */
     @FXML
-    private TableColumn<Task, String> columnPriority;
+    private TableColumn<Task, String> tablecolumnPriority;
 
 
     /** Column for the table to show the due date of the tasks. */
     @FXML
-    private TableColumn<Task, LocalDate> columnDue;
+    private TableColumn<Task, LocalDate> tablecolumnDue;
 
 
     /** Column for the table to show the descriptions of the tasks. */
     @FXML
-    private TableColumn<Task, String> columnDescription;
+    private TableColumn<Task, String> tablecolumnDescription;
 
 
     /** Column for the table to show the context of the tasks. */
     @FXML
-    private TableColumn<Task, String> columnContext;
+    private TableColumn<Task, String> tablecolumnContext;
 
 
     /** Column for the table to show the project of the tasks. */
     @FXML
-    private TableColumn<Task, String> columnProject;
+    private TableColumn<Task, String> tablecolumnProject;
 
 
     /** Translated captions and tooltips for the GUI. */
@@ -166,10 +166,6 @@ public class MainWindowController {
     private NewEditDialogController newEditController;
 
 
-    /** The controller of the about dialog. */
-    private AboutDialogController aboutController;
-
-
     /**
      * Initialize controller by loading the translated captions and tooltips
      * for the GUI components.
@@ -192,82 +188,81 @@ public class MainWindowController {
     @FXML
     private void initialize() {
         /* Initialize buttons with icons and tooltips */
-        initButton(btnOpen, "open.png", "tooltip.button.open");
-        initButton(btnSave, "save.png", "tooltip.button.save");
-        initButton(btnNew, "new.png", "tooltip.button.new");
-        initButton(btnEdit, "edit.png", "tooltip.button.edit");
-        initButton(btnDone, "done.png", "tooltip.button.done");
-        initButton(btnDelete, "delete.png", "tooltip.button.delete");
-        initButton(btnSettings, "settings.png", "tooltip.button.settings");
-        initButton(btnInfo, "info.png", "tooltip.button.info");
+        initButton(buttonOpen, "open.png", "tooltip.button.open");
+        initButton(buttonSave, "save.png", "tooltip.button.save");
+        initButton(buttonNew, "new.png", "tooltip.button.new");
+        initButton(buttonEdit, "edit.png", "tooltip.button.edit");
+        initButton(buttonDone, "done.png", "tooltip.button.done");
+        initButton(buttonDelete, "delete.png", "tooltip.button.delete");
+        initButton(buttonSettings, "settings.png", "tooltip.button.settings");
+        initButton(buttonInfo, "info.png", "tooltip.button.info");
 
         /* Initialize context filter */
         tasks.getContextList().add(0, translations.getString("filter.context.all"));
         tasks.getContextList().add(1, translations.getString("filter.context.without"));
-        cbxContext.setItems(tasks.getContextList());
-        cbxContext.getSelectionModel().clearAndSelect(0);
+        comboboxContext.setItems(tasks.getContextList());
+        comboboxContext.getSelectionModel().clearAndSelect(0);
 
         /* Initialize project filter */
         tasks.getProjectList().add(0, translations.getString("filter.project.all"));
         tasks.getProjectList().add(1, translations.getString("filter.project.without"));
-        cbxProject.setItems(tasks.getProjectList());
-        cbxProject.getSelectionModel().clearAndSelect(0);
+        comboboxProject.setItems(tasks.getProjectList());
+        comboboxProject.getSelectionModel().clearAndSelect(0);
 
         /* Custom renderers for nonstandard table cells */
-        columnStatus.setCellFactory(CheckBoxTableCell.forTableColumn(columnStatus));
-        columnPriority.setCellFactory(column -> new PriorityTableCell());
-        columnDue.setCellFactory(column -> new DateTableCell());
-        columnDescription.setCellFactory(column -> new DescriptionTableCell());
+        tablecolumnStatus.setCellFactory(CheckBoxTableCell.forTableColumn(tablecolumnStatus));
+        tablecolumnPriority.setCellFactory(column -> new PriorityTableCell());
+        tablecolumnDue.setCellFactory(column -> new DateTableCell());
+        tablecolumnDescription.setCellFactory(column -> new DescriptionTableCell());
 
         /* Show data from the model in the table */
-        columnStatus.setCellValueFactory(cellData -> cellData.getValue().doneProperty());
-        columnPriority.setCellValueFactory(cellData -> cellData.getValue().priorityProperty());
-        columnDue.setCellValueFactory(cellData -> cellData.getValue().dueProperty());
-        columnDescription
-                .setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
-        columnContext.setCellValueFactory(cellData -> cellData.getValue().contextStringProperty());
-        columnProject.setCellValueFactory(cellData -> cellData.getValue().projectStringProperty());
+        tablecolumnStatus.setCellValueFactory(cellData -> cellData.getValue().doneProperty());
+        tablecolumnPriority.setCellValueFactory(cellData -> cellData.getValue().priorityProperty());
+        tablecolumnDue.setCellValueFactory(cellData -> cellData.getValue().dueProperty());
+        tablecolumnDescription.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+        tablecolumnContext.setCellValueFactory(cellData -> cellData.getValue().contextStringProperty());
+        tablecolumnProject.setCellValueFactory(cellData -> cellData.getValue().projectStringProperty());
 
         /* Custom comperators to achieve a correct sorting */
-        columnPriority.setComparator(new PriorityComperator());
-        columnDue.setComparator(new DueComperator());
+        tablecolumnPriority.setComparator(new PriorityComperator());
+        tablecolumnDue.setComparator(new DueComperator());
 
         /* Wrap task list in filtered list to enable filtering */
-        FilteredList<Task> filteredTasks = new FilteredList<>(tasks.getTaskList(), p -> true);
+        final FilteredList<Task> filteredTasks = new FilteredList<>(tasks.getTaskList(), p -> true);
 
         /* Listener to filter by done / not yet done */
-        chkbxDone.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        checkboxDone.selectedProperty().addListener((observable, oldValue, newValue) -> {
             filteredTasks.setPredicate(task -> {
                 return filterTableItem(task);
             });
         });
 
         /* Listener to filter by context */
-        cbxContext.valueProperty().addListener((observable, oldValue, newValue) -> {
+        comboboxContext.valueProperty().addListener((observable, oldValue, newValue) -> {
             filteredTasks.setPredicate(task -> {
                 return filterTableItem(task);
             });
         });
 
         /* Listener to filter by project */
-        cbxProject.valueProperty().addListener((observable, oldValue, newValue) -> {
+        comboboxProject.valueProperty().addListener((observable, oldValue, newValue) -> {
             filteredTasks.setPredicate(task -> {
                 return filterTableItem(task);
             });
         });
 
         /* Wrap filtered list in sorted list to enable sorting */
-        SortedList<Task> sortedTasks = new SortedList<>(filteredTasks);
-        sortedTasks.comparatorProperty().bind(tableTasks.comparatorProperty());
+        final SortedList<Task> sortedTasks = new SortedList<>(filteredTasks);
+        sortedTasks.comparatorProperty().bind(tableviewTasks.comparatorProperty());
 
-        tableTasks.setItems(sortedTasks);
+        tableviewTasks.setItems(sortedTasks);
 
         /* Sort columns */
-        tableTasks.getSortOrder().add(columnPriority);
-        tableTasks.getSortOrder().add(columnDue);
+        tableviewTasks.getSortOrder().add(tablecolumnPriority);
+        tableviewTasks.getSortOrder().add(tablecolumnDue);
 
         /* Resizing the table: expand columns to full width */
-        tableTasks.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableviewTasks.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
 
@@ -278,13 +273,13 @@ public class MainWindowController {
     private void initDialogs() {
         /* Initialize new / edit dialog */
         newEditDialog = new Stage();
-        newEditController = (NewEditDialogController) initDialog(newEditDialog,
-                "NewEditDialog.fxml");
+        newEditController = (NewEditDialogController) initDialog(newEditDialog, "NewEditDialog.fxml");
         newEditController.setStage(newEditDialog);
 
         /* Initialize about dialog */
         aboutDialog = new Stage();
-        aboutController = (AboutDialogController) initDialog(aboutDialog, "AboutDialog.fxml");
+        final AboutDialogController aboutController =
+                (AboutDialogController) initDialog(aboutDialog, "AboutDialog.fxml");
         aboutController.setStage(aboutDialog);
         aboutDialog.setTitle(translations.getString("about.title"));
     }
@@ -298,14 +293,14 @@ public class MainWindowController {
      * @param fxml The FXML file of the GUI
      * @return The initialized controller for the dialog
      */
-    private AbstractDialogController initDialog(Stage dialog, final String fxml) {
+    private AbstractDialogController initDialog(final Stage dialog, final String fxml) {
         AbstractDialogController controller = null;
 
         /* Load FXML */
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+            final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
                     .getResource("eu/ortlepp/tasklist/fxml/" + fxml), translations);
-            Parent root = loader.load();
+            final Parent root = loader.load();
             dialog.setScene(new Scene(root));
             controller = loader.getController();
         } catch (IOException ex) {
@@ -332,8 +327,8 @@ public class MainWindowController {
      */
     private void initButton(final Button button, final String icon, final String tooltip) {
         button.setText("");
-        String iconfile = "eu/ortlepp/tasklist/icons/" + icon;
-        Image iconimage = new Image(getClass().getClassLoader().getResourceAsStream(iconfile));
+        final String iconfile = "eu/ortlepp/tasklist/icons/" + icon;
+        final Image iconimage = new Image(getClass().getClassLoader().getResourceAsStream(iconfile));
         button.setGraphic(new ImageView(iconimage));
         button.setTooltip(new Tooltip(translations.getString(tooltip)));
     }
@@ -357,14 +352,14 @@ public class MainWindowController {
     @FXML
     private void handleBtnOpenClick() {
         /* Initialize dialog */
-        FileChooser openDialog = new FileChooser();
+        final FileChooser openDialog = new FileChooser();
         openDialog.setTitle(translations.getString("dialog.open.title"));
         openDialog.getExtensionFilters().addAll(
                 new ExtensionFilter(translations.getString("dialog.open.filetype.text"), "*.txt"),
                 new ExtensionFilter(translations.getString("dialog.open.filetype.all"), "*.*"));
 
         /* Show dialog */
-        File file = openDialog.showOpenDialog(stage);
+        final File file = openDialog.showOpenDialog(stage);
 
         /* Load selected file */
         if (file != null && file.exists()) {
@@ -380,7 +375,7 @@ public class MainWindowController {
     @FXML
     private void handleBtnSaveClick() {
         if (!tasks.writeTaskList()) {
-            Alert message = new Alert(AlertType.ERROR);
+            final Alert message = new Alert(AlertType.ERROR);
             newEditController.initDialog(message, "dialog.write.title", "dialog.write.header",
                     "dialog.write.content");
             message.showAndWait();
@@ -402,15 +397,15 @@ public class MainWindowController {
 
         /* If adding was not aborted */
         if (newEditController.isSaved()) {
-            for (Task task : newEditController.getNewTasks()) {
+            for (final Task task : newEditController.getNewTasks()) {
                 /* Add task */
                 tasks.getTaskList().add(new Task(task));
 
                 /* Update context and project filters */
-                for (String item : task.getContext()) {
+                for (final String item : task.getContext()) {
                     tasks.addContext(item);
                 }
-                for (String item : task.getProject()) {
+                for (final String item : task.getProject()) {
                     tasks.addProject(item);
                 }
             }
@@ -425,36 +420,35 @@ public class MainWindowController {
      */
     @FXML
     private void handleBtnEditClick() {
-        if (tableTasks.getSelectionModel().getSelectedIndex() != -1) {
+        if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
             /* Open edit dialog */
-            newEditController.setEditDialog(tableTasks.getSelectionModel().getSelectedItem(),
+            newEditController.setEditDialog(tableviewTasks.getSelectionModel().getSelectedItem(),
                     tasks.getContextList(), tasks.getProjectList());
             newEditDialog.setTitle(translations.getString("dialog.edit.title"));
             newEditDialog.showAndWait();
 
             /* If editing was not aborted */
             if (newEditController.isSaved()) {
-                Task temp = newEditController.getEditedTask();
+                final Task temp = newEditController.getEditedTask();
 
                 /* Update values */
-                tableTasks.getSelectionModel().getSelectedItem().setDone(temp.isDone());
-                tableTasks.getSelectionModel().getSelectedItem().setPriority(temp.getPriority());
-                tableTasks.getSelectionModel().getSelectedItem().setCreation(temp.getCreation());
-                tableTasks.getSelectionModel().getSelectedItem().setDue(temp.getDue());
-                tableTasks.getSelectionModel().getSelectedItem().setDescription(
-                        temp.getDescription());
+                tableviewTasks.getSelectionModel().getSelectedItem().setDone(temp.isDone());
+                tableviewTasks.getSelectionModel().getSelectedItem().setPriority(temp.getPriority());
+                tableviewTasks.getSelectionModel().getSelectedItem().setCreation(temp.getCreation());
+                tableviewTasks.getSelectionModel().getSelectedItem().setDue(temp.getDue());
+                tableviewTasks.getSelectionModel().getSelectedItem().setDescription(temp.getDescription());
 
                 /* Update contexts */
-                tableTasks.getSelectionModel().getSelectedItem().clearContext();
-                for (String item : temp.getContext()) {
-                    tableTasks.getSelectionModel().getSelectedItem().addToContext(item);
+                tableviewTasks.getSelectionModel().getSelectedItem().clearContext();
+                for (final String item : temp.getContext()) {
+                    tableviewTasks.getSelectionModel().getSelectedItem().addToContext(item);
                     tasks.addContext(item);
                 }
 
                 /* Update projects */
-                tableTasks.getSelectionModel().getSelectedItem().clearProject();
-                for (String item : temp.getProject()) {
-                    tableTasks.getSelectionModel().getSelectedItem().addToProject(item);
+                tableviewTasks.getSelectionModel().getSelectedItem().clearProject();
+                for (final String item : temp.getProject()) {
+                    tableviewTasks.getSelectionModel().getSelectedItem().addToProject(item);
                     tasks.addProject(item);
                 }
             }
@@ -468,8 +462,8 @@ public class MainWindowController {
      */
     @FXML
     private void handleBtnDoneClick() {
-        if (tableTasks.getSelectionModel().getSelectedIndex() != -1) {
-            tableTasks.getSelectionModel().getSelectedItem().setDone(true);
+        if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
+            tableviewTasks.getSelectionModel().getSelectedItem().setDone(true);
         }
     }
 
@@ -480,18 +474,19 @@ public class MainWindowController {
      */
     @FXML
     private void handleBtnDeleteClick() {
-        if (tableTasks.getSelectionModel().getSelectedIndex() != -1) {
+        if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
 
             /* Confirmation dialog */
-            Alert alert = new Alert(AlertType.CONFIRMATION);
+            final Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle(translations.getString("dialog.delete.title"));
             alert.setHeaderText(translations.getString("dialog.delete.header"));
             alert.setContentText(translations.getString("dialog.delete.content"));
-            Optional<ButtonType> choice = alert.showAndWait();
+            final Optional<ButtonType> choice = alert.showAndWait();
 
             /* Confirm deleting of the task */
             if (choice.get() == ButtonType.OK) {
-                long deleteTaskId = tableTasks.getSelectionModel().getSelectedItem().getTaskId();
+                final long deleteTaskId =
+                        tableviewTasks.getSelectionModel().getSelectedItem().getTaskId();
                 int deleteListId = -1;
 
                 /* Find the correct task */
@@ -538,7 +533,7 @@ public class MainWindowController {
      */
     public void loadTaskList(final String file) {
         if (file != null && !file.isEmpty() && !tasks.loadTaskList(file)) {
-            Alert message = new Alert(AlertType.ERROR);
+            final Alert message = new Alert(AlertType.ERROR);
             newEditController.initDialog(message, "dialog.read.title", "dialog.read.header",
                     "dialog.read.content");
             message.showAndWait();
@@ -553,14 +548,14 @@ public class MainWindowController {
      * @param item The item (= task) to check
      * @return Result of the check; true = show item in table, false = hide item
      */
-    private boolean filterTableItem(Task item) {
+    private boolean filterTableItem(final Task item) {
         boolean done = true;
         /* Only show done tasks when check box is checked */
-        if (!chkbxDone.isSelected() && item.isDone()) {
+        if (!checkboxDone.isSelected() && item.isDone()) {
             done = false;
         }
 
-        String selectedContext = cbxContext.getSelectionModel().getSelectedItem();
+        final String selectedContext = comboboxContext.getSelectionModel().getSelectedItem();
         boolean context = false;
 
         /* Show task when "All Contexts" is selected or when "Without Context" is selected and
@@ -571,7 +566,7 @@ public class MainWindowController {
                 && item.getContext().isEmpty()) {
             context = true;
         } else {
-            for (String itemContext : item.getContext()) {
+            for (final String itemContext : item.getContext()) {
                 if (itemContext.equals(selectedContext)) {
                     context = true;
                     break;
@@ -579,7 +574,7 @@ public class MainWindowController {
             }
         }
 
-        String selectedProject = cbxProject.getSelectionModel().getSelectedItem();
+        final String selectedProject = comboboxProject.getSelectionModel().getSelectedItem();
         boolean project = false;
 
         /* Show task when "All Projects" is selected or when "Without Project" is selected
@@ -590,7 +585,7 @@ public class MainWindowController {
                 && item.getProject().isEmpty()) {
             project = true;
         } else {
-            for (String itemProject : item.getProject()) {
+            for (final String itemProject : item.getProject()) {
                 if (itemProject.equals(selectedProject)) {
                     project = true;
                     break;

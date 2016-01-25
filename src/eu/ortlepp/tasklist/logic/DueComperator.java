@@ -1,5 +1,6 @@
 package eu.ortlepp.tasklist.logic;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Comparator;
 
@@ -9,7 +10,11 @@ import java.util.Comparator;
  *
  * @author Thorsten Ortlepp
  */
-public class DueComperator implements Comparator<LocalDate> {
+public class DueComperator implements Comparator<LocalDate>, Serializable {
+
+    /** Randomly generated ID for Serializable. */
+    private static final long serialVersionUID = -877582538618674536L;
+
 
     /**
      * Compares two dates.
@@ -19,7 +24,7 @@ public class DueComperator implements Comparator<LocalDate> {
      * @return Result of the comparison
      */
     @Override
-    public int compare(LocalDate due1, LocalDate due2) {
+    public int compare(final LocalDate due1, final LocalDate due2) {
         return fixDate(due1).compareTo(fixDate(due2));
     }
 
@@ -32,7 +37,7 @@ public class DueComperator implements Comparator<LocalDate> {
      * @param date The date to be fixed
      * @return The fixed date
      */
-    private LocalDate fixDate(LocalDate date) {
+    private LocalDate fixDate(final LocalDate date) {
         if (date.isEqual(LocalDate.MIN)) {
             return LocalDate.MAX;
         }
