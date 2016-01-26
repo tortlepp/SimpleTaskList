@@ -21,21 +21,24 @@
    <top>
       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-          <Button fx:id="buttonOpen" mnemonicParsing="false" onAction="#handleBtnOpenClick" text="OPEN" />
-            <Button fx:id="buttonSave" mnemonicParsing="false" onAction="#handleBtnSaveClick" text="SAVE" />
+          <Button fx:id="buttonOpen" mnemonicParsing="false" onAction="#handleFileOpen" text="OPEN" />
+            <Button fx:id="buttonSave" mnemonicParsing="false" onAction="#handleFileSave" text="SAVE" />
             <Separator orientation="VERTICAL" />
-            <Button fx:id="buttonNew" mnemonicParsing="false" onAction="#handleBtnNewClick" text="NEW" />
-            <Button fx:id="buttonEdit" mnemonicParsing="false" onAction="#handleBtnEditClick" text="EDIT" />
-            <Button fx:id="buttonDone" mnemonicParsing="false" onAction="#handleBtnDoneClick" text="DONE" />
-            <Button fx:id="buttonDelete" mnemonicParsing="false" onAction="#handleBtnDeleteClick" text="DELETE" />
+            <Button fx:id="buttonNew" mnemonicParsing="false" onAction="#handleNewTask" text="NEW" />
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="buttonEdit" mnemonicParsing="false" onAction="#handleEditTask" text="EDIT" />
+            <Button fx:id="buttonDone" mnemonicParsing="false" onAction="#handleTaskDone" text="DONE" />
+            <Button fx:id="buttonDelete" mnemonicParsing="false" onAction="#handleTaskDelete" text="DELETE" />
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="buttonMove" mnemonicParsing="false" onAction="#handleMoveToArchive" text="MOVE" />
             <Separator orientation="VERTICAL" />
             <CheckBox fx:id="checkboxDone" mnemonicParsing="false" selected="true" text="%caption.filter.done" />
             <Separator orientation="VERTICAL" />
             <ComboBox fx:id="comboboxContext" prefWidth="150.0" />
             <ComboBox fx:id="comboboxProject" prefWidth="150.0" />
             <Separator orientation="VERTICAL" />
-            <Button fx:id="buttonSettings" mnemonicParsing="false" onAction="#handleBtnSettingsClick" text="SETTINGS" />
-            <Button fx:id="buttonInfo" mnemonicParsing="false" onAction="#handleBtnInfoClick" text="INFO" />
+            <Button fx:id="buttonSettings" mnemonicParsing="false" onAction="#handleOpenSettings" text="SETTINGS" />
+            <Button fx:id="buttonInfo" mnemonicParsing="false" onAction="#handleOpenInfo" text="INFO" />
         </items>
       </ToolBar>
    </top>

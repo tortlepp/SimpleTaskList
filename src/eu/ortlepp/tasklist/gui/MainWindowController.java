@@ -82,6 +82,11 @@ public class MainWindowController {
     private Button buttonDelete;
 
 
+    /** Button to move completed tasks to the archive. */
+    @FXML
+    private Button buttonMove;
+
+
     /** Button to open the settings dialog. */
     @FXML
     private Button buttonSettings;
@@ -194,6 +199,7 @@ public class MainWindowController {
         initButton(buttonEdit, "edit.png", "tooltip.button.edit");
         initButton(buttonDone, "done.png", "tooltip.button.done");
         initButton(buttonDelete, "delete.png", "tooltip.button.delete");
+        initButton(buttonMove, "move.png", "tooltip.button.move");
         initButton(buttonSettings, "settings.png", "tooltip.button.settings");
         initButton(buttonInfo, "info.png", "tooltip.button.info");
 
@@ -347,10 +353,10 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "open" button: Show open dialog, load selected file.
+     * Handle to open a task list file: Show open dialog, load selected file.
      */
     @FXML
-    private void handleBtnOpenClick() {
+    private void handleFileOpen() {
         /* Initialize dialog */
         final FileChooser openDialog = new FileChooser();
         openDialog.setTitle(translations.getString("dialog.open.title"));
@@ -370,10 +376,10 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "save" button: Save task list to file.
+     * Handle to save the currently open task list: Save task list to file.
      */
     @FXML
-    private void handleBtnSaveClick() {
+    private void handleFileSave() {
         if (!tasks.writeTaskList()) {
             final Alert message = new Alert(AlertType.ERROR);
             newEditController.initDialog(message, "dialog.write.title", "dialog.write.header",
@@ -385,11 +391,11 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "new" button: Open the new task dialog and
+     * Handle to add a new task to the list: Open the new task dialog and
      * then add one or more tasks to the list.
      */
     @FXML
-    private void handleBtnNewClick() {
+    private void handleNewTask() {
         /* Open new task dialog */
         newEditController.setNewDialog(tasks.getContextList(), tasks.getProjectList());
         newEditDialog.setTitle(translations.getString("dialog.new.title"));
@@ -415,11 +421,11 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "edit" button: Open edit dialog and
+     * Handle to edit the currently selected task: Open edit dialog and
      * after editing update the edited task.
      */
     @FXML
-    private void handleBtnEditClick() {
+    private void handleEditTask() {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
             /* Open edit dialog */
             newEditController.setEditDialog(tableviewTasks.getSelectionModel().getSelectedItem(),
@@ -458,10 +464,11 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "done" button: If a task is selected mark this task as done.
+     * Handle to mark the currently selected task as done: If a task is selected mark
+     * that task as done.
      */
     @FXML
-    private void handleBtnDoneClick() {
+    private void handleTaskDone() {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
             tableviewTasks.getSelectionModel().getSelectedItem().setDone(true);
         }
@@ -470,10 +477,11 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "delete" button: If a task is selected delete this task from the list.
+     * Handle to delete / remove the currently selected task from the list:
+     * If a task is selected delete this task from the list.
      */
     @FXML
-    private void handleBtnDeleteClick() {
+    private void handleTaskDelete() {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
 
             /* Confirmation dialog */
@@ -506,20 +514,37 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "settings" button: TBD.
+     * Handle to move all completed tasks into the archive: Add completed tasks to done.txt and
+     * remove them from task list.
      */
     @FXML
-    private void handleBtnSettingsClick() {
+    private void handleMoveToArchive() {
+        final int moved = tasks.moveToArchive();
+
+        if (moved > 0) {
+            final Alert message = new Alert(AlertType.INFORMATION);
+            newEditController.initDialog(message, "dialog.moved.title", "dialog.moved.header", "dialog.moved.content");
+            message.showAndWait();
+        }
+    }
+
+
+
+    /**
+     * Handle to open the settings dialog: TBD.
+     */
+    @FXML
+    private void handleOpenSettings() {
         System.out.println("SETTINGS");
     }
 
 
 
     /**
-     * Handle a click on the "info" button: show the info / about dialog.
+     * Handle to open the about / info dialog: show the info / about dialog.
      */
     @FXML
-    private void handleBtnInfoClick() {
+    private void handleOpenInfo() {
         aboutDialog.showAndWait();
     }
 

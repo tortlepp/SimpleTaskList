@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -261,7 +262,8 @@ public class TaskController {
 
             /* Write the file */
             try {
-                Files.write(Paths.get(filename), tasks);
+                Files.write(Paths.get(filename), tasks, StandardCharsets.UTF_8,
+                        StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
                 return true;
             } catch (IOException ex) {
                 LOGGER.severe("Error while writing the file " + filename + ": " + ex.getMessage());
@@ -270,6 +272,51 @@ public class TaskController {
 
         return false;
     }
+
+
+
+    /**
+     * Moves completed tasks to the archive. The Archive is called done.txt and is in the
+     * same format as the todo.txt but contains only completed tasks.
+     *
+     * @return The number of tasks that where moved to the archive
+     */
+    public int moveToArchive() {
+        int counter = 0;
+        final List<String> tasks = new ArrayList<String>();
+
+        /* Find completed task objects to move */
+        for (final Task task : tasklist) {
+            if (task.isDone()) {
+                tasks.add(taskToString(task));
+                counter++;
+            }
+        }
+
+        /* Continue only if there are completed task */
+        if (counter > 0) {
+            String doneFile = filename.substring(0, filename.lastIndexOf(File.separator) + 1);
+            doneFile += "done.txt";
+
+            /* Write the file and remove moved tasks from list */
+            try {
+                Files.write(Paths.get(doneFile), tasks, StandardCharsets.UTF_8,
+                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
+                for (int i = tasklist.size() - 1; i >= 0; i--) {
+                    if (tasklist.get(i).isDone()) {
+                        tasklist.remove(i);
+                    }
+                }
+
+            } catch (IOException ex) {
+                LOGGER.severe("Error while writing the file " + filename + ": " + ex.getMessage());
+            }
+        }
+
+        return counter;
+    }
+
 
 
     /**
