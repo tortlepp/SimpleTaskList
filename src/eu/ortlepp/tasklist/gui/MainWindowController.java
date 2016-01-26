@@ -9,6 +9,9 @@ import eu.ortlepp.tasklist.logic.PriorityComperator;
 import eu.ortlepp.tasklist.logic.TaskController;
 import eu.ortlepp.tasklist.model.Task;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
@@ -21,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
@@ -147,6 +151,16 @@ public class MainWindowController {
     private TableColumn<Task, String> tablecolumnProject;
 
 
+    /** Label to show the currently opened file. */
+    @FXML
+    private Label labelFilename;
+
+
+    /** Indicator for unsaved changes on the task list. */
+    @FXML
+    private Label labelSaved;
+
+
     /** Translated captions and tooltips for the GUI. */
     private final ResourceBundle translations;
 
@@ -169,6 +183,14 @@ public class MainWindowController {
 
     /** The controller of the new / edit dialog. */
     private NewEditDialogController newEditController;
+
+
+    /** Status for the task list: Are there unsaved changes (false) or not (true). */
+    private boolean saved;
+
+
+    /** Listener for changes on done properties of tasks. */
+    private CompletionListener completionListener;
 
 
     /**
@@ -269,6 +291,9 @@ public class MainWindowController {
 
         /* Resizing the table: expand columns to full width */
         tableviewTasks.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        setSaved(true);
+        completionListener = new CompletionListener();
     }
 
 
@@ -353,6 +378,18 @@ public class MainWindowController {
 
 
     /**
+     * Set the status for the task list: Are there unsaved changes (false) or not (true).
+     *
+     * @param saved Saved status: true = no changes, false = unsaved changes
+     */
+    public void setSaved(boolean saved) {
+        this.saved = saved;
+        labelSaved.setVisible(!saved);
+    }
+
+
+
+    /**
      * Handle to open a task list file: Show open dialog, load selected file.
      */
     @FXML
@@ -380,11 +417,15 @@ public class MainWindowController {
      */
     @FXML
     private void handleFileSave() {
-        if (!tasks.writeTaskList()) {
-            final Alert message = new Alert(AlertType.ERROR);
-            newEditController.initDialog(message, "dialog.write.title", "dialog.write.header",
-                    "dialog.write.content");
-            message.showAndWait();
+        if (!saved) {
+            if (tasks.writeTaskList()) {
+                setSaved(true);
+            } else {
+                final Alert message = new Alert(AlertType.ERROR);
+                newEditController.initDialog(message, "dialog.write.title", "dialog.write.header",
+                        "dialog.write.content");
+                message.showAndWait();
+            }
         }
     }
 
@@ -405,7 +446,8 @@ public class MainWindowController {
         if (newEditController.isSaved()) {
             for (final Task task : newEditController.getNewTasks()) {
                 /* Add task */
-                tasks.getTaskList().add(new Task(task));
+                Task newTask = new Task(task);
+                tasks.getTaskList().add(newTask);
 
                 /* Update context and project filters */
                 for (final String item : task.getContext()) {
@@ -414,7 +456,11 @@ public class MainWindowController {
                 for (final String item : task.getProject()) {
                     tasks.addProject(item);
                 }
+
+                addCompletionListener(newTask.doneProperty());
             }
+
+            setSaved(false);
         }
     }
 
@@ -457,6 +503,8 @@ public class MainWindowController {
                     tableviewTasks.getSelectionModel().getSelectedItem().addToProject(item);
                     tasks.addProject(item);
                 }
+
+                setSaved(false);
             }
         }
     }
@@ -471,6 +519,7 @@ public class MainWindowController {
     private void handleTaskDone() {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
             tableviewTasks.getSelectionModel().getSelectedItem().setDone(true);
+            setSaved(false);
         }
     }
 
@@ -486,9 +535,8 @@ public class MainWindowController {
 
             /* Confirmation dialog */
             final Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle(translations.getString("dialog.delete.title"));
-            alert.setHeaderText(translations.getString("dialog.delete.header"));
-            alert.setContentText(translations.getString("dialog.delete.content"));
+            newEditController.initDialog(alert, "dialog.delete.title", "dialog.delete.header",
+                    "dialog.delete.content");
             final Optional<ButtonType> choice = alert.showAndWait();
 
             /* Confirm deleting of the task */
@@ -507,6 +555,8 @@ public class MainWindowController {
 
                 /* Delete task from list */
                 tasks.getTaskList().remove(deleteListId);
+
+                setSaved(false);
             }
         }
     }
@@ -525,6 +575,7 @@ public class MainWindowController {
             final Alert message = new Alert(AlertType.INFORMATION);
             newEditController.initDialog(message, "dialog.moved.title", "dialog.moved.header", "dialog.moved.content");
             message.showAndWait();
+            setSaved(false);
         }
     }
 
@@ -562,6 +613,14 @@ public class MainWindowController {
             newEditController.initDialog(message, "dialog.read.title", "dialog.read.header",
                     "dialog.read.content");
             message.showAndWait();
+        } else {
+            labelFilename.setText(tasks.getFilename());
+            setSaved(true);
+
+            /* Add listener for changes on done property */
+            for (final Task task : tasks.getTaskList()) {
+                addCompletionListener(task.doneProperty());
+            }
         }
     }
 
@@ -620,6 +679,45 @@ public class MainWindowController {
 
         /* Combine the three filters and get final filter result */
         return done && context && project;
+    }
+
+
+
+    /**
+     * Add a change listener to a boolean property to detect when a task completion status changes.
+     *
+     * @param property Boolean property
+     */
+    private void addCompletionListener(final BooleanProperty property) {
+        property.addListener(completionListener);
+    }
+
+
+
+    ///// ----- Inner classes ----- \\\\\
+
+
+
+    /**
+     * Inner class: A change listener for the boolean done property. Changes the saved status
+     * of the task list.
+     *
+     * @author Thorsten Ortlepp
+     */
+    private class CompletionListener implements ChangeListener<Boolean> {
+
+        /**
+         * Change event: Value is changing - set saved state to unsaved.
+         *
+         * @param observable The property
+         * @param oldValue The old value of the property
+         * @param newValue The new value of the property
+         */
+        @Override
+        public void changed(final ObservableValue<? extends Boolean> observable,
+                final Boolean oldValue, final Boolean newValue) {
+            setSaved(false);
+        }
     }
 
 }

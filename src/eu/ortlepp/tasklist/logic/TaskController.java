@@ -129,6 +129,17 @@ public class TaskController {
 
 
     /**
+     * Getter for the filename. Returns the name and path of the currently opened file.
+     *
+     * @return The name (including path) of the currently opened file
+     */
+    public String getFilename() {
+        return filename;
+    }
+
+
+
+    /**
      * Read a todo.txt file and transform its contents into tasks. The tasks list will be
      * cleared before and then the read tasks are added to the list.
      * If the file contains a BOM it will be omitted.
