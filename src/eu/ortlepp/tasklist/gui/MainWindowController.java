@@ -16,6 +16,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -608,18 +609,32 @@ public class MainWindowController {
      * @param file File name of the task list
      */
     public void loadTaskList(final String file) {
-        if (file != null && !file.isEmpty() && !tasks.loadTaskList(file)) {
-            final Alert message = new Alert(AlertType.ERROR);
-            newEditController.initDialog(message, "dialog.read.title", "dialog.read.header",
-                    "dialog.read.content");
-            message.showAndWait();
-        } else {
-            labelFilename.setText(tasks.getFilename());
-            setSaved(true);
+        if (file != null && !file.isEmpty()) {
 
-            /* Add listener for changes on done property */
-            for (final Task task : tasks.getTaskList()) {
-                addCompletionListener(task.doneProperty());
+            if (tasks.loadTaskList(file)) {
+                labelFilename.setText(tasks.getFilename());
+                setSaved(true);
+
+                /* Add listener for changes on done property */
+                for (final Task task : tasks.getTaskList()) {
+                    addCompletionListener(task.doneProperty());
+                }
+
+                /* Unlock GUI */
+                buttonSave.setDisable(false);
+                buttonNew.setDisable(false);
+                buttonEdit.setDisable(false);
+                buttonDone.setDisable(false);
+                buttonDelete.setDisable(false);
+                buttonMove.setDisable(false);
+                checkboxDone.setDisable(false);
+                comboboxContext.setDisable(false);
+                comboboxProject.setDisable(false);
+            } else {
+                final Alert message = new Alert(AlertType.ERROR);
+                newEditController.initDialog(message, "dialog.read.title", "dialog.read.header",
+                        "dialog.read.content");
+                message.showAndWait();
             }
         }
     }
