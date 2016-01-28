@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -21,22 +23,48 @@
    <top>
       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-          <Button fx:id="buttonOpen" mnemonicParsing="false" onAction="#handleBtnOpenClick" text="OPEN" />
-            <Button fx:id="buttonSave" mnemonicParsing="false" onAction="#handleBtnSaveClick" text="SAVE" />
+          <Button fx:id="buttonOpen" mnemonicParsing="false" onAction="#handleFileOpen" text="OPEN" />
+            <Button fx:id="buttonSave" disable="true" mnemonicParsing="false" onAction="#handleFileSave" text="SAVE" />
             <Separator orientation="VERTICAL" />
-            <Button fx:id="buttonNew" mnemonicParsing="false" onAction="#handleBtnNewClick" text="NEW" />
-            <Button fx:id="buttonEdit" mnemonicParsing="false" onAction="#handleBtnEditClick" text="EDIT" />
-            <Button fx:id="buttonDone" mnemonicParsing="false" onAction="#handleBtnDoneClick" text="DONE" />
-            <Button fx:id="buttonDelete" mnemonicParsing="false" onAction="#handleBtnDeleteClick" text="DELETE" />
+            <Button fx:id="buttonNew" disable="true" mnemonicParsing="false" onAction="#handleNewTask" text="NEW" />
             <Separator orientation="VERTICAL" />
-            <CheckBox fx:id="checkboxDone" mnemonicParsing="false" selected="true" text="%caption.filter.done" />
+            <Button fx:id="buttonEdit" disable="true" mnemonicParsing="false" onAction="#handleEditTask" text="EDIT" />
+            <Button fx:id="buttonDone" disable="true" mnemonicParsing="false" onAction="#handleTaskDone" text="DONE" />
+            <Button fx:id="buttonDelete" disable="true" mnemonicParsing="false" onAction="#handleTaskDelete" text="DELETE" />
             <Separator orientation="VERTICAL" />
-            <ComboBox fx:id="comboboxContext" prefWidth="150.0" />
-            <ComboBox fx:id="comboboxProject" prefWidth="150.0" />
+            <Button fx:id="buttonMove" disable="true" mnemonicParsing="false" onAction="#handleMoveToArchive" text="MOVE" />
             <Separator orientation="VERTICAL" />
-            <Button fx:id="buttonSettings" mnemonicParsing="false" onAction="#handleBtnSettingsClick" text="SETTINGS" />
-            <Button fx:id="buttonInfo" mnemonicParsing="false" onAction="#handleBtnInfoClick" text="INFO" />
+            <CheckBox fx:id="checkboxDone" disable="true" mnemonicParsing="false" selected="true" text="%caption.filter.done" />
+            <Separator orientation="VERTICAL" />
+            <ComboBox fx:id="comboboxContext" disable="true" prefWidth="150.0" />
+            <ComboBox fx:id="comboboxProject" disable="true" prefWidth="150.0" />
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="buttonSettings" mnemonicParsing="false" onAction="#handleOpenSettings" text="SETTINGS" />
+            <Button fx:id="buttonInfo" mnemonicParsing="false" onAction="#handleOpenInfo" text="INFO" />
         </items>
       </ToolBar>
    </top>
+   <bottom>
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="25.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label fx:id="labelFilename">
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+            </Label>
+            <Label fx:id="labelSaved" text="#" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+               <padding>
+                  <Insets right="3.0" />
+               </padding>
+            </Label>
+         </children>
+      </GridPane>
+   </bottom>
 </BorderPane>

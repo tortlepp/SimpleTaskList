@@ -1,6 +1,7 @@
 package eu.ortlepp.tasklist.gui;
 
 import eu.ortlepp.tasklist.SimpleTaskList;
+import eu.ortlepp.tasklist.extra.CustomSortedList;
 import eu.ortlepp.tasklist.gui.components.DateTableCell;
 import eu.ortlepp.tasklist.gui.components.DescriptionTableCell;
 import eu.ortlepp.tasklist.gui.components.PriorityTableCell;
@@ -9,8 +10,10 @@ import eu.ortlepp.tasklist.logic.PriorityComperator;
 import eu.ortlepp.tasklist.logic.TaskController;
 import eu.ortlepp.tasklist.model.Task;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
@@ -80,6 +84,11 @@ public class MainWindowController {
     /** Button to delete the currently selected task from the list. */
     @FXML
     private Button buttonDelete;
+
+
+    /** Button to move completed tasks to the archive. */
+    @FXML
+    private Button buttonMove;
 
 
     /** Button to open the settings dialog. */
@@ -142,6 +151,16 @@ public class MainWindowController {
     private TableColumn<Task, String> tablecolumnProject;
 
 
+    /** Label to show the currently opened file. */
+    @FXML
+    private Label labelFilename;
+
+
+    /** Indicator for unsaved changes on the task list. */
+    @FXML
+    private Label labelSaved;
+
+
     /** Translated captions and tooltips for the GUI. */
     private final ResourceBundle translations;
 
@@ -164,6 +183,14 @@ public class MainWindowController {
 
     /** The controller of the new / edit dialog. */
     private NewEditDialogController newEditController;
+
+
+    /** Status for the task list: Are there unsaved changes (false) or not (true). */
+    private boolean saved;
+
+
+    /** Listener for changes on done properties of tasks. */
+    private CompletionListener completionListener;
 
 
     /**
@@ -194,6 +221,7 @@ public class MainWindowController {
         initButton(buttonEdit, "edit.png", "tooltip.button.edit");
         initButton(buttonDone, "done.png", "tooltip.button.done");
         initButton(buttonDelete, "delete.png", "tooltip.button.delete");
+        initButton(buttonMove, "move.png", "tooltip.button.move");
         initButton(buttonSettings, "settings.png", "tooltip.button.settings");
         initButton(buttonInfo, "info.png", "tooltip.button.info");
 
@@ -252,7 +280,7 @@ public class MainWindowController {
         });
 
         /* Wrap filtered list in sorted list to enable sorting */
-        final SortedList<Task> sortedTasks = new SortedList<>(filteredTasks);
+        final CustomSortedList<Task> sortedTasks = new CustomSortedList<>(filteredTasks);
         sortedTasks.comparatorProperty().bind(tableviewTasks.comparatorProperty());
 
         tableviewTasks.setItems(sortedTasks);
@@ -263,6 +291,9 @@ public class MainWindowController {
 
         /* Resizing the table: expand columns to full width */
         tableviewTasks.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        setSaved(true);
+        completionListener = new CompletionListener();
     }
 
 
@@ -347,16 +378,29 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "open" button: Show open dialog, load selected file.
+     * Set the status for the task list: Are there unsaved changes (false) or not (true).
+     *
+     * @param saved Saved status: true = no changes, false = unsaved changes
+     */
+    public void setSaved(boolean saved) {
+        this.saved = saved;
+        labelSaved.setVisible(!saved);
+    }
+
+
+
+    /**
+     * Handle to open a task list file: Show open dialog, load selected file.
      */
     @FXML
-    private void handleBtnOpenClick() {
+    private void handleFileOpen() {
         /* Initialize dialog */
         final FileChooser openDialog = new FileChooser();
         openDialog.setTitle(translations.getString("dialog.open.title"));
         openDialog.getExtensionFilters().addAll(
                 new ExtensionFilter(translations.getString("dialog.open.filetype.text"), "*.txt"),
                 new ExtensionFilter(translations.getString("dialog.open.filetype.all"), "*.*"));
+        openDialog.setInitialDirectory(new File(System.getProperty("user.home")));
 
         /* Show dialog */
         final File file = openDialog.showOpenDialog(stage);
@@ -370,26 +414,30 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "save" button: Save task list to file.
+     * Handle to save the currently open task list: Save task list to file.
      */
     @FXML
-    private void handleBtnSaveClick() {
-        if (!tasks.writeTaskList()) {
-            final Alert message = new Alert(AlertType.ERROR);
-            newEditController.initDialog(message, "dialog.write.title", "dialog.write.header",
-                    "dialog.write.content");
-            message.showAndWait();
+    private void handleFileSave() {
+        if (!saved) {
+            if (tasks.writeTaskList()) {
+                setSaved(true);
+            } else {
+                final Alert message = new Alert(AlertType.ERROR);
+                newEditController.initDialog(message, "dialog.write.title", "dialog.write.header",
+                        "dialog.write.content");
+                message.showAndWait();
+            }
         }
     }
 
 
 
     /**
-     * Handle a click on the "new" button: Open the new task dialog and
+     * Handle to add a new task to the list: Open the new task dialog and
      * then add one or more tasks to the list.
      */
     @FXML
-    private void handleBtnNewClick() {
+    private void handleNewTask() {
         /* Open new task dialog */
         newEditController.setNewDialog(tasks.getContextList(), tasks.getProjectList());
         newEditDialog.setTitle(translations.getString("dialog.new.title"));
@@ -399,7 +447,8 @@ public class MainWindowController {
         if (newEditController.isSaved()) {
             for (final Task task : newEditController.getNewTasks()) {
                 /* Add task */
-                tasks.getTaskList().add(new Task(task));
+                Task newTask = new Task(task);
+                tasks.getTaskList().add(newTask);
 
                 /* Update context and project filters */
                 for (final String item : task.getContext()) {
@@ -408,18 +457,22 @@ public class MainWindowController {
                 for (final String item : task.getProject()) {
                     tasks.addProject(item);
                 }
+
+                addCompletionListener(newTask.doneProperty());
             }
+
+            setSaved(false);
         }
     }
 
 
 
     /**
-     * Handle a click on the "edit" button: Open edit dialog and
+     * Handle to edit the currently selected task: Open edit dialog and
      * after editing update the edited task.
      */
     @FXML
-    private void handleBtnEditClick() {
+    private void handleEditTask() {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
             /* Open edit dialog */
             newEditController.setEditDialog(tableviewTasks.getSelectionModel().getSelectedItem(),
@@ -451,6 +504,8 @@ public class MainWindowController {
                     tableviewTasks.getSelectionModel().getSelectedItem().addToProject(item);
                     tasks.addProject(item);
                 }
+
+                setSaved(false);
             }
         }
     }
@@ -458,29 +513,31 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "done" button: If a task is selected mark this task as done.
+     * Handle to mark the currently selected task as done: If a task is selected mark
+     * that task as done.
      */
     @FXML
-    private void handleBtnDoneClick() {
+    private void handleTaskDone() {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
             tableviewTasks.getSelectionModel().getSelectedItem().setDone(true);
+            setSaved(false);
         }
     }
 
 
 
     /**
-     * Handle a click on the "delete" button: If a task is selected delete this task from the list.
+     * Handle to delete / remove the currently selected task from the list:
+     * If a task is selected delete this task from the list.
      */
     @FXML
-    private void handleBtnDeleteClick() {
+    private void handleTaskDelete() {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
 
             /* Confirmation dialog */
             final Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle(translations.getString("dialog.delete.title"));
-            alert.setHeaderText(translations.getString("dialog.delete.header"));
-            alert.setContentText(translations.getString("dialog.delete.content"));
+            newEditController.initDialog(alert, "dialog.delete.title", "dialog.delete.header",
+                    "dialog.delete.content");
             final Optional<ButtonType> choice = alert.showAndWait();
 
             /* Confirm deleting of the task */
@@ -499,6 +556,8 @@ public class MainWindowController {
 
                 /* Delete task from list */
                 tasks.getTaskList().remove(deleteListId);
+
+                setSaved(false);
             }
         }
     }
@@ -506,20 +565,38 @@ public class MainWindowController {
 
 
     /**
-     * Handle a click on the "settings" button: TBD.
+     * Handle to move all completed tasks into the archive: Add completed tasks to done.txt and
+     * remove them from task list.
      */
     @FXML
-    private void handleBtnSettingsClick() {
+    private void handleMoveToArchive() {
+        final int moved = tasks.moveToArchive();
+
+        if (moved > 0) {
+            final Alert message = new Alert(AlertType.INFORMATION);
+            newEditController.initDialog(message, "dialog.moved.title", "dialog.moved.header", "dialog.moved.content");
+            message.showAndWait();
+            setSaved(false);
+        }
+    }
+
+
+
+    /**
+     * Handle to open the settings dialog: TBD.
+     */
+    @FXML
+    private void handleOpenSettings() {
         System.out.println("SETTINGS");
     }
 
 
 
     /**
-     * Handle a click on the "info" button: show the info / about dialog.
+     * Handle to open the about / info dialog: show the info / about dialog.
      */
     @FXML
-    private void handleBtnInfoClick() {
+    private void handleOpenInfo() {
         aboutDialog.showAndWait();
     }
 
@@ -532,11 +609,33 @@ public class MainWindowController {
      * @param file File name of the task list
      */
     public void loadTaskList(final String file) {
-        if (file != null && !file.isEmpty() && !tasks.loadTaskList(file)) {
-            final Alert message = new Alert(AlertType.ERROR);
-            newEditController.initDialog(message, "dialog.read.title", "dialog.read.header",
-                    "dialog.read.content");
-            message.showAndWait();
+        if (file != null && !file.isEmpty()) {
+
+            if (tasks.loadTaskList(file)) {
+                labelFilename.setText(tasks.getFilename());
+                setSaved(true);
+
+                /* Add listener for changes on done property */
+                for (final Task task : tasks.getTaskList()) {
+                    addCompletionListener(task.doneProperty());
+                }
+
+                /* Unlock GUI */
+                buttonSave.setDisable(false);
+                buttonNew.setDisable(false);
+                buttonEdit.setDisable(false);
+                buttonDone.setDisable(false);
+                buttonDelete.setDisable(false);
+                buttonMove.setDisable(false);
+                checkboxDone.setDisable(false);
+                comboboxContext.setDisable(false);
+                comboboxProject.setDisable(false);
+            } else {
+                final Alert message = new Alert(AlertType.ERROR);
+                newEditController.initDialog(message, "dialog.read.title", "dialog.read.header",
+                        "dialog.read.content");
+                message.showAndWait();
+            }
         }
     }
 
@@ -595,6 +694,45 @@ public class MainWindowController {
 
         /* Combine the three filters and get final filter result */
         return done && context && project;
+    }
+
+
+
+    /**
+     * Add a change listener to a boolean property to detect when a task completion status changes.
+     *
+     * @param property Boolean property
+     */
+    private void addCompletionListener(final BooleanProperty property) {
+        property.addListener(completionListener);
+    }
+
+
+
+    ///// ----- Inner classes ----- \\\\\
+
+
+
+    /**
+     * Inner class: A change listener for the boolean done property. Changes the saved status
+     * of the task list.
+     *
+     * @author Thorsten Ortlepp
+     */
+    private class CompletionListener implements ChangeListener<Boolean> {
+
+        /**
+         * Change event: Value is changing - set saved state to unsaved.
+         *
+         * @param observable The property
+         * @param oldValue The old value of the property
+         * @param newValue The new value of the property
+         */
+        @Override
+        public void changed(final ObservableValue<? extends Boolean> observable,
+                final Boolean oldValue, final Boolean newValue) {
+            setSaved(false);
+        }
     }
 
 }

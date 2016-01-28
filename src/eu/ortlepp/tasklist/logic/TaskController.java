@@ -10,11 +10,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 /**
@@ -123,6 +125,17 @@ public class TaskController {
         if (!projects.contains(project)) {
             projects.add(project);
         }
+    }
+
+
+
+    /**
+     * Getter for the filename. Returns the name and path of the currently opened file.
+     *
+     * @return The name (including path) of the currently opened file
+     */
+    public String getFilename() {
+        return filename;
     }
 
 
@@ -261,7 +274,8 @@ public class TaskController {
 
             /* Write the file */
             try {
-                Files.write(Paths.get(filename), tasks);
+                Files.write(Paths.get(filename), tasks, StandardCharsets.UTF_8,
+                        StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
                 return true;
             } catch (IOException ex) {
                 LOGGER.severe("Error while writing the file " + filename + ": " + ex.getMessage());
@@ -270,6 +284,53 @@ public class TaskController {
 
         return false;
     }
+
+
+
+    /**
+     * Moves completed tasks to the archive. The Archive is called done.txt and is in the
+     * same format as the todo.txt but contains only completed tasks.
+     *
+     * @return The number of tasks that where moved to the archive
+     */
+    public int moveToArchive() {
+        int counter = 0;
+        final List<String> tasks = new ArrayList<String>();
+
+        /* Find completed task objects to move */
+        for (final Task task : tasklist) {
+            if (task.isDone()) {
+                tasks.add(taskToString(task));
+                counter++;
+            }
+        }
+
+        /* Continue only if there are completed task */
+        if (counter > 0) {
+            String doneFile = filename.substring(0, filename.lastIndexOf(File.separator) + 1);
+            doneFile += "done.txt";
+
+            /* Write the file and remove moved tasks from list */
+            try {
+                Files.write(Paths.get(doneFile), tasks, StandardCharsets.UTF_8,
+                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
+                /* Remove tasks from the list */
+                tasklist.removeIf(new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task task) {
+                        return task.isDone();
+                    }
+                });
+
+            } catch (IOException ex) {
+                LOGGER.severe("Error while writing the file " + filename + ": " + ex.getMessage());
+            }
+        }
+
+        return counter;
+    }
+
 
 
     /**
