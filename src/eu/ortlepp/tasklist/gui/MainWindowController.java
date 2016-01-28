@@ -400,6 +400,7 @@ public class MainWindowController {
         openDialog.getExtensionFilters().addAll(
                 new ExtensionFilter(translations.getString("dialog.open.filetype.text"), "*.txt"),
                 new ExtensionFilter(translations.getString("dialog.open.filetype.all"), "*.*"));
+        openDialog.setInitialDirectory(new File(System.getProperty("user.home")));
 
         /* Show dialog */
         final File file = openDialog.showOpenDialog(stage);
