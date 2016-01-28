@@ -1,6 +1,7 @@
 package eu.ortlepp.tasklist.gui;
 
 import eu.ortlepp.tasklist.SimpleTaskList;
+import eu.ortlepp.tasklist.extra.CustomSortedList;
 import eu.ortlepp.tasklist.gui.components.DateTableCell;
 import eu.ortlepp.tasklist.gui.components.DescriptionTableCell;
 import eu.ortlepp.tasklist.gui.components.PriorityTableCell;
@@ -13,10 +14,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -281,7 +280,7 @@ public class MainWindowController {
         });
 
         /* Wrap filtered list in sorted list to enable sorting */
-        final SortedList<Task> sortedTasks = new SortedList<>(filteredTasks);
+        final CustomSortedList<Task> sortedTasks = new CustomSortedList<>(filteredTasks);
         sortedTasks.comparatorProperty().bind(tableviewTasks.comparatorProperty());
 
         tableviewTasks.setItems(sortedTasks);

@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 /**
@@ -314,11 +315,13 @@ public class TaskController {
                 Files.write(Paths.get(doneFile), tasks, StandardCharsets.UTF_8,
                         StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 
-                for (int i = tasklist.size() - 1; i >= 0; i--) {
-                    if (tasklist.get(i).isDone()) {
-                        tasklist.remove(i);
+                /* Remove tasks from the list */
+                tasklist.removeIf(new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task task) {
+                        return task.isDone();
                     }
-                }
+                });
 
             } catch (IOException ex) {
                 LOGGER.severe("Error while writing the file " + filename + ": " + ex.getMessage());
