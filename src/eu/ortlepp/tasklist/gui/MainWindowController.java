@@ -185,6 +185,14 @@ public class MainWindowController {
     private NewEditDialogController newEditController;
 
 
+    /** The dialog window to change settings. */
+    private Stage settingsDialog;
+
+
+    /** The controller of the settings dialog. */
+    private SettingsDialogController settingsController;
+
+
     /** Status for the task list: Are there unsaved changes (false) or not (true). */
     private boolean saved;
 
@@ -313,6 +321,14 @@ public class MainWindowController {
                 (AboutDialogController) initDialog(aboutDialog, "AboutDialog.fxml");
         aboutController.setStage(aboutDialog);
         aboutDialog.setTitle(translations.getString("about.title"));
+
+        /* Initialize settings dialog */
+        settingsDialog = new Stage();
+        settingsController = (SettingsDialogController) initDialog(settingsDialog, "SettingsDialog.fxml");
+        settingsController.setStage(settingsDialog);
+        settingsDialog.setTitle(translations.getString("settings.title"));
+        settingsController.initComboBoxInterval(
+                translations.getString("settings.preference.autosave.interval.values").split(";"));
     }
 
 
@@ -587,7 +603,13 @@ public class MainWindowController {
      */
     @FXML
     private void handleOpenSettings() {
-        System.out.println("SETTINGS");
+        settingsController.initShow();
+        settingsDialog.showAndWait();
+        if (settingsController.isSaved()) {
+            final Alert message = new Alert(AlertType.INFORMATION);
+            newEditController.initDialog(message, "dialog.settings.title", "dialog.settings.header", "dialog.settings.content");
+            message.showAndWait();
+        }
     }
 
 
