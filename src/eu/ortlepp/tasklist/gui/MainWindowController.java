@@ -439,7 +439,7 @@ public class MainWindowController {
                 setSaved(true);
             } else {
                 final Alert message = new Alert(AlertType.ERROR);
-                newEditController.initDialog(message, "dialog.write.title", "dialog.write.header",
+                AbstractDialogController.prepareDialog(message, "dialog.write.title", "dialog.write.header",
                         "dialog.write.content");
                 message.showAndWait();
             }
@@ -552,7 +552,7 @@ public class MainWindowController {
 
             /* Confirmation dialog */
             final Alert alert = new Alert(AlertType.CONFIRMATION);
-            newEditController.initDialog(alert, "dialog.delete.title", "dialog.delete.header",
+            AbstractDialogController.prepareDialog(alert, "dialog.delete.title", "dialog.delete.header",
                     "dialog.delete.content");
             final Optional<ButtonType> choice = alert.showAndWait();
 
@@ -590,7 +590,8 @@ public class MainWindowController {
 
         if (moved > 0) {
             final Alert message = new Alert(AlertType.INFORMATION);
-            newEditController.initDialog(message, "dialog.moved.title", "dialog.moved.header", "dialog.moved.content");
+            AbstractDialogController.prepareDialog(message, "dialog.moved.title",
+                    "dialog.moved.header", "dialog.moved.content");
             message.showAndWait();
             setSaved(false);
         }
@@ -607,7 +608,8 @@ public class MainWindowController {
         settingsDialog.showAndWait();
         if (settingsController.isSaved()) {
             final Alert message = new Alert(AlertType.INFORMATION);
-            newEditController.initDialog(message, "dialog.settings.title", "dialog.settings.header", "dialog.settings.content");
+            AbstractDialogController.prepareDialog(message, "dialog.settings.title",
+                    "dialog.settings.header", "dialog.settings.content");
             message.showAndWait();
         }
     }
@@ -654,7 +656,7 @@ public class MainWindowController {
                 comboboxProject.setDisable(false);
             } else {
                 final Alert message = new Alert(AlertType.ERROR);
-                newEditController.initDialog(message, "dialog.read.title", "dialog.read.header",
+                AbstractDialogController.prepareDialog(message, "dialog.read.title", "dialog.read.header",
                         "dialog.read.content");
                 message.showAndWait();
             }
