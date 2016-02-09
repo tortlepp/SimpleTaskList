@@ -1,5 +1,6 @@
 package eu.ortlepp.tasklist.gui;
 
+import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -68,10 +69,36 @@ public class SettingsDialogController extends AbstractDialogController {
 
 
     /**
-     * Prepare the window before it is shown to the user.
+     * Prepare the window before it is shown to the user. Especially initialize all GUI components.
      */
     public void initShow() {
         saved = false;
+
+        /* Initialize GUI components with actual values */
+        UserProperties properties = UserProperties.getInstance();
+        checkboxAutoSave.setSelected(properties.isAutomaticSave());
+        checkboxSaveOnClose.setSelected(properties.isSaveOnClose());
+        checkboxTooltips.setSelected(properties.isShowTooltips());
+        textfieldFile.setText(properties.getStandardTasklist());
+        textfieldArchive.setText(properties.getArchiveFile());
+
+        /* Translate minutes to selected item */
+        int selectionIndex;
+        switch (properties.getAutomaticSaveInterval()) {
+            case 3:
+                selectionIndex = 0;
+                break;
+            case 5:
+                selectionIndex = 1;
+                break;
+            case 10:
+                selectionIndex = 2;
+                break;
+            default:
+                selectionIndex = 3;
+                break;
+        }
+        comboboxInterval.getSelectionModel().select(selectionIndex);
     }
 
 
@@ -81,8 +108,34 @@ public class SettingsDialogController extends AbstractDialogController {
      */
     @FXML
     protected void handleSave() {
-        // TODO ...
         stage.hide();
+
+        /* Save values to preferences */
+        UserProperties properties = UserProperties.getInstance();
+        properties.updateAutomaticSave(checkboxAutoSave.isSelected());
+        properties.updateSaveOnClose(checkboxSaveOnClose.isSelected());
+        properties.updateShowTooltips(checkboxTooltips.isSelected());
+        properties.updateStandardTasklist(textfieldFile.getText());
+        properties.updateArchiveFile(textfieldArchive.getText());
+
+        /* Translate selected item to minutes */
+        int minutes;
+        switch (comboboxInterval.getSelectionModel().getSelectedIndex()) {
+            case 0:
+                minutes = 3;
+                break;
+            case 1:
+                minutes = 5;
+                break;
+            case 2:
+                minutes = 10;
+                break;
+            default:
+                minutes = 15;
+                break;
+        }
+        properties.updateAutomaticSaveInterval(minutes);
+
         saved = true;
     }
 
