@@ -1,10 +1,14 @@
 package eu.ortlepp.tasklist.gui;
 
+import java.io.File;
+
 import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
  * Controller for the settings dialog window. Handles all actions of the dialog window.
@@ -104,10 +108,34 @@ public class SettingsDialogController extends AbstractDialogController {
 
 
     /**
+     * Handle a click on the open button: select a standard task list.
+     */
+    @FXML
+    private void handleSelectFile() {
+        /* Initialize dialog */
+        final FileChooser openDialog = new FileChooser();
+        openDialog.setTitle(translations.getString("dialog.open.title"));
+        openDialog.getExtensionFilters().addAll(
+                new ExtensionFilter(translations.getString("dialog.open.filetype.text"), "*.txt"),
+                new ExtensionFilter(translations.getString("dialog.open.filetype.all"), "*.*"));
+        openDialog.setInitialDirectory(new File(System.getProperty("user.home")));
+
+        /* Show dialog */
+        final File file = openDialog.showOpenDialog(stage);
+
+        /* Show selected file in TextField */
+        if (file != null) {
+            textfieldFile.setText(file.getAbsolutePath());
+        }
+    }
+
+
+
+    /**
      * Handle a click on the save button: save settings to preferences.
      */
     @FXML
-    protected void handleSave() {
+    private void handleSave() {
         stage.hide();
 
         /* Save values to preferences */

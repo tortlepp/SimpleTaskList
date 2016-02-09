@@ -9,7 +9,7 @@ import eu.ortlepp.tasklist.logic.DueComperator;
 import eu.ortlepp.tasklist.logic.PriorityComperator;
 import eu.ortlepp.tasklist.logic.TaskController;
 import eu.ortlepp.tasklist.model.Task;
-
+import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -377,7 +377,9 @@ public class MainWindowController {
         final String iconfile = "eu/ortlepp/tasklist/icons/" + icon;
         final Image iconimage = new Image(getClass().getClassLoader().getResourceAsStream(iconfile));
         button.setGraphic(new ImageView(iconimage));
-        button.setTooltip(new Tooltip(translations.getString(tooltip)));
+        if (UserProperties.getInstance().isShowTooltips()) {
+            button.setTooltip(new Tooltip(translations.getString(tooltip)));
+        }
     }
 
 
@@ -406,6 +408,17 @@ public class MainWindowController {
 
 
     /**
+     * Returns the status for the task list: Are there unsaved changes (false) or not (true).
+     *
+     * @return Saved status: true = no changes, false = unsaved changes
+     */
+    public boolean isSaved() {
+        return saved;
+    }
+
+
+
+    /**
      * Handle to open a task list file: Show open dialog, load selected file.
      */
     @FXML
@@ -422,7 +435,7 @@ public class MainWindowController {
         final File file = openDialog.showOpenDialog(stage);
 
         /* Load selected file */
-        if (file != null && file.exists()) {
+        if (file != null) {
             loadTaskList(file.getAbsolutePath());
         }
     }
@@ -433,7 +446,7 @@ public class MainWindowController {
      * Handle to save the currently open task list: Save task list to file.
      */
     @FXML
-    private void handleFileSave() {
+    public void handleFileSave() {
         if (!saved) {
             if (tasks.writeTaskList()) {
                 setSaved(true);
@@ -633,7 +646,7 @@ public class MainWindowController {
      * @param file File name of the task list
      */
     public void loadTaskList(final String file) {
-        if (file != null && !file.isEmpty()) {
+        if (file != null && !file.isEmpty() && new File(file).exists()) {
 
             if (tasks.loadTaskList(file)) {
                 labelFilename.setText(tasks.getFilename());

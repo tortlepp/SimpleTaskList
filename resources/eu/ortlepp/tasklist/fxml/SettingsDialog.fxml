@@ -71,12 +71,12 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Button mnemonicParsing="false" text="..." GridPane.columnIndex="1" GridPane.halignment="RIGHT">
+                              <Button mnemonicParsing="false" onAction="#handleSelectFile" text="..." GridPane.columnIndex="1" GridPane.halignment="RIGHT">
                                  <GridPane.margin>
                                     <Insets />
                                  </GridPane.margin>
                               </Button>
-                              <TextField fx:id="textfieldFile" editable="false" />
+                              <TextField fx:id="textfieldFile" />
                            </children>
                         </GridPane>
                      </children>
