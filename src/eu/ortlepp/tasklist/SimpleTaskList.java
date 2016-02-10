@@ -1,6 +1,7 @@
 package eu.ortlepp.tasklist;
 
 import eu.ortlepp.tasklist.gui.MainWindowController;
+import eu.ortlepp.tasklist.tools.AutoSaveThread;
 import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -39,6 +40,10 @@ public final class SimpleTaskList extends Application {
 
     /** The controller of the main window. */
     private MainWindowController controller;
+
+
+    /** Thread to save the current task list automatically. */
+    private AutoSaveThread autosave;
 
 
     /**
@@ -108,6 +113,12 @@ public final class SimpleTaskList extends Application {
             controller.setStage(primaryStage);
             controller.loadTaskList(file);
 
+            /* If automatic saving is enabled the thread needs to be started */
+            if (UserProperties.getInstance().isAutomaticSave()) {
+                autosave = new AutoSaveThread(controller);
+                autosave.start();
+            }
+
             /* Show the window */
             final Scene scene = new Scene(window);
             primaryStage.setScene(scene);
@@ -121,11 +132,16 @@ public final class SimpleTaskList extends Application {
 
 
     /**
-     * Stop the application. If desired the task list is automatically saved.
+     * Stop the application. If enabled the task list is automatically saved.
      */
     @Override
     public void stop() throws Exception {
-        /* Automatic save if desired */
+        /* Abort the automatic saving thread */
+        if (autosave != null) {
+            autosave.interrupt();
+        }
+
+        /* Automatic save if enabled */
         if (UserProperties.getInstance().isSaveOnClose()) {
             controller.handleFileSave();
         }
