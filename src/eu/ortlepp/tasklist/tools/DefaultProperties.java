@@ -31,6 +31,34 @@ public final class DefaultProperties {
     protected static final boolean SHOW_TOOLTIPS = true;
 
 
+    /** Standard letter for the shortcut to open a file. */
+    protected static final String SHORTCUT_KEY_OPEN = "O";
+
+
+    /** Standard letter for the shortcut to save a file. */
+    protected static final String SHORTCUT_KEY_SAVE = "S";
+
+
+    /** Standard letter for the shortcut to create a new task. */
+    protected static final String SHORTCUT_KEY_NEW = "N";
+
+
+    /** Standard letter for the shortcut to edit the selected task. */
+    protected static final String SHORTCUT_KEY_EDIT = "E";
+
+
+    /** Standard letter for the shortcut to mark the selected task as done. */
+    protected static final String SHORTCUT_KEY_DONE = "X";
+
+
+    /** Standard letter for the shortcut to delete the selected task. */
+    protected static final String SHORTCUT_KEY_DELETE = "D";
+
+
+    /** Standard letter for the shortcut to move completed task to the archive. */
+    protected static final String SHORTCUT_KEY_MOVE = "A";
+
+
     /**
      * Private constructor for tool class (without functionality).
      */

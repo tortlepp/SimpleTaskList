@@ -4,7 +4,7 @@ import java.util.prefs.Preferences;
 
 /**
  * Access to the user defined (or default) properties for the application.
- * Uses the preferences API and is implemented as singleton.
+ * This class uses the preferences API and is implemented as singleton.
  *
  * @author Thorsten Ortlepp
  */

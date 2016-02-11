@@ -307,7 +307,7 @@ public class MainWindowController {
 
 
     /**
-     * INitialize dialogs by loading their FXML and getting access to their controllers.
+     * Initialize dialogs by loading their FXML and getting access to their controllers.
      */
     private void initDialogs() {
         /* Initialize new / edit dialog */
@@ -327,8 +327,6 @@ public class MainWindowController {
         settingsController = (SettingsDialogController) initDialog(settingsDialog, "SettingsDialog.fxml");
         settingsController.setStage(settingsDialog);
         settingsDialog.setTitle(translations.getString("settings.title"));
-        settingsController.initComboBoxInterval(
-                translations.getString("settings.preference.autosave.interval.values").split(";"));
     }
 
 

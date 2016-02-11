@@ -2,10 +2,13 @@ package eu.ortlepp.tasklist.gui;
 
 import java.io.File;
 
+import eu.ortlepp.tasklist.tools.ShortcutProperties;
 import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -16,6 +19,11 @@ import javafx.stage.FileChooser.ExtensionFilter;
  * @author Thorsten Ortlepp
  */
 public class SettingsDialogController extends AbstractDialogController {
+
+    /** TabPane to change between different settings groups. */
+    @FXML
+    private TabPane tabpaneTabs;
+
 
     /** CheckBox for automatically saving the task list. */
     @FXML
@@ -47,27 +55,118 @@ public class SettingsDialogController extends AbstractDialogController {
     private TextField textfieldArchive;
 
 
+    /** Label to display the shortcut key. */
+    @FXML
+    private Label labelShortcut1;
+
+
+    /** Label to display the shortcut key. */
+    @FXML
+    private Label labelShortcut2;
+
+
+    /** Label to display the shortcut key. */
+    @FXML
+    private Label labelShortcut3;
+
+
+    /** Label to display the shortcut key. */
+    @FXML
+    private Label labelShortcut4;
+
+
+    /** Label to display the shortcut key. */
+    @FXML
+    private Label labelShortcut5;
+
+
+    /** Label to display the shortcut key. */
+    @FXML
+    private Label labelShortcut6;
+
+
+    /** Label to display the shortcut key. */
+    @FXML
+    private Label labelShortcut7;
+
+
+    /** ComboBox to select the key for opening a file. */
+    @FXML
+    private ComboBox<String> comboboxKeyOpen;
+
+
+    /** ComboBox to select the key for saving the task list. */
+    @FXML
+    private ComboBox<String> comboboxKeySave;
+
+
+    /** ComboBox to select the key for creating a new task. */
+    @FXML
+    private ComboBox<String> comboboxKeyNew;
+
+
+    /** ComboBox to select the key for editing an existing task. */
+    @FXML
+    private ComboBox<String> comboboxKeyEdit;
+
+
+    /** ComboBox to select the key for marking the selected task as done. */
+    @FXML
+    private ComboBox<String> comboboxKeyDone;
+
+
+    /** ComboBox to select the key for deleting the selected task. */
+    @FXML
+    private ComboBox<String> comboboxKeyDelete;
+
+
+    /** ComboBox to select the key for moving completed task to the archive. */
+    @FXML
+    private ComboBox<String> comboboxKeyMove;
+
+
     /** Save status of the dialog: true = user clicked on "Save", false = user clicked on "Cancel". */
     private boolean saved;
+
+
+    /** A list of all keys / letters. */
+    private final String[] keys = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
 
     /**
      * Initialize the dialog and its components.
      */
+    @FXML
     @Override
     protected void initialize() {
-        // TODO ...
-    }
+        comboboxInterval.getItems().setAll(
+                translations.getString("settings.preference.autosave.interval.values").split(";"));
 
+        /* Get OS dependent shortcut key */
+        final String shortcut;
+        if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+            shortcut = translations.getString("settings.shortcut.mac") + " +";
+        } else {
+            shortcut = translations.getString("settings.shortcut") + " +";
+        }
 
+        /* Show shortcut key in GUI */
+        labelShortcut1.setText(shortcut);
+        labelShortcut2.setText(shortcut);
+        labelShortcut3.setText(shortcut);
+        labelShortcut4.setText(shortcut);
+        labelShortcut5.setText(shortcut);
+        labelShortcut6.setText(shortcut);
+        labelShortcut7.setText(shortcut);
 
-    /**
-     * Initialize the ComboBox by setting its values.
-     *
-     * @param values Values to show in the ComboBox
-     */
-    public void initComboBoxInterval(String[] values) {
-        comboboxInterval.getItems().setAll(values);
+        /* Fill ComboBoxey with values */
+        comboboxKeyOpen.getItems().addAll(keys);
+        comboboxKeySave.getItems().addAll(keys);
+        comboboxKeyNew.getItems().addAll(keys);
+        comboboxKeyEdit.getItems().addAll(keys);
+        comboboxKeyDone.getItems().addAll(keys);
+        comboboxKeyDelete.getItems().addAll(keys);
+        comboboxKeyMove.getItems().addAll(keys);
     }
 
 
@@ -77,18 +176,19 @@ public class SettingsDialogController extends AbstractDialogController {
      */
     public void initShow() {
         saved = false;
+        tabpaneTabs.getSelectionModel().select(0);
 
         /* Initialize GUI components with actual values */
-        UserProperties properties = UserProperties.getInstance();
-        checkboxAutoSave.setSelected(properties.isAutomaticSave());
-        checkboxSaveOnClose.setSelected(properties.isSaveOnClose());
-        checkboxTooltips.setSelected(properties.isShowTooltips());
-        textfieldFile.setText(properties.getStandardTasklist());
-        textfieldArchive.setText(properties.getArchiveFile());
+        UserProperties userProp = UserProperties.getInstance();
+        checkboxAutoSave.setSelected(userProp.isAutomaticSave());
+        checkboxSaveOnClose.setSelected(userProp.isSaveOnClose());
+        checkboxTooltips.setSelected(userProp.isShowTooltips());
+        textfieldFile.setText(userProp.getStandardTasklist());
+        textfieldArchive.setText(userProp.getArchiveFile());
 
         /* Translate minutes to selected item */
         int selectionIndex;
-        switch (properties.getAutomaticSaveInterval()) {
+        switch (userProp.getAutomaticSaveInterval()) {
             case 3:
                 selectionIndex = 0;
                 break;
@@ -103,6 +203,29 @@ public class SettingsDialogController extends AbstractDialogController {
                 break;
         }
         comboboxInterval.getSelectionModel().select(selectionIndex);
+
+        /* Initialize ComboBoxes for shortcuts */
+        ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
+        comboboxKeyOpen.getSelectionModel().select(getNumericValue(shortcutProp.getKeyOpen()));
+        comboboxKeySave.getSelectionModel().select(getNumericValue(shortcutProp.getKeySave()));
+        comboboxKeyNew.getSelectionModel().select(getNumericValue(shortcutProp.getKeyNew()));
+        comboboxKeyEdit.getSelectionModel().select(getNumericValue(shortcutProp.getKeyEdit()));
+        comboboxKeyDone.getSelectionModel().select(getNumericValue(shortcutProp.getKeyDone()));
+        comboboxKeyDelete.getSelectionModel().select(getNumericValue(shortcutProp.getKeyDelete()));
+        comboboxKeyMove.getSelectionModel().select(getNumericValue(shortcutProp.getKeyMove()));
+    }
+
+
+
+    /**
+     * Converts a letter into a numeric value. The counting starts with 0.
+     * For example A = 0, B = 1, C = 2, ...
+     *
+     * @param letter The letter to convert (only the first letter of the sting is converted)
+     * @return The numeric value of the letter
+     */
+    private int getNumericValue(String letter) {
+        return letter.charAt(0) - 'A';
     }
 
 
@@ -138,13 +261,13 @@ public class SettingsDialogController extends AbstractDialogController {
     private void handleSave() {
         stage.hide();
 
-        /* Save values to preferences */
-        UserProperties properties = UserProperties.getInstance();
-        properties.updateAutomaticSave(checkboxAutoSave.isSelected());
-        properties.updateSaveOnClose(checkboxSaveOnClose.isSelected());
-        properties.updateShowTooltips(checkboxTooltips.isSelected());
-        properties.updateStandardTasklist(textfieldFile.getText());
-        properties.updateArchiveFile(textfieldArchive.getText());
+        /* Save settings to preferences */
+        UserProperties userProp = UserProperties.getInstance();
+        userProp.updateAutomaticSave(checkboxAutoSave.isSelected());
+        userProp.updateSaveOnClose(checkboxSaveOnClose.isSelected());
+        userProp.updateShowTooltips(checkboxTooltips.isSelected());
+        userProp.updateStandardTasklist(textfieldFile.getText());
+        userProp.updateArchiveFile(textfieldArchive.getText());
 
         /* Translate selected item to minutes */
         int minutes;
@@ -162,9 +285,31 @@ public class SettingsDialogController extends AbstractDialogController {
                 minutes = 15;
                 break;
         }
-        properties.updateAutomaticSaveInterval(minutes);
+        userProp.updateAutomaticSaveInterval(minutes);
+
+        /* Save shortcuts to preferences */
+        ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
+        shortcutProp.updateKeyOpen(getSelectedLetter(comboboxKeyOpen));
+        shortcutProp.updateKeySave(getSelectedLetter(comboboxKeySave));
+        shortcutProp.updateKeyNew(getSelectedLetter(comboboxKeyNew));
+        shortcutProp.updateKeyEdit(getSelectedLetter(comboboxKeyEdit));
+        shortcutProp.updateKeyDone(getSelectedLetter(comboboxKeyDone));
+        shortcutProp.updateKeyDelete(getSelectedLetter(comboboxKeyDelete));
+        shortcutProp.updateKeyMove(getSelectedLetter(comboboxKeyMove));
 
         saved = true;
+    }
+
+
+
+    /**
+     * Get the currently selected letter from a ComboBox.
+     *
+     * @param combobox The ComboBox (source)
+     * @return The currently selected letter
+     */
+    private String getSelectedLetter(ComboBox<String> combobox) {
+        return combobox.getItems().get(combobox.getSelectionModel().getSelectedIndex());
     }
 
 
