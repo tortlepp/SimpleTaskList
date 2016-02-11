@@ -9,6 +9,7 @@ import eu.ortlepp.tasklist.logic.DueComperator;
 import eu.ortlepp.tasklist.logic.PriorityComperator;
 import eu.ortlepp.tasklist.logic.TaskController;
 import eu.ortlepp.tasklist.model.Task;
+import eu.ortlepp.tasklist.tools.ShortcutProperties;
 import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -31,6 +32,10 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
@@ -377,6 +382,110 @@ public class MainWindowController {
         button.setGraphic(new ImageView(iconimage));
         if (UserProperties.getInstance().isShowTooltips()) {
             button.setTooltip(new Tooltip(translations.getString(tooltip)));
+        }
+    }
+
+
+
+    /**
+     * Initialize the keyboard shortcuts.
+     */
+    public void initShortcuts() {
+        ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
+
+        /* Open file */
+        addShortcut(shortcutProp.getKeyOpen(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleFileOpen();
+                    }
+                 });
+
+        /* Save file */
+        addShortcut(shortcutProp.getKeySave(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleFileSave();
+                    }
+                 });
+
+        /* New task */
+        addShortcut(shortcutProp.getKeyNew(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleNewTask();
+                    }
+                 });
+
+        /* Edit task */
+        addShortcut(shortcutProp.getKeyEdit(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleEditTask();
+                    }
+                 });
+
+        /* Mark task as done */
+        addShortcut(shortcutProp.getKeyDone(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleTaskDone();
+                    }
+                 });
+
+        /* Delete task */
+        addShortcut(shortcutProp.getKeyDelete(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleTaskDelete();
+                    }
+                 });
+
+        /* Move completed tasks to archive */
+        addShortcut(shortcutProp.getKeyMove(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleMoveToArchive();
+                    }
+                 });
+    }
+
+
+    /**
+     * Add a keyboard shortcut to the window / its stage and scene. The shortcut is created as a
+     * combination of CTRL (or Meta) and the given key.
+     *
+     * @param key The key that is used to create the shortcut
+     * @param action The action that is triggered by the shortcut
+     */
+    private void addShortcut(String key, Runnable action) {
+        KeyCodeCombination keycode =
+                new KeyCodeCombination(KeyCode.getKeyCode(key), KeyCombination.SHORTCUT_DOWN);
+        stage.getScene().getAccelerators().put(keycode, action);
+    }
+
+
+
+    /**
+     * Handle events when a key is pressed. Pressing DEL deletes the currently selected task,
+     * pressing ENTER opens the editing dialog for the currently selected task. These events
+     * are hard-coded to create a "natural" behavior of the table for the user.
+     *
+     * @param event Event that occurred
+     */
+    @FXML
+    public void handleKeyEvents(KeyEvent event) {
+        if (event.getCode() == KeyCode.DELETE) {
+            handleTaskDelete();
+        } else if (event.getCode() == KeyCode.ENTER) {
+            handleEditTask();
         }
     }
 

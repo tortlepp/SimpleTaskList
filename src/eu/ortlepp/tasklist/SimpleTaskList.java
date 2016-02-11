@@ -123,6 +123,9 @@ public final class SimpleTaskList extends Application {
             final Scene scene = new Scene(window);
             primaryStage.setScene(scene);
             primaryStage.show();
+
+            /* Initialize keyboard shortcuts */
+            controller.initShortcuts();
         } catch (IOException ex) {
             Logger.getLogger(SimpleTaskList.class.getName())
                     .severe("Initialization of the main window failed: " + ex.getMessage());
