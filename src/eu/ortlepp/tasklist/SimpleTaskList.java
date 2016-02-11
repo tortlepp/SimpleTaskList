@@ -1,7 +1,8 @@
 package eu.ortlepp.tasklist;
 
 import eu.ortlepp.tasklist.gui.MainWindowController;
-
+import eu.ortlepp.tasklist.tools.AutoSaveThread;
+import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -35,6 +36,14 @@ public final class SimpleTaskList extends Application {
 
     /** The stage for the window. Contains all components of the window. */
     private Stage primaryStage;
+
+
+    /** The controller of the main window. */
+    private MainWindowController controller;
+
+
+    /** Thread to save the current task list automatically. */
+    private AutoSaveThread autosave;
 
 
     /**
@@ -90,21 +99,58 @@ public final class SimpleTaskList extends Application {
                     .getResource("eu/ortlepp/tasklist/fxml/MainWindow.fxml"), bundle);
             final BorderPane window = (BorderPane) loader.load();
 
-            /* Initialize the controller, pass file to open to the controller */
+            /* Get the file which was given as a parameter */
             final List<String> params = getParameters().getRaw();
-            final String file = params.isEmpty() ? "" : params.get(0);
-            final MainWindowController controller = loader.getController();
+            String file = params.isEmpty() ? "" : params.get(0);
+
+            /* If no file was given as parameter check the settings for a file to open */
+            if (file.isEmpty()) {
+                file = UserProperties.getInstance().getStandardTasklist();
+            }
+
+            /* Initialize the controller, pass file to open to the controller */
+            controller = loader.getController();
             controller.setStage(primaryStage);
             controller.loadTaskList(file);
+
+            /* If automatic saving is enabled the thread needs to be started */
+            if (UserProperties.getInstance().isAutomaticSave()) {
+                autosave = new AutoSaveThread(controller);
+                autosave.start();
+            }
 
             /* Show the window */
             final Scene scene = new Scene(window);
             primaryStage.setScene(scene);
             primaryStage.show();
+
+            /* Initialize keyboard shortcuts */
+            controller.initShortcuts();
         } catch (IOException ex) {
             Logger.getLogger(SimpleTaskList.class.getName())
                     .severe("Initialization of the main window failed: " + ex.getMessage());
         }
+    }
+
+
+
+    /**
+     * Stop the application. If enabled the task list is automatically saved.
+     */
+    @Override
+    public void stop() throws Exception {
+        /* Abort the automatic saving thread */
+        if (autosave != null) {
+            autosave.interrupt();
+        }
+
+        /* Automatic save if enabled */
+        if (UserProperties.getInstance().isSaveOnClose()) {
+            controller.handleFileSave();
+        }
+
+        /* Finally close the application */
+        super.stop();
     }
 
 }

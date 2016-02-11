@@ -9,7 +9,8 @@ import eu.ortlepp.tasklist.logic.DueComperator;
 import eu.ortlepp.tasklist.logic.PriorityComperator;
 import eu.ortlepp.tasklist.logic.TaskController;
 import eu.ortlepp.tasklist.model.Task;
-
+import eu.ortlepp.tasklist.tools.ShortcutProperties;
+import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -31,6 +32,10 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
@@ -185,6 +190,14 @@ public class MainWindowController {
     private NewEditDialogController newEditController;
 
 
+    /** The dialog window to change settings. */
+    private Stage settingsDialog;
+
+
+    /** The controller of the settings dialog. */
+    private SettingsDialogController settingsController;
+
+
     /** Status for the task list: Are there unsaved changes (false) or not (true). */
     private boolean saved;
 
@@ -299,7 +312,7 @@ public class MainWindowController {
 
 
     /**
-     * INitialize dialogs by loading their FXML and getting access to their controllers.
+     * Initialize dialogs by loading their FXML and getting access to their controllers.
      */
     private void initDialogs() {
         /* Initialize new / edit dialog */
@@ -313,6 +326,12 @@ public class MainWindowController {
                 (AboutDialogController) initDialog(aboutDialog, "AboutDialog.fxml");
         aboutController.setStage(aboutDialog);
         aboutDialog.setTitle(translations.getString("about.title"));
+
+        /* Initialize settings dialog */
+        settingsDialog = new Stage();
+        settingsController = (SettingsDialogController) initDialog(settingsDialog, "SettingsDialog.fxml");
+        settingsController.setStage(settingsDialog);
+        settingsDialog.setTitle(translations.getString("settings.title"));
     }
 
 
@@ -361,7 +380,113 @@ public class MainWindowController {
         final String iconfile = "eu/ortlepp/tasklist/icons/" + icon;
         final Image iconimage = new Image(getClass().getClassLoader().getResourceAsStream(iconfile));
         button.setGraphic(new ImageView(iconimage));
-        button.setTooltip(new Tooltip(translations.getString(tooltip)));
+        if (UserProperties.getInstance().isShowTooltips()) {
+            button.setTooltip(new Tooltip(translations.getString(tooltip)));
+        }
+    }
+
+
+
+    /**
+     * Initialize the keyboard shortcuts.
+     */
+    public void initShortcuts() {
+        ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
+
+        /* Open file */
+        addShortcut(shortcutProp.getKeyOpen(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleFileOpen();
+                    }
+                 });
+
+        /* Save file */
+        addShortcut(shortcutProp.getKeySave(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleFileSave();
+                    }
+                 });
+
+        /* New task */
+        addShortcut(shortcutProp.getKeyNew(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleNewTask();
+                    }
+                 });
+
+        /* Edit task */
+        addShortcut(shortcutProp.getKeyEdit(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleEditTask();
+                    }
+                 });
+
+        /* Mark task as done */
+        addShortcut(shortcutProp.getKeyDone(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleTaskDone();
+                    }
+                 });
+
+        /* Delete task */
+        addShortcut(shortcutProp.getKeyDelete(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleTaskDelete();
+                    }
+                 });
+
+        /* Move completed tasks to archive */
+        addShortcut(shortcutProp.getKeyMove(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        handleMoveToArchive();
+                    }
+                 });
+    }
+
+
+    /**
+     * Add a keyboard shortcut to the window / its stage and scene. The shortcut is created as a
+     * combination of CTRL (or Meta) and the given key.
+     *
+     * @param key The key that is used to create the shortcut
+     * @param action The action that is triggered by the shortcut
+     */
+    private void addShortcut(String key, Runnable action) {
+        KeyCodeCombination keycode =
+                new KeyCodeCombination(KeyCode.getKeyCode(key), KeyCombination.SHORTCUT_DOWN);
+        stage.getScene().getAccelerators().put(keycode, action);
+    }
+
+
+
+    /**
+     * Handle events when a key is pressed. Pressing DEL deletes the currently selected task,
+     * pressing ENTER opens the editing dialog for the currently selected task. These events
+     * are hard-coded to create a "natural" behavior of the table for the user.
+     *
+     * @param event Event that occurred
+     */
+    @FXML
+    public void handleKeyEvents(KeyEvent event) {
+        if (event.getCode() == KeyCode.DELETE) {
+            handleTaskDelete();
+        } else if (event.getCode() == KeyCode.ENTER) {
+            handleEditTask();
+        }
     }
 
 
@@ -390,6 +515,17 @@ public class MainWindowController {
 
 
     /**
+     * Returns the status for the task list: Are there unsaved changes (false) or not (true).
+     *
+     * @return Saved status: true = no changes, false = unsaved changes
+     */
+    public boolean isSaved() {
+        return saved;
+    }
+
+
+
+    /**
      * Handle to open a task list file: Show open dialog, load selected file.
      */
     @FXML
@@ -406,7 +542,7 @@ public class MainWindowController {
         final File file = openDialog.showOpenDialog(stage);
 
         /* Load selected file */
-        if (file != null && file.exists()) {
+        if (file != null) {
             loadTaskList(file.getAbsolutePath());
         }
     }
@@ -417,13 +553,13 @@ public class MainWindowController {
      * Handle to save the currently open task list: Save task list to file.
      */
     @FXML
-    private void handleFileSave() {
+    public void handleFileSave() {
         if (!saved) {
             if (tasks.writeTaskList()) {
                 setSaved(true);
             } else {
                 final Alert message = new Alert(AlertType.ERROR);
-                newEditController.initDialog(message, "dialog.write.title", "dialog.write.header",
+                AbstractDialogController.prepareDialog(message, "dialog.write.title", "dialog.write.header",
                         "dialog.write.content");
                 message.showAndWait();
             }
@@ -536,7 +672,7 @@ public class MainWindowController {
 
             /* Confirmation dialog */
             final Alert alert = new Alert(AlertType.CONFIRMATION);
-            newEditController.initDialog(alert, "dialog.delete.title", "dialog.delete.header",
+            AbstractDialogController.prepareDialog(alert, "dialog.delete.title", "dialog.delete.header",
                     "dialog.delete.content");
             final Optional<ButtonType> choice = alert.showAndWait();
 
@@ -574,7 +710,8 @@ public class MainWindowController {
 
         if (moved > 0) {
             final Alert message = new Alert(AlertType.INFORMATION);
-            newEditController.initDialog(message, "dialog.moved.title", "dialog.moved.header", "dialog.moved.content");
+            AbstractDialogController.prepareDialog(message, "dialog.moved.title",
+                    "dialog.moved.header", "dialog.moved.content");
             message.showAndWait();
             setSaved(false);
         }
@@ -587,7 +724,14 @@ public class MainWindowController {
      */
     @FXML
     private void handleOpenSettings() {
-        System.out.println("SETTINGS");
+        settingsController.initShow();
+        settingsDialog.showAndWait();
+        if (settingsController.isSaved()) {
+            final Alert message = new Alert(AlertType.INFORMATION);
+            AbstractDialogController.prepareDialog(message, "dialog.settings.title",
+                    "dialog.settings.header", "dialog.settings.content");
+            message.showAndWait();
+        }
     }
 
 
@@ -609,7 +753,7 @@ public class MainWindowController {
      * @param file File name of the task list
      */
     public void loadTaskList(final String file) {
-        if (file != null && !file.isEmpty()) {
+        if (file != null && !file.isEmpty() && new File(file).exists()) {
 
             if (tasks.loadTaskList(file)) {
                 labelFilename.setText(tasks.getFilename());
@@ -632,7 +776,7 @@ public class MainWindowController {
                 comboboxProject.setDisable(false);
             } else {
                 final Alert message = new Alert(AlertType.ERROR);
-                newEditController.initDialog(message, "dialog.read.title", "dialog.read.header",
+                AbstractDialogController.prepareDialog(message, "dialog.read.title", "dialog.read.header",
                         "dialog.read.content");
                 message.showAndWait();
             }

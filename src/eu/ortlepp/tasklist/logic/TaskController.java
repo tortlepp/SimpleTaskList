@@ -1,7 +1,7 @@
 package eu.ortlepp.tasklist.logic;
 
 import eu.ortlepp.tasklist.model.Task;
-
+import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -308,7 +308,7 @@ public class TaskController {
         /* Continue only if there are completed task */
         if (counter > 0) {
             String doneFile = filename.substring(0, filename.lastIndexOf(File.separator) + 1);
-            doneFile += "done.txt";
+            doneFile += UserProperties.getInstance().getArchiveFile();
 
             /* Write the file and remove moved tasks from list */
             try {

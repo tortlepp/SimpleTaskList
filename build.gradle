@@ -34,6 +34,7 @@ jar {
 
 // Run the generated JAR file
 task run(type: JavaExec) {
+  description "Run the generated JAR file."
   classpath = jar.outputs.files
   main = "eu.ortlepp.tasklist.SimpleTaskList"
 }

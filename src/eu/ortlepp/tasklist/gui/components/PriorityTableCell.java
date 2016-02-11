@@ -34,7 +34,7 @@ public class PriorityTableCell extends TableCell<Task, String> {
         } else if (item.equals("x")) {
             /* Task marked as done */
             setTextFill(Color.BLACK);
-            setText("×");
+            setText("\u00D7");
 
         } else {
             /* Tasks with or without priority */

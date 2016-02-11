@@ -1,7 +1,12 @@
 package eu.ortlepp.tasklist.gui;
 
+import java.util.ResourceBundle;
+
+import eu.ortlepp.tasklist.SimpleTaskList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Dialog;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * Abstract class with common functionality for all dialog windows.
@@ -12,6 +17,10 @@ public abstract class AbstractDialogController {
 
     /** The stage of the dialog. */
     protected Stage stage;
+
+
+    /** Translated captions and tooltips for the GUI. */
+    protected static ResourceBundle translations = ResourceBundle.getBundle(SimpleTaskList.TRANSLATION);
 
 
     /**
@@ -39,5 +48,24 @@ public abstract class AbstractDialogController {
      * Initialize the dialog and its components. Implementation is done the child classes.
      */
     protected abstract void initialize();
+
+
+
+    /**
+     * Initialize a dialog by setting its title, header and content
+     * and set window style to "utility dialog".
+     *
+     * @param dialog The dialog to initialize
+     * @param keyTitle Key for dialog title in the translation file
+     * @param keyHeader Key for dialog header in the translation file
+     * @param keyContent Key for dialog content in the translation file
+     */
+    protected static void prepareDialog(final Dialog dialog, final String keyTitle, final String keyHeader,
+            final String keyContent) {
+        dialog.setTitle(translations.getString(keyTitle));
+        dialog.setHeaderText(translations.getString(keyHeader));
+        dialog.setContentText(translations.getString(keyContent));
+        ((Stage) dialog.getDialogPane().getScene().getWindow()).initStyle(StageStyle.UTILITY);
+    }
 
 }

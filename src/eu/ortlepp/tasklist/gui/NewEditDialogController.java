@@ -86,10 +86,6 @@ public class NewEditDialogController extends AbstractDialogController {
     private ListView<String> listviewProject;
 
 
-    /** Translated captions and tooltips for the GUI. */
-    private ResourceBundle translations;
-
-
     /** List of all existing contexts. */
     private List<String> contexts;
 
@@ -120,12 +116,6 @@ public class NewEditDialogController extends AbstractDialogController {
         projects = new ArrayList<String>();
         newTasks = new ArrayList<Task>();
 
-        try {
-            translations = ResourceBundle.getBundle(SimpleTaskList.TRANSLATION);
-        } catch (MissingResourceException ex) {
-            throw new RuntimeException("Translation is not available", ex);
-        }
-
         comboboxPriority.setItems(FXCollections.observableArrayList(
                 translations.getString("choice.priority.no"),
                 translations.getString("choice.priority.done"),
@@ -147,7 +137,7 @@ public class NewEditDialogController extends AbstractDialogController {
         /* Confirm canceling if there are not yet added tasks */
         if (!newTasks.isEmpty()) {
             final Alert confirmation = new Alert(AlertType.CONFIRMATION);
-            initDialog(confirmation, "dialog.cancel.title", "dialog.cancel.header",
+            AbstractDialogController.prepareDialog(confirmation, "dialog.cancel.title", "dialog.cancel.header",
                     "dialog.cancel.content");
             final Optional<ButtonType> choice = confirmation.showAndWait();
             if (choice.get() == ButtonType.CANCEL) {
@@ -182,7 +172,7 @@ public class NewEditDialogController extends AbstractDialogController {
         /* At least enter a task description */
         if (textareaDescription.getText().isEmpty()) {
             final Alert message = new Alert(AlertType.WARNING);
-            initDialog(message, "dialog.empty.title", "dialog.empty.header",
+            AbstractDialogController.prepareDialog(message, "dialog.empty.title", "dialog.empty.header",
                     "dialog.empty.content");
             message.showAndWait();
         } else {
@@ -217,7 +207,7 @@ public class NewEditDialogController extends AbstractDialogController {
     private void handleSelectContext() {
         if (!contexts.isEmpty()) {
             final ChoiceDialog<String> choice = new ChoiceDialog<String>(contexts.get(0), contexts);
-            initDialog(choice, "dialog.context.select.title", "dialog.context.select.header",
+            AbstractDialogController.prepareDialog(choice, "dialog.context.select.title", "dialog.context.select.header",
                     "dialog.context.select.content");
             final Optional<String> text = choice.showAndWait();
             if (text.isPresent()) {
@@ -235,7 +225,7 @@ public class NewEditDialogController extends AbstractDialogController {
     @FXML
     private void handleAddContext() {
         final TextInputDialog input = new TextInputDialog();
-        initDialog(input, "dialog.context.new.title", "dialog.context.new.header",
+        AbstractDialogController.prepareDialog(input, "dialog.context.new.title", "dialog.context.new.header",
                 "dialog.context.new.content");
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
@@ -265,7 +255,7 @@ public class NewEditDialogController extends AbstractDialogController {
     private void handleSelectProject() {
         if (!projects.isEmpty()) {
             final ChoiceDialog<String> choice = new ChoiceDialog<String>(projects.get(0), projects);
-            initDialog(choice, "dialog.project.select.title", "dialog.project.select.header",
+            AbstractDialogController.prepareDialog(choice, "dialog.project.select.title", "dialog.project.select.header",
                     "dialog.project.select.content");
             final Optional<String> text = choice.showAndWait();
             if (text.isPresent()) {
@@ -283,7 +273,7 @@ public class NewEditDialogController extends AbstractDialogController {
     @FXML
     private void handleAddProject() {
         final TextInputDialog input = new TextInputDialog();
-        initDialog(input, "dialog.project.new.title", "dialog.project.new.header",
+        AbstractDialogController.prepareDialog(input, "dialog.project.new.title", "dialog.project.new.header",
                 "dialog.project.new.content");
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
@@ -301,25 +291,6 @@ public class NewEditDialogController extends AbstractDialogController {
         if (listviewProject.getSelectionModel().getSelectedIndex() != -1) {
             listviewProject.getItems().remove(listviewProject.getSelectionModel().getSelectedIndex());
         }
-    }
-
-
-
-    /**
-     * Initialize a dialog by setting its title, header and content
-     * and set window style to "utility dialog".
-     *
-     * @param dialog The dialog to initialize
-     * @param keyTitle Key for dialog title in the translation file
-     * @param keyHeader Key for dialog header in the translation file
-     * @param keyContent Key for dialog content in the translation file
-     */
-    public void initDialog(final Dialog dialog, final String keyTitle, final String keyHeader,
-            final String keyContent) {
-        dialog.setTitle(translations.getString(keyTitle));
-        dialog.setHeaderText(translations.getString(keyHeader));
-        dialog.setContentText(translations.getString(keyContent));
-        ((Stage) dialog.getDialogPane().getScene().getWindow()).initStyle(StageStyle.UTILITY);
     }
 
 
