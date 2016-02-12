@@ -2,6 +2,7 @@ package eu.ortlepp.tasklist.gui;
 
 import java.io.File;
 
+import eu.ortlepp.tasklist.tools.DefaultProperties;
 import eu.ortlepp.tasklist.tools.ShortcutProperties;
 import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.fxml.FXML;
@@ -296,6 +297,37 @@ public class SettingsDialogController extends AbstractDialogController {
         shortcutProp.updateKeyDone(getSelectedLetter(comboboxKeyDone));
         shortcutProp.updateKeyDelete(getSelectedLetter(comboboxKeyDelete));
         shortcutProp.updateKeyMove(getSelectedLetter(comboboxKeyMove));
+
+        saved = true;
+    }
+
+
+
+    /**
+     * Reset all properties and shortcuts to their defaults.
+     */
+    @FXML
+    private void handleRestore() {
+        stage.hide();
+
+        /* Save default settings to preferences */
+        UserProperties userProp = UserProperties.getInstance();
+        userProp.updateAutomaticSave(DefaultProperties.AUTOMATIC_SAVE);
+        userProp.updateSaveOnClose(DefaultProperties.SAVE_ON_CLOSE);
+        userProp.updateShowTooltips(DefaultProperties.SHOW_TOOLTIPS);
+        userProp.updateStandardTasklist(DefaultProperties.STANDARD_TASKLIST);
+        userProp.updateArchiveFile(DefaultProperties.ARCHIVE_FILE);
+        userProp.updateAutomaticSaveInterval(DefaultProperties.AUTOMATIC_SAVE_INTERVAL);
+
+        /* Save default shortcuts to preferences */
+        ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
+        shortcutProp.updateKeyOpen(DefaultProperties.SHORTCUT_KEY_OPEN);
+        shortcutProp.updateKeySave(DefaultProperties.SHORTCUT_KEY_SAVE);
+        shortcutProp.updateKeyNew(DefaultProperties.SHORTCUT_KEY_NEW);
+        shortcutProp.updateKeyEdit(DefaultProperties.SHORTCUT_KEY_EDIT);
+        shortcutProp.updateKeyDone(DefaultProperties.SHORTCUT_KEY_DONE);
+        shortcutProp.updateKeyDelete(DefaultProperties.SHORTCUT_KEY_DELETE);
+        shortcutProp.updateKeyMove(DefaultProperties.SHORTCUT_KEY_MOVE);
 
         saved = true;
     }
