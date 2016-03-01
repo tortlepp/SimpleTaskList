@@ -42,9 +42,9 @@ public class PriorityTableCell extends TableCell<Task, String> {
             switch (item) {
                 case "A": setTextFill(Color.RED);
                           break;
-                case "B": setTextFill(Color.YELLOW);
+                case "B": setTextFill(Color.ORANGE);
                           break;
-                case "C": setTextFill(Color.GREEN);
+                case "C": setTextFill(Color.LIMEGREEN);
                           break;
                 default: setTextFill(Color.BLACK);
                          break;
