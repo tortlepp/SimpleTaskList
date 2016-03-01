@@ -2,6 +2,8 @@ package eu.ortlepp.tasklist.tools;
 
 import java.util.prefs.Preferences;
 
+import eu.ortlepp.tasklist.SimpleTaskList;
+
 /**
  * Access to the user defined (or default) properties for the application.
  * This class uses the preferences API and is implemented as singleton.
@@ -70,7 +72,7 @@ public class UserProperties {
      * Private constructor, initializes access to the preferences API and loads properties.
      */
     private UserProperties() {
-        preferences = Preferences.userRoot().node(this.getClass().getName());
+        preferences = Preferences.userRoot().node(SimpleTaskList.class.getPackage().getName());
 
         /* Load preferences, use defaults if not yet available */
         automaticSave =

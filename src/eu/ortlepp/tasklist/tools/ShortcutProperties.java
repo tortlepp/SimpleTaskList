@@ -2,6 +2,8 @@ package eu.ortlepp.tasklist.tools;
 
 import java.util.prefs.Preferences;
 
+import eu.ortlepp.tasklist.SimpleTaskList;
+
 /**
  * Access to the user defined (or default) shortcuts for the application.
  * This class uses the preferences API and is implemented as singleton.
@@ -78,7 +80,7 @@ public class ShortcutProperties {
      * Private constructor, initializes access to the preferences API and loads properties.
      */
     private ShortcutProperties() {
-        preferences = Preferences.userRoot().node(this.getClass().getName());
+        preferences = Preferences.userRoot().node(SimpleTaskList.class.getPackage().getName());
 
         /* Load preferences, use defaults if not yet available */
         keyOpen = preferences.get(KEY_OPEN, DefaultProperties.SHORTCUT_KEY_OPEN);
