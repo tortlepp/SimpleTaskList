@@ -76,7 +76,6 @@ public final class SimpleTaskList extends Application {
 
         /* Initialize main window */
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("SimpleTaskList");
         this.primaryStage.setResizable(true);
         this.primaryStage.setMinWidth(800);
         this.primaryStage.setMinHeight(600);
@@ -93,6 +92,9 @@ public final class SimpleTaskList extends Application {
         try {
             /* Load the translation for the GUI */
             final ResourceBundle bundle = PropertyResourceBundle.getBundle(TRANSLATION);
+
+            /* Set the title of the main window */
+            this.primaryStage.setTitle(bundle.getString("app.title"));
 
             /* Load FXML and initialize the main window */
             final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
