@@ -11,7 +11,7 @@ public final class DefaultProperties {
     public static final boolean AUTOMATIC_SAVE = true;
 
 
-    /** Default interval between automatic savings. Value is given in in minutes. */
+    /** Default interval between automatic savings. Value is given in minutes. */
     public static final int AUTOMATIC_SAVE_INTERVAL = 10;
 
 
@@ -57,6 +57,26 @@ public final class DefaultProperties {
 
     /** Standard letter for the shortcut to move completed task to the archive. */
     public static final String SHORTCUT_KEY_MOVE = "A";
+
+
+    /** Default value for the maximization of the main window. */
+    public static final boolean WINDOW_MAXIMIZED = false;
+
+
+    /** Default width of the main window. Value is given in pixels. */
+    public static final int WINDOW_WIDTH = 800;
+
+
+    /** Default height of the main window. Value is given in pixels. */
+    public static final int WINDOW_HEIGHT = 600;
+
+
+    /** Default x position of the main window. The value -1 indicates that no position is set. */
+    public static final int WINDOW_POS_X = -1;
+
+
+    /** Default y position of the main window. The value -1 indicates that no position is set. */
+    public static final int WINDOW_POS_Y = -1;
 
 
     /**

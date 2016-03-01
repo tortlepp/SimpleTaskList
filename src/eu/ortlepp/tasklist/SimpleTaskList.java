@@ -2,7 +2,9 @@ package eu.ortlepp.tasklist;
 
 import eu.ortlepp.tasklist.gui.MainWindowController;
 import eu.ortlepp.tasklist.tools.AutoSaveThread;
+import eu.ortlepp.tasklist.tools.DefaultProperties;
 import eu.ortlepp.tasklist.tools.UserProperties;
+import eu.ortlepp.tasklist.tools.WindowProperties;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -25,7 +27,6 @@ import java.util.logging.Logger;
  */
 public final class SimpleTaskList extends Application {
 
-
     /** ResourceBundle with translated captions, tooltips and messages. */
     public static final String TRANSLATION = "eu.ortlepp.tasklist.i18n.tasklist";
 
@@ -40,6 +41,10 @@ public final class SimpleTaskList extends Application {
 
     /** The controller of the main window. */
     private MainWindowController controller;
+
+
+    /** Settings for the main window. */
+    private WindowProperties properties;
 
 
     /** Thread to save the current task list automatically. */
@@ -74,12 +79,26 @@ public final class SimpleTaskList extends Application {
                     .severe("Initialization of the logger failed: " + ex.getMessage());
         }
 
+        /* Load properties */
+        properties = new WindowProperties();
+
         /* Initialize main window */
         this.primaryStage = primaryStage;
         this.primaryStage.setResizable(true);
-        this.primaryStage.setMinWidth(800);
-        this.primaryStage.setMinHeight(600);
         this.primaryStage.getIcons().add(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList.png"));
+        this.primaryStage.setMaximized(properties.isMaximizedWindow());
+        this.primaryStage.setWidth(properties.getWidth());
+        this.primaryStage.setHeight(properties.getHeight());
+        this.primaryStage.setMinWidth(DefaultProperties.WINDOW_WIDTH);
+        this.primaryStage.setMinHeight(DefaultProperties.WINDOW_HEIGHT);
+
+        /* Set the position of the window if it is not the default position */
+        if (properties.getPosX() != DefaultProperties.WINDOW_POS_X
+                && properties.getPosY() != DefaultProperties.WINDOW_POS_Y) {
+            this.primaryStage.setX((int) properties.getPosX());
+            this.primaryStage.setY((int) properties.getPosY());
+        }
+
         initWindow();
     }
 
@@ -149,6 +168,15 @@ public final class SimpleTaskList extends Application {
         /* Automatic save if enabled */
         if (UserProperties.getInstance().isSaveOnClose()) {
             controller.handleFileSave();
+        }
+
+        /* Save properties of the main window */
+        properties.updateMaximizedWindow(this.primaryStage.isMaximized());
+        if (!this.primaryStage.isMaximized()) {
+            properties.updateWidth((int) this.primaryStage.getWidth());
+            properties.updateHeight((int) this.primaryStage.getHeight());
+            properties.updatePosX((int) this.primaryStage.getX());
+            properties.updatePosY((int) this.primaryStage.getY());
         }
 
         /* Finally close the application */
