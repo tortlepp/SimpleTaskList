@@ -8,6 +8,7 @@ import eu.ortlepp.tasklist.gui.components.PriorityTableCell;
 import eu.ortlepp.tasklist.logic.DueComperator;
 import eu.ortlepp.tasklist.logic.PriorityComperator;
 import eu.ortlepp.tasklist.logic.TaskController;
+import eu.ortlepp.tasklist.model.ParentWindowData;
 import eu.ortlepp.tasklist.model.Task;
 import eu.ortlepp.tasklist.tools.ShortcutProperties;
 import eu.ortlepp.tasklist.tools.UserProperties;
@@ -15,6 +16,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -41,6 +43,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -179,11 +182,11 @@ public class MainWindowController {
 
 
     /** The dialog window to add new tasks or edit existing tasks. */
-    private Stage newEditDialog;
+    private DialogStage newEditDialog;
 
 
     /** The the about dialog. */
-    private Stage aboutDialog;
+    private DialogStage aboutDialog;
 
 
     /** The controller of the new / edit dialog. */
@@ -191,7 +194,7 @@ public class MainWindowController {
 
 
     /** The dialog window to change settings. */
-    private Stage settingsDialog;
+    private DialogStage settingsDialog;
 
 
     /** The controller of the settings dialog. */
@@ -316,19 +319,19 @@ public class MainWindowController {
      */
     private void initDialogs() {
         /* Initialize new / edit dialog */
-        newEditDialog = new Stage();
+        newEditDialog = new DialogStage();
         newEditController = (NewEditDialogController) initDialog(newEditDialog, "NewEditDialog.fxml");
         newEditController.setStage(newEditDialog);
 
         /* Initialize about dialog */
-        aboutDialog = new Stage();
+        aboutDialog = new DialogStage();
         final AboutDialogController aboutController =
                 (AboutDialogController) initDialog(aboutDialog, "AboutDialog.fxml");
         aboutController.setStage(aboutDialog);
         aboutDialog.setTitle(translations.getString("about.title"));
 
         /* Initialize settings dialog */
-        settingsDialog = new Stage();
+        settingsDialog = new DialogStage();
         settingsController = (SettingsDialogController) initDialog(settingsDialog, "SettingsDialog.fxml");
         settingsController.setStage(settingsDialog);
         settingsDialog.setTitle(translations.getString("settings.title"));
@@ -343,7 +346,7 @@ public class MainWindowController {
      * @param fxml The FXML file of the GUI
      * @return The initialized controller for the dialog
      */
-    private AbstractDialogController initDialog(final Stage dialog, final String fxml) {
+    private AbstractDialogController initDialog(final DialogStage dialog, final String fxml) {
         AbstractDialogController controller = null;
 
         /* Load FXML */
@@ -362,6 +365,13 @@ public class MainWindowController {
         dialog.initOwner(stage);
         dialog.initStyle(StageStyle.UTILITY);
         dialog.setResizable(false);
+
+        /* Handler to place the dialog in the center of the main window instead of the screen center */
+        dialog.setOnShown(new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent event) {
+                dialog.setPosition(getCurrentWindowData());
+            }
+        });
 
         return controller;
     }
@@ -559,8 +569,8 @@ public class MainWindowController {
                 setSaved(true);
             } else {
                 final Alert message = new Alert(AlertType.ERROR);
-                AbstractDialogController.prepareDialog(message, "dialog.write.title", "dialog.write.header",
-                        "dialog.write.content");
+                AbstractDialogController.prepareDialog(message, "dialog.write.title",
+                        "dialog.write.header", "dialog.write.content", getCurrentWindowData());
                 message.showAndWait();
             }
         }
@@ -672,8 +682,8 @@ public class MainWindowController {
 
             /* Confirmation dialog */
             final Alert alert = new Alert(AlertType.CONFIRMATION);
-            AbstractDialogController.prepareDialog(alert, "dialog.delete.title", "dialog.delete.header",
-                    "dialog.delete.content");
+            AbstractDialogController.prepareDialog(alert, "dialog.delete.title",
+                    "dialog.delete.header", "dialog.delete.content", getCurrentWindowData());
             final Optional<ButtonType> choice = alert.showAndWait();
 
             /* Confirm deleting of the task */
@@ -711,7 +721,7 @@ public class MainWindowController {
         if (moved > 0) {
             final Alert message = new Alert(AlertType.INFORMATION);
             AbstractDialogController.prepareDialog(message, "dialog.moved.title",
-                    "dialog.moved.header", "dialog.moved.content");
+                    "dialog.moved.header", "dialog.moved.content", getCurrentWindowData());
             message.showAndWait();
             setSaved(false);
         }
@@ -729,7 +739,7 @@ public class MainWindowController {
         if (settingsController.isSaved()) {
             final Alert message = new Alert(AlertType.INFORMATION);
             AbstractDialogController.prepareDialog(message, "dialog.settings.title",
-                    "dialog.settings.header", "dialog.settings.content");
+                    "dialog.settings.header", "dialog.settings.content", getCurrentWindowData());
             message.showAndWait();
         }
     }
@@ -776,8 +786,8 @@ public class MainWindowController {
                 comboboxProject.setDisable(false);
             } else {
                 final Alert message = new Alert(AlertType.ERROR);
-                AbstractDialogController.prepareDialog(message, "dialog.read.title", "dialog.read.header",
-                        "dialog.read.content");
+                AbstractDialogController.prepareDialog(message, "dialog.read.title",
+                        "dialog.read.header", "dialog.read.content", getCurrentWindowData());
                 message.showAndWait();
             }
         }
@@ -849,6 +859,17 @@ public class MainWindowController {
      */
     private void addCompletionListener(final BooleanProperty property) {
         property.addListener(completionListener);
+    }
+
+
+
+    /**
+     * Create a ParentWindowData object with the current values from the window.
+     *
+     * @return The created ParentWindowData object
+     */
+    private ParentWindowData getCurrentWindowData() {
+        return new ParentWindowData(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
     }
 
 

@@ -1,6 +1,6 @@
 package eu.ortlepp.tasklist.gui;
 
-import eu.ortlepp.tasklist.SimpleTaskList;
+import eu.ortlepp.tasklist.model.ParentWindowData;
 import eu.ortlepp.tasklist.model.Task;
 
 import javafx.collections.FXCollections;
@@ -12,20 +12,15 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.MissingResourceException;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 /**
  * Controller for the new task and edit task dialog window.
@@ -137,8 +132,8 @@ public class NewEditDialogController extends AbstractDialogController {
         /* Confirm canceling if there are not yet added tasks */
         if (!newTasks.isEmpty()) {
             final Alert confirmation = new Alert(AlertType.CONFIRMATION);
-            AbstractDialogController.prepareDialog(confirmation, "dialog.cancel.title", "dialog.cancel.header",
-                    "dialog.cancel.content");
+            AbstractDialogController.prepareDialog(confirmation, "dialog.cancel.title",
+                    "dialog.cancel.header", "dialog.cancel.content", getCurrentWindowData());
             final Optional<ButtonType> choice = confirmation.showAndWait();
             if (choice.get() == ButtonType.CANCEL) {
                 cancel = false;
@@ -172,8 +167,8 @@ public class NewEditDialogController extends AbstractDialogController {
         /* At least enter a task description */
         if (textareaDescription.getText().isEmpty()) {
             final Alert message = new Alert(AlertType.WARNING);
-            AbstractDialogController.prepareDialog(message, "dialog.empty.title", "dialog.empty.header",
-                    "dialog.empty.content");
+            AbstractDialogController.prepareDialog(message, "dialog.empty.title",
+                    "dialog.empty.header", "dialog.empty.content", getCurrentWindowData());
             message.showAndWait();
         } else {
             newTasks.add(createTask());
@@ -207,8 +202,8 @@ public class NewEditDialogController extends AbstractDialogController {
     private void handleSelectContext() {
         if (!contexts.isEmpty()) {
             final ChoiceDialog<String> choice = new ChoiceDialog<String>(contexts.get(0), contexts);
-            AbstractDialogController.prepareDialog(choice, "dialog.context.select.title", "dialog.context.select.header",
-                    "dialog.context.select.content");
+            AbstractDialogController.prepareDialog(choice, "dialog.context.select.title",
+                    "dialog.context.select.header", "dialog.context.select.content", getCurrentWindowData());
             final Optional<String> text = choice.showAndWait();
             if (text.isPresent()) {
                 listviewContext.getItems().add(text.get());
@@ -225,8 +220,8 @@ public class NewEditDialogController extends AbstractDialogController {
     @FXML
     private void handleAddContext() {
         final TextInputDialog input = new TextInputDialog();
-        AbstractDialogController.prepareDialog(input, "dialog.context.new.title", "dialog.context.new.header",
-                "dialog.context.new.content");
+        AbstractDialogController.prepareDialog(input, "dialog.context.new.title",
+                "dialog.context.new.header", "dialog.context.new.content", getCurrentWindowData());
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
             listviewContext.getItems().add(text.get());
@@ -255,8 +250,8 @@ public class NewEditDialogController extends AbstractDialogController {
     private void handleSelectProject() {
         if (!projects.isEmpty()) {
             final ChoiceDialog<String> choice = new ChoiceDialog<String>(projects.get(0), projects);
-            AbstractDialogController.prepareDialog(choice, "dialog.project.select.title", "dialog.project.select.header",
-                    "dialog.project.select.content");
+            AbstractDialogController.prepareDialog(choice, "dialog.project.select.title",
+                    "dialog.project.select.header", "dialog.project.select.content", getCurrentWindowData());
             final Optional<String> text = choice.showAndWait();
             if (text.isPresent()) {
                 listviewProject.getItems().add(text.get());
@@ -273,8 +268,8 @@ public class NewEditDialogController extends AbstractDialogController {
     @FXML
     private void handleAddProject() {
         final TextInputDialog input = new TextInputDialog();
-        AbstractDialogController.prepareDialog(input, "dialog.project.new.title", "dialog.project.new.header",
-                "dialog.project.new.content");
+        AbstractDialogController.prepareDialog(input, "dialog.project.new.title",
+                "dialog.project.new.header", "dialog.project.new.content", getCurrentWindowData());
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
             listviewProject.getItems().add(text.get());
@@ -471,6 +466,17 @@ public class NewEditDialogController extends AbstractDialogController {
         textareaDescription.setText("");
         listviewContext.getItems().clear();
         listviewProject.getItems().clear();
+    }
+
+
+
+    /**
+     * Create a ParentWindowData object with the current values from the window.
+     *
+     * @return The created ParentWindowData object
+     */
+    private ParentWindowData getCurrentWindowData() {
+        return new ParentWindowData(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
     }
 
 }
