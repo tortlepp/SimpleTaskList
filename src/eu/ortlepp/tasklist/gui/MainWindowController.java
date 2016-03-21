@@ -651,6 +651,7 @@ public class MainWindowController {
                     tasks.addProject(item);
                 }
 
+                tableviewTasks.sort();
                 setSaved(false);
             }
         }
@@ -667,6 +668,7 @@ public class MainWindowController {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
             tableviewTasks.getSelectionModel().getSelectedItem().setDone(true);
             setSaved(false);
+            tableviewTasks.sort();
         }
     }
 
