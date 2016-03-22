@@ -205,7 +205,7 @@ public class NewEditDialogController extends AbstractDialogController {
             AbstractDialogController.prepareDialog(choice, "dialog.context.select.title",
                     "dialog.context.select.header", "dialog.context.select.content", getCurrentWindowData());
             final Optional<String> text = choice.showAndWait();
-            if (text.isPresent()) {
+            if (text.isPresent() && !listviewContext.getItems().contains(text.get())) {
                 listviewContext.getItems().add(text.get());
             }
         }
@@ -224,7 +224,15 @@ public class NewEditDialogController extends AbstractDialogController {
                 "dialog.context.new.header", "dialog.context.new.content", getCurrentWindowData());
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
-            listviewContext.getItems().add(text.get());
+            /* Add item if not yet in list */
+            if (!listviewContext.getItems().contains(text.get())) {
+                listviewContext.getItems().add(text.get());
+            }
+
+            /* Add item if not yet in selection */
+            if (!contexts.contains(text.get())){
+                contexts.add(text.get());
+            }
         }
     }
 
@@ -253,7 +261,7 @@ public class NewEditDialogController extends AbstractDialogController {
             AbstractDialogController.prepareDialog(choice, "dialog.project.select.title",
                     "dialog.project.select.header", "dialog.project.select.content", getCurrentWindowData());
             final Optional<String> text = choice.showAndWait();
-            if (text.isPresent()) {
+            if (text.isPresent() && !listviewProject.getItems().contains(text.get())) {
                 listviewProject.getItems().add(text.get());
             }
         }
@@ -272,7 +280,15 @@ public class NewEditDialogController extends AbstractDialogController {
                 "dialog.project.new.header", "dialog.project.new.content", getCurrentWindowData());
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
-            listviewProject.getItems().add(text.get());
+            /* Add item if not yet in list */
+            if (!listviewProject.getItems().contains(text.get())) {
+                listviewProject.getItems().add(text.get());
+            }
+
+            /* Add item if not yet in selection */
+            if (!projects.contains(text.get())){
+                projects.add(text.get());
+            }
         }
     }
 
