@@ -84,7 +84,7 @@ public abstract class AbstractDialogController {
                 dialog.getDialogPane().setMaxWidth(DIALOG_WIDTH);
                 dialog.getDialogPane().setMinWidth(DIALOG_WIDTH);
                 dialog.setX(windowData.getX() + (windowData.getWidth() / 2) - (dialog.getWidth() / 2));
-                dialog.setY(windowData.getY() + (windowData.getHeight() / 2));
+                dialog.setY(windowData.getY() + 30);
             }
         });
     }
