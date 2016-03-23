@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -92,13 +93,15 @@ public class TaskController {
 
     /**
      * Add a new context to the context list. The context is only added if
-     * it is not yet in the list.
+     * it is not yet in the list. The list is kept in alphabetical order.
      *
      * @param context The context to add
      */
     public void addContext(final String context) {
         if (!contexts.contains(context)) {
             contexts.add(context);
+            /* Sort the list except the first two items (-> "all" and "no") */
+            Collections.sort(contexts.subList(2, contexts.size()), String.CASE_INSENSITIVE_ORDER);
         }
     }
 
@@ -117,13 +120,15 @@ public class TaskController {
 
     /**
      * Add a new project to the project list. The project is only added if
-     * it is not yet in the list.
+     * it is not yet in the list. The list is kept in alphabetical order.
      *
      * @param project The project to add
      */
     public void addProject(final String project) {
         if (!projects.contains(project)) {
             projects.add(project);
+            /* Sort the list except the first two items (-> "all" and "no") */
+            Collections.sort(projects.subList(2, projects.size()), String.CASE_INSENSITIVE_ORDER);
         }
     }
 

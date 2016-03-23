@@ -19,6 +19,7 @@ import javafx.scene.layout.GridPane;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -229,9 +230,10 @@ public class NewEditDialogController extends AbstractDialogController {
                 listviewContext.getItems().add(text.get());
             }
 
-            /* Add item if not yet in selection */
+            /* Add item if not yet in selection and keep list sorted */
             if (!contexts.contains(text.get())){
                 contexts.add(text.get());
+                Collections.sort(contexts, String.CASE_INSENSITIVE_ORDER);
             }
         }
     }
@@ -285,9 +287,10 @@ public class NewEditDialogController extends AbstractDialogController {
                 listviewProject.getItems().add(text.get());
             }
 
-            /* Add item if not yet in selection */
+            /* Add item if not yet in selection and keep list sorted */
             if (!projects.contains(text.get())){
                 projects.add(text.get());
+                Collections.sort(projects, String.CASE_INSENSITIVE_ORDER);
             }
         }
     }
@@ -384,7 +387,8 @@ public class NewEditDialogController extends AbstractDialogController {
 
     /**
      * Initialize a choice list with items. The first two items of the source list
-     * (all / no items) are omitted.
+     * ("all" and "no" item) are omitted. (Re-)Sorting the list is not necessary
+     * because it is already sorted.
      *
      * @param source The source list with all items
      * @param target The list to be initialized
