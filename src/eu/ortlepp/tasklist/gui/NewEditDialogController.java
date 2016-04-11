@@ -225,14 +225,17 @@ public class NewEditDialogController extends AbstractDialogController {
                 "dialog.context.new.header", "dialog.context.new.content", getCurrentWindowData());
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
+            /* Remove whitespaces from String */
+            String preparedText = text.get().replaceAll("\\s+", "");
+
             /* Add item if not yet in list */
-            if (!listviewContext.getItems().contains(text.get())) {
-                listviewContext.getItems().add(text.get());
+            if (!listviewContext.getItems().contains(preparedText)) {
+                listviewContext.getItems().add(preparedText);
             }
 
             /* Add item if not yet in selection and keep list sorted */
-            if (!contexts.contains(text.get())){
-                contexts.add(text.get());
+            if (!contexts.contains(preparedText)){
+                contexts.add(preparedText);
                 Collections.sort(contexts, String.CASE_INSENSITIVE_ORDER);
             }
         }
@@ -282,14 +285,17 @@ public class NewEditDialogController extends AbstractDialogController {
                 "dialog.project.new.header", "dialog.project.new.content", getCurrentWindowData());
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
+            /* Remove whitespaces from String */
+            String preparedText = text.get().replaceAll("\\s+", "");
+
             /* Add item if not yet in list */
-            if (!listviewProject.getItems().contains(text.get())) {
-                listviewProject.getItems().add(text.get());
+            if (!listviewProject.getItems().contains(preparedText)) {
+                listviewProject.getItems().add(preparedText);
             }
 
             /* Add item if not yet in selection and keep list sorted */
-            if (!projects.contains(text.get())){
-                projects.add(text.get());
+            if (!projects.contains(preparedText)){
+                projects.add(preparedText);
                 Collections.sort(projects, String.CASE_INSENSITIVE_ORDER);
             }
         }
