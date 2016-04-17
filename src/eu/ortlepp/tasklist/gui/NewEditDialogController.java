@@ -474,8 +474,8 @@ public class NewEditDialogController extends AbstractDialogController {
             task.addToProject(item);
         }
 
-        /* Set text */
-        task.setDescription(textareaDescription.getText());
+        /* Set text, remove line breaks */
+        task.setDescription(textareaDescription.getText().replaceAll("(\\r|\\n)+", " "));
 
         return task;
     }
