@@ -20,8 +20,8 @@
       <TableView fx:id="tableviewTasks" editable="true" onKeyPressed="#handleKeyEvents" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
             <TableColumn fx:id="tablecolumnStatus" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" resizable="false" />
-          <TableColumn fx:id="tablecolumnPriority" maxWidth="80.0" minWidth="75.0" prefWidth="75.0" text="%caption.table.priority" />
-          <TableColumn fx:id="tablecolumnDue" maxWidth="80.0" minWidth="75.0" prefWidth="75.0" text="%caption.table.due" />
+          <TableColumn fx:id="tablecolumnPriority" maxWidth="95.0" minWidth="90.0" prefWidth="90.0" text="%caption.table.priority" />
+          <TableColumn fx:id="tablecolumnDue" maxWidth="95.0" minWidth="90.0" prefWidth="90.0" text="%caption.table.due" />
             <TableColumn fx:id="tablecolumnDescription" minWidth="100.0" prefWidth="200.0" text="%caption.table.description" />
             <TableColumn fx:id="tablecolumnContext" maxWidth="150.0" minWidth="120.0" prefWidth="120.0" text="%caption.table.context" />
             <TableColumn fx:id="tablecolumnProject" maxWidth="150.0" minWidth="120.0" prefWidth="120.0" text="%caption.table.project" />

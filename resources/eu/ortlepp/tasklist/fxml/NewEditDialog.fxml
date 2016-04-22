@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.ortlepp.tasklist.gui.NewEditDialogController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.ortlepp.tasklist.gui.NewEditDialogController">
    <center>
       <GridPane BorderPane.alignment="CENTER">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="253.0" minWidth="10.0" prefWidth="253.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="160.0" minWidth="160.0" prefWidth="160.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="300.0" minWidth="10.0" prefWidth="300.0" />
         </columnConstraints>
         <rowConstraints>
             <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -44,7 +50,7 @@
                <right>
                   <GridPane BorderPane.alignment="CENTER">
                     <columnConstraints>
-                      <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="90.0" minWidth="90.0" prefWidth="90.0" />
+                      <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="110.0" minWidth="110.0" prefWidth="110.0" />
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
@@ -52,15 +58,15 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddContext" prefWidth="80.0" text="%caption.button.add" GridPane.rowIndex="1">
+                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddContext" prefWidth="100.0" text="%caption.button.add" GridPane.rowIndex="1">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin></Button>
-                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleRemoveContext" prefWidth="80.0" text="%caption.button.remove" GridPane.rowIndex="2">
+                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleRemoveContext" prefWidth="100.0" text="%caption.button.remove" GridPane.rowIndex="2">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin></Button>
-                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleSelectContext" prefWidth="80.0" text="%caption.button.select" />
+                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleSelectContext" prefWidth="100.0" text="%caption.button.select" />
                      </children>
                   </GridPane>
                </right>
@@ -76,7 +82,7 @@
                <right>
                   <GridPane BorderPane.alignment="CENTER">
                     <columnConstraints>
-                      <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="90.0" minWidth="90.0" prefWidth="90.0" />
+                      <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="110.0" minWidth="110.0" prefWidth="110.0" />
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
@@ -84,15 +90,15 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddProject" prefWidth="80.0" text="%caption.button.add" GridPane.rowIndex="1">
+                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddProject" prefWidth="100.0" text="%caption.button.add" GridPane.rowIndex="1">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin></Button>
-                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleRemoveProject" prefWidth="80.0" text="%caption.button.remove" GridPane.rowIndex="2">
+                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleRemoveProject" prefWidth="100.0" text="%caption.button.remove" GridPane.rowIndex="2">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin></Button>
-                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleSelectProject" prefWidth="80.0" text="%caption.button.select" />
+                        <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleSelectProject" prefWidth="100.0" text="%caption.button.select" />
                      </children>
                   </GridPane>
                </right>
@@ -121,10 +127,10 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleDialogHide" prefWidth="110.0" text="%caption.button.hide" GridPane.columnIndex="2" />
-            <Button fx:id="buttonDone" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleDoneClick" prefWidth="110.0" text="%caption.button.done" />
+            <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleDialogHide" prefWidth="140.0" text="%caption.button.hide" GridPane.columnIndex="2" />
+            <Button fx:id="buttonDone" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleDoneClick" prefWidth="140.0" text="%caption.button.done" />
             <Button fx:id="buttonSave" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleSaveClick" prefWidth="110.0" text="%caption.button.save" GridPane.columnIndex="1" />
-            <Button fx:id="buttonContinue" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleContinueClick" prefWidth="110.0" text="%caption.button.continue" GridPane.columnIndex="1" />
+            <Button fx:id="buttonContinue" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleContinueClick" prefWidth="140.0" text="%caption.button.continue" GridPane.columnIndex="1" />
          </children>
          <BorderPane.margin>
             <Insets top="5.0" />

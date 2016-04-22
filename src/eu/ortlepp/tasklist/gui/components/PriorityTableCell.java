@@ -40,14 +40,21 @@ public class PriorityTableCell extends TableCell<Task, String> {
             /* Tasks with or without priority */
             setText(item);
             switch (item) {
-                case "A": setTextFill(Color.RED);
-                          break;
-                case "B": setTextFill(Color.ORANGE);
-                          break;
-                case "C": setTextFill(Color.LIMEGREEN);
-                          break;
-                default: setTextFill(Color.BLACK);
-                         break;
+                case "A":
+                    setTextFill(Color.RED);
+                    break;
+                case "B":
+                    setTextFill(Color.ORANGE);
+                    break;
+                case "C":
+                    setTextFill(Color.LIMEGREEN);
+                    break;
+                case "D":
+                    setTextFill(Color.ROYALBLUE);
+                    break;
+                default:
+                    setTextFill(Color.BLACK);
+                    break;
             }
 
         }
