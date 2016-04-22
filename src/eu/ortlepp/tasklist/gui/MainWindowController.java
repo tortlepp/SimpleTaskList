@@ -320,7 +320,8 @@ public class MainWindowController {
     private void initDialogs() {
         /* Initialize new / edit dialog */
         newEditDialog = new DialogStage();
-        newEditController = (NewEditDialogController) initDialog(newEditDialog, "NewEditDialog.fxml");
+        newEditController =
+                (NewEditDialogController) initDialog(newEditDialog, "NewEditDialog.fxml");
         newEditController.setStage(newEditDialog);
 
         /* Initialize about dialog */
@@ -332,7 +333,8 @@ public class MainWindowController {
 
         /* Initialize settings dialog */
         settingsDialog = new DialogStage();
-        settingsController = (SettingsDialogController) initDialog(settingsDialog, "SettingsDialog.fxml");
+        settingsController =
+                (SettingsDialogController) initDialog(settingsDialog, "SettingsDialog.fxml");
         settingsController.setStage(settingsDialog);
         settingsDialog.setTitle(translations.getString("settings.title"));
     }
@@ -368,7 +370,7 @@ public class MainWindowController {
 
         /* Handler to place the dialog in the center of the main window instead of the screen center */
         dialog.setOnShown(new EventHandler<WindowEvent>() {
-            public void handle(WindowEvent event) {
+            public void handle(final WindowEvent event) {
                 dialog.setPosition(getCurrentWindowData());
             }
         });
@@ -385,10 +387,12 @@ public class MainWindowController {
      * @param icon The file name of the icon to be displayed on the button
      * @param tooltip The key for the tooltip in the translation
      */
-    private void initButton(final Button button, final String icon, final String tooltip) {
+    private void initButton(final Button button,
+            final String icon, final String tooltip) {
         button.setText("");
         final String iconfile = "eu/ortlepp/tasklist/icons/" + icon;
-        final Image iconimage = new Image(getClass().getClassLoader().getResourceAsStream(iconfile));
+        final Image iconimage =
+                new Image(getClass().getClassLoader().getResourceAsStream(iconfile));
         button.setGraphic(new ImageView(iconimage));
         if (UserProperties.getInstance().isShowTooltips()) {
             button.setTooltip(new Tooltip(translations.getString(tooltip)));
@@ -401,7 +405,7 @@ public class MainWindowController {
      * Initialize the keyboard shortcuts.
      */
     public void initShortcuts() {
-        ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
+        final ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
 
         /* Open file */
         addShortcut(shortcutProp.getKeyOpen(),
@@ -410,7 +414,7 @@ public class MainWindowController {
                     public void run() {
                         handleFileOpen();
                     }
-                 });
+                });
 
         /* Save file */
         addShortcut(shortcutProp.getKeySave(),
@@ -419,7 +423,7 @@ public class MainWindowController {
                     public void run() {
                         handleFileSave();
                     }
-                 });
+                });
 
         /* New task */
         addShortcut(shortcutProp.getKeyNew(),
@@ -428,7 +432,7 @@ public class MainWindowController {
                     public void run() {
                         handleNewTask();
                     }
-                 });
+                });
 
         /* Edit task */
         addShortcut(shortcutProp.getKeyEdit(),
@@ -437,7 +441,7 @@ public class MainWindowController {
                     public void run() {
                         handleEditTask();
                     }
-                 });
+                });
 
         /* Mark task as done */
         addShortcut(shortcutProp.getKeyDone(),
@@ -446,7 +450,7 @@ public class MainWindowController {
                     public void run() {
                         handleTaskDone();
                     }
-                 });
+                });
 
         /* Delete task */
         addShortcut(shortcutProp.getKeyDelete(),
@@ -455,7 +459,7 @@ public class MainWindowController {
                     public void run() {
                         handleTaskDelete();
                     }
-                 });
+                });
 
         /* Move completed tasks to archive */
         addShortcut(shortcutProp.getKeyMove(),
@@ -464,7 +468,7 @@ public class MainWindowController {
                     public void run() {
                         handleMoveToArchive();
                     }
-                 });
+                });
     }
 
 
@@ -475,8 +479,8 @@ public class MainWindowController {
      * @param key The key that is used to create the shortcut
      * @param action The action that is triggered by the shortcut
      */
-    private void addShortcut(String key, Runnable action) {
-        KeyCodeCombination keycode =
+    private void addShortcut(final String key, final Runnable action) {
+        final KeyCodeCombination keycode =
                 new KeyCodeCombination(KeyCode.getKeyCode(key), KeyCombination.SHORTCUT_DOWN);
         stage.getScene().getAccelerators().put(keycode, action);
     }
@@ -491,7 +495,7 @@ public class MainWindowController {
      * @param event Event that occurred
      */
     @FXML
-    public void handleKeyEvents(KeyEvent event) {
+    public void handleKeyEvents(final KeyEvent event) {
         if (event.getCode() == KeyCode.DELETE) {
             handleTaskDelete();
         } else if (event.getCode() == KeyCode.ENTER) {
@@ -517,7 +521,7 @@ public class MainWindowController {
      *
      * @param saved Saved status: true = no changes, false = unsaved changes
      */
-    public void setSaved(boolean saved) {
+    public void setSaved(final boolean saved) {
         this.saved = saved;
         labelSaved.setVisible(!saved);
     }
@@ -593,7 +597,7 @@ public class MainWindowController {
         if (newEditController.isSaved()) {
             for (final Task task : newEditController.getNewTasks()) {
                 /* Add task */
-                Task newTask = new Task(task);
+                final Task newTask = new Task(task);
                 tasks.getTaskList().add(newTask);
 
                 /* Update context and project filters */

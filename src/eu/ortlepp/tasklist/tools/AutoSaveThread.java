@@ -1,10 +1,10 @@
 package eu.ortlepp.tasklist.tools;
 
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
 import eu.ortlepp.tasklist.gui.MainWindowController;
 import javafx.application.Platform;
+
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 /**
  * A thread that regularly saves the task list if it contains unsaved changes.
@@ -30,7 +30,7 @@ public class AutoSaveThread extends Thread {
      *
      * @param controller A reference to the controller of the main window
      */
-    public AutoSaveThread(MainWindowController controller) {
+    public AutoSaveThread(final MainWindowController controller) {
         this.controller = controller;
         this.interval = UserProperties.getInstance().getAutomaticSaveInterval();
     }

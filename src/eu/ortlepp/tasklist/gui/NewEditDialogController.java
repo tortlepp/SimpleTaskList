@@ -113,8 +113,8 @@ public class NewEditDialogController extends AbstractDialogController {
         newTasks = new ArrayList<Task>();
 
         comboboxPriority.setItems(FXCollections.observableArrayList(
-                translations.getString("choice.priority.no"),
-                translations.getString("choice.priority.done"),
+                TRANSLATIONS.getString("choice.priority.no"),
+                TRANSLATIONS.getString("choice.priority.done"),
                 "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
                 "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     }
@@ -204,7 +204,8 @@ public class NewEditDialogController extends AbstractDialogController {
         if (!contexts.isEmpty()) {
             final ChoiceDialog<String> choice = new ChoiceDialog<String>(contexts.get(0), contexts);
             AbstractDialogController.prepareDialog(choice, "dialog.context.select.title",
-                    "dialog.context.select.header", "dialog.context.select.content", getCurrentWindowData());
+                    "dialog.context.select.header", "dialog.context.select.content",
+                    getCurrentWindowData());
             final Optional<String> text = choice.showAndWait();
             if (text.isPresent() && !listviewContext.getItems().contains(text.get())) {
                 listviewContext.getItems().add(text.get());
@@ -226,7 +227,7 @@ public class NewEditDialogController extends AbstractDialogController {
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
             /* Remove whitespaces from String */
-            String preparedText = text.get().replaceAll("\\s+", "");
+            final String preparedText = text.get().replaceAll("\\s+", "");
 
             /* Add item if not yet in list */
             if (!listviewContext.getItems().contains(preparedText)) {
@@ -234,7 +235,7 @@ public class NewEditDialogController extends AbstractDialogController {
             }
 
             /* Add item if not yet in selection and keep list sorted */
-            if (!contexts.contains(preparedText)){
+            if (!contexts.contains(preparedText)) {
                 contexts.add(preparedText);
                 Collections.sort(contexts, String.CASE_INSENSITIVE_ORDER);
             }
@@ -264,7 +265,8 @@ public class NewEditDialogController extends AbstractDialogController {
         if (!projects.isEmpty()) {
             final ChoiceDialog<String> choice = new ChoiceDialog<String>(projects.get(0), projects);
             AbstractDialogController.prepareDialog(choice, "dialog.project.select.title",
-                    "dialog.project.select.header", "dialog.project.select.content", getCurrentWindowData());
+                    "dialog.project.select.header", "dialog.project.select.content",
+                    getCurrentWindowData());
             final Optional<String> text = choice.showAndWait();
             if (text.isPresent() && !listviewProject.getItems().contains(text.get())) {
                 listviewProject.getItems().add(text.get());
@@ -286,7 +288,7 @@ public class NewEditDialogController extends AbstractDialogController {
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
             /* Remove whitespaces from String */
-            String preparedText = text.get().replaceAll("\\s+", "");
+            final String preparedText = text.get().replaceAll("\\s+", "");
 
             /* Add item if not yet in list */
             if (!listviewProject.getItems().contains(preparedText)) {
@@ -294,7 +296,7 @@ public class NewEditDialogController extends AbstractDialogController {
             }
 
             /* Add item if not yet in selection and keep list sorted */
-            if (!projects.contains(preparedText)){
+            if (!projects.contains(preparedText)) {
                 projects.add(preparedText);
                 Collections.sort(projects, String.CASE_INSENSITIVE_ORDER);
             }

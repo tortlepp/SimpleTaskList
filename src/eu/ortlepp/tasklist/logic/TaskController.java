@@ -217,19 +217,18 @@ public class TaskController {
         }
 
         /* completion or creation date */
-        if (!elements.isEmpty()) {
-            if (elements.get(0).matches("\\d{4}-\\d{2}-\\d{2}")) {
-                if (task.isDone()) {
-                    task.setCompletion(elements.get(0));
-                } else {
-                    task.setCreation(elements.get(0));
-                }
-                elements.remove(0);
+        if (!elements.isEmpty() && elements.get(0).matches("\\d{4}-\\d{2}-\\d{2}")) {
+            if (task.isDone()) {
+                task.setCompletion(elements.get(0));
+            } else {
+                task.setCreation(elements.get(0));
             }
+            elements.remove(0);
         }
 
         /* creation date for tasks mared as done */
-        if (!elements.isEmpty() && task.isDone() && elements.get(0).matches("\\d{4}-\\d{2}-\\d{2}")) {
+        if (!elements.isEmpty() && task.isDone()
+                && elements.get(0).matches("\\d{4}-\\d{2}-\\d{2}")) {
             task.setCreation(elements.get(0));
             elements.remove(0);
         }
@@ -323,7 +322,7 @@ public class TaskController {
                 /* Remove tasks from the list */
                 tasklist.removeIf(new Predicate<Task>() {
                     @Override
-                    public boolean test(Task task) {
+                    public boolean test(final Task task) {
                         return task.isDone();
                     }
                 });

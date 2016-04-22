@@ -24,6 +24,7 @@ public class ParentWindowData {
 
 
     /**
+     * Initialize the data object with the given values.
      *
      * @param posX The current x position of the parent window
      * @param posY The current y position of the parent window

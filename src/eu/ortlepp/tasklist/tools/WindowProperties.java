@@ -1,8 +1,8 @@
 package eu.ortlepp.tasklist.tools;
 
-import java.util.prefs.Preferences;
-
 import eu.ortlepp.tasklist.SimpleTaskList;
+
+import java.util.prefs.Preferences;
 
 /**
  * Access window settings for the main window of the application.
@@ -90,7 +90,7 @@ public class WindowProperties {
      *
      * @param maximizeWindow Maximization of the main window
      */
-    public void updateMaximizedWindow(boolean maximizeWindow) {
+    public void updateMaximizedWindow(final boolean maximizeWindow) {
         this.maximizeWindow = maximizeWindow;
         preferences.putBoolean(KEY_WINDOW_MAXIMIZED, maximizeWindow);
     }
@@ -114,7 +114,7 @@ public class WindowProperties {
      *
      * @param width The width of the main window (in pixels)
      */
-    public void updateWidth(int width) {
+    public void updateWidth(final int width) {
         this.width = width;
         preferences.putInt(KEY_WINDOW_WIDTH, width);
     }
@@ -138,7 +138,7 @@ public class WindowProperties {
      *
      * @param height The height of the main window (in pixels)
      */
-    public void updateHeight(int height) {
+    public void updateHeight(final int height) {
         this.height = height;
         preferences.putInt(KEY_WINDOW_HEIGHT, height);
     }
@@ -162,7 +162,7 @@ public class WindowProperties {
      *
      * @param posX The x position of the main window (in pixels)
      */
-    public void updatePosX(int posX) {
+    public void updatePosX(final int posX) {
         this.posX = posX;
         preferences.putInt(KEY_WINDOW_POS_X, posX);
     }
@@ -186,7 +186,7 @@ public class WindowProperties {
      *
      * @param posY The y position of the main window (in pixels)
      */
-    public void updatePosY(int posY) {
+    public void updatePosY(final int posY) {
         this.posY = posY;
         preferences.putInt(KEY_WINDOW_POS_Y, posY);
     }
