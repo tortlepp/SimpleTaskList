@@ -15,6 +15,8 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 
 import java.time.LocalDate;
@@ -257,6 +259,20 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
+     * Handle DEL key pressed for the context list: remove the selected context from the list.
+     *
+     * @param event The KeyEvent that occurred
+     */
+    @FXML
+    private void handleRemoveContextKey(KeyEvent event) {
+        if (event.getCode() == KeyCode.DELETE) {
+            handleRemoveContext();
+        }
+    }
+
+
+
+    /**
      * Handle a click on the "select project" button: open a selection dialog
      * and add the selected project to the list.
      */
@@ -312,6 +328,20 @@ public class NewEditDialogController extends AbstractDialogController {
     private void handleRemoveProject() {
         if (listviewProject.getSelectionModel().getSelectedIndex() != -1) {
             listviewProject.getItems().remove(listviewProject.getSelectionModel().getSelectedIndex());
+        }
+    }
+
+
+
+    /**
+     * Handle DEL key pressed for the project list: remove the selected project from the list.
+     *
+     * @param event The KeyEvent that occurred
+     */
+    @FXML
+    private void handleRemoveProjectKey(KeyEvent event) {
+        if (event.getCode() == KeyCode.DELETE) {
+            handleRemoveProject();
         }
     }
 

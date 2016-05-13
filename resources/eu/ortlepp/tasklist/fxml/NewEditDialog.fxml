@@ -71,7 +71,7 @@
                   </GridPane>
                </right>
                <center>
-                  <ListView fx:id="listviewContext" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                  <ListView fx:id="listviewContext" onKeyPressed="#handleRemoveContextKey" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets bottom="5.0" top="5.0" />
                      </BorderPane.margin>
@@ -103,7 +103,7 @@
                   </GridPane>
                </right>
                <center>
-                  <ListView fx:id="listviewProject" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                  <ListView fx:id="listviewProject" onKeyPressed="#handleRemoveProjectKey" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets bottom="5.0" top="5.0" />
                      </BorderPane.margin>
