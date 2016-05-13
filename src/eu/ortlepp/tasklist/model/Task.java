@@ -545,7 +545,8 @@ public class Task {
 
 
     /**
-     * Convert a list of string into a single string. After each list item a line break
+     * Convert a list of strings into a single string. Before the string is created
+     * the list is sorted in alphabetical order. After each list item a line break
      * is inserted into the string.
      *
      * @param list The list to be converted into a string
@@ -553,6 +554,7 @@ public class Task {
      */
     private String listToString(final List<String> list) {
         final StringBuilder text = new StringBuilder();
+        list.sort(String.CASE_INSENSITIVE_ORDER);
 
         /* One item per "line" */
         for (int i = 0; i < list.size(); i++) {
