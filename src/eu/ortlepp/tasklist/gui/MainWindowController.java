@@ -40,6 +40,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
@@ -319,6 +320,7 @@ public class MainWindowController {
         final CustomSortedList<Task> sortedTasks = new CustomSortedList<>(filteredTasks);
         sortedTasks.comparatorProperty().bind(tableviewTasks.comparatorProperty());
 
+        tableviewTasks.setPlaceholder(new Label());
         tableviewTasks.setItems(sortedTasks);
 
         /* Sort columns */
@@ -515,10 +517,26 @@ public class MainWindowController {
      * @param event Event that occurred
      */
     @FXML
-    public void handleKeyEvents(final KeyEvent event) {
+    private void handleKeyEvents(final KeyEvent event) {
         if (event.getCode() == KeyCode.DELETE) {
             handleTaskDelete();
         } else if (event.getCode() == KeyCode.ENTER) {
+            handleEditTask();
+        }
+    }
+
+
+
+    /**
+     * Handle events when a the mouse is clicked while over the table. Double clicking on
+     * the table opens the editing dialog for the currently selected task. This event is
+     * hard-coded to create a "natural" behavior of the table for the user.
+     *
+     * @param event Event that occurred
+     */
+    @FXML
+    private void handleTableClick(final MouseEvent event) {
+        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
             handleEditTask();
         }
     }

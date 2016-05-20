@@ -17,7 +17,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1000.0" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.ortlepp.tasklist.gui.MainWindowController">
    <center>
-      <TableView fx:id="tableviewTasks" editable="true" onKeyPressed="#handleKeyEvents" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableviewTasks" editable="true" onKeyPressed="#handleKeyEvents" onMousePressed="#handleTableClick" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
             <TableColumn fx:id="tablecolumnStatus" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" resizable="false" />
           <TableColumn fx:id="tablecolumnPriority" maxWidth="95.0" minWidth="90.0" prefWidth="90.0" text="%caption.table.priority" />
