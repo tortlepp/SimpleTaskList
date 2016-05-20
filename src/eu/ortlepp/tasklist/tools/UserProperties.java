@@ -1,5 +1,7 @@
 package eu.ortlepp.tasklist.tools;
 
+import eu.ortlepp.tasklist.SimpleTaskList;
+
 import java.util.prefs.Preferences;
 
 /**
@@ -8,7 +10,7 @@ import java.util.prefs.Preferences;
  *
  * @author Thorsten Ortlepp
  */
-public class UserProperties {
+public final class UserProperties {
 
     /** An object of this class itself. Needed for singleton implementation. */
     private static UserProperties  properties;
@@ -70,7 +72,7 @@ public class UserProperties {
      * Private constructor, initializes access to the preferences API and loads properties.
      */
     private UserProperties() {
-        preferences = Preferences.userRoot().node(this.getClass().getName());
+        preferences = Preferences.userRoot().node(SimpleTaskList.class.getPackage().getName());
 
         /* Load preferences, use defaults if not yet available */
         automaticSave =
@@ -121,7 +123,7 @@ public class UserProperties {
      *
      * @param automaticSave The automatic saving of the task list
      */
-    public void updateAutomaticSave(boolean automaticSave) {
+    public void updateAutomaticSave(final boolean automaticSave) {
         this.automaticSave = automaticSave;
         preferences.putBoolean(KEY_AUTOMATIC_SAVE, automaticSave);
     }
@@ -145,7 +147,7 @@ public class UserProperties {
      *
      * @param automaticSaveInterval The interval for automatic saving (in minutes)
      */
-    public void updateAutomaticSaveInterval(int automaticSaveInterval) {
+    public void updateAutomaticSaveInterval(final int automaticSaveInterval) {
         this.automaticSaveInterval = automaticSaveInterval;
         preferences.putInt(KEY_AUTOMATIC_SAVE_INTERVAL, automaticSaveInterval);
     }
@@ -169,7 +171,7 @@ public class UserProperties {
      *
      * @param saveOnClose Automatic saving of the task list when application is closed
      */
-    public void updateSaveOnClose(boolean saveOnClose) {
+    public void updateSaveOnClose(final boolean saveOnClose) {
         this.saveOnClose = saveOnClose;
         preferences.putBoolean(KEY_SAVE_ONCLOSE, saveOnClose);
     }
@@ -177,7 +179,8 @@ public class UserProperties {
 
 
     /**
-     * Getter for the standard filename of the task list (which is opened when the application starts).
+     * Getter for the standard filename of the task list
+     * (which is opened when the application starts).
      *
      * @return The standard filename of the task list
      */
@@ -193,7 +196,7 @@ public class UserProperties {
      *
      * @param standardTasklist The standard filename of the task list
      */
-    public void updateStandardTasklist(String standardTasklist) {
+    public void updateStandardTasklist(final String standardTasklist) {
         this.standardTasklist = standardTasklist;
         preferences.put(KEY_STANDARD_TASKLIST, standardTasklist);
     }
@@ -217,7 +220,7 @@ public class UserProperties {
      *
      * @param archiveFile The archive file for completed tasks
      */
-    public void updateArchiveFile(String archiveFile) {
+    public void updateArchiveFile(final String archiveFile) {
         this.archiveFile = archiveFile;
         preferences.put(KEY_ARCHIVE_FILE, archiveFile);
     }
@@ -241,7 +244,7 @@ public class UserProperties {
      *
      * @param showTooltips Showing tooltips in the main window
      */
-    public void updateShowTooltips(boolean showTooltips) {
+    public void updateShowTooltips(final boolean showTooltips) {
         this.showTooltips = showTooltips;
         preferences.putBoolean(KEY_SHOW_TOOLTIPS, showTooltips);
     }

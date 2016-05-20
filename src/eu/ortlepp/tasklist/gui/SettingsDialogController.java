@@ -1,7 +1,6 @@
 package eu.ortlepp.tasklist.gui;
 
-import java.io.File;
-
+import eu.ortlepp.tasklist.tools.DefaultProperties;
 import eu.ortlepp.tasklist.tools.ShortcutProperties;
 import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.fxml.FXML;
@@ -12,6 +11,9 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+
+import java.io.File;
+import java.util.Locale;
 
 /**
  * Controller for the settings dialog window. Handles all actions of the dialog window.
@@ -125,12 +127,16 @@ public class SettingsDialogController extends AbstractDialogController {
     private ComboBox<String> comboboxKeyMove;
 
 
-    /** Save status of the dialog: true = user clicked on "Save", false = user clicked on "Cancel". */
+    /**
+     * Save status of the dialog: true = user clicked on "Save",
+     * false = user clicked on "Cancel".
+     */
     private boolean saved;
 
 
     /** A list of all keys / letters. */
-    private final String[] keys = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+    private final String[] keys = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+        "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
 
     /**
@@ -140,14 +146,15 @@ public class SettingsDialogController extends AbstractDialogController {
     @Override
     protected void initialize() {
         comboboxInterval.getItems().setAll(
-                translations.getString("settings.preference.autosave.interval.values").split(";"));
+                TRANSLATIONS.getString("settings.preference.autosave.interval.values").split(";"));
 
         /* Get OS dependent shortcut key */
+        final String system = System.getProperty("os.name").toLowerCase(Locale.getDefault());
         final String shortcut;
-        if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-            shortcut = translations.getString("settings.shortcut.mac") + " +";
+        if (system.contains("mac")) {
+            shortcut = TRANSLATIONS.getString("settings.shortcut.mac") + " +";
         } else {
-            shortcut = translations.getString("settings.shortcut") + " +";
+            shortcut = TRANSLATIONS.getString("settings.shortcut") + " +";
         }
 
         /* Show shortcut key in GUI */
@@ -179,7 +186,7 @@ public class SettingsDialogController extends AbstractDialogController {
         tabpaneTabs.getSelectionModel().select(0);
 
         /* Initialize GUI components with actual values */
-        UserProperties userProp = UserProperties.getInstance();
+        final UserProperties userProp = UserProperties.getInstance();
         checkboxAutoSave.setSelected(userProp.isAutomaticSave());
         checkboxSaveOnClose.setSelected(userProp.isSaveOnClose());
         checkboxTooltips.setSelected(userProp.isShowTooltips());
@@ -205,7 +212,7 @@ public class SettingsDialogController extends AbstractDialogController {
         comboboxInterval.getSelectionModel().select(selectionIndex);
 
         /* Initialize ComboBoxes for shortcuts */
-        ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
+        final ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
         comboboxKeyOpen.getSelectionModel().select(getNumericValue(shortcutProp.getKeyOpen()));
         comboboxKeySave.getSelectionModel().select(getNumericValue(shortcutProp.getKeySave()));
         comboboxKeyNew.getSelectionModel().select(getNumericValue(shortcutProp.getKeyNew()));
@@ -224,7 +231,7 @@ public class SettingsDialogController extends AbstractDialogController {
      * @param letter The letter to convert (only the first letter of the sting is converted)
      * @return The numeric value of the letter
      */
-    private int getNumericValue(String letter) {
+    private int getNumericValue(final String letter) {
         return letter.charAt(0) - 'A';
     }
 
@@ -237,10 +244,10 @@ public class SettingsDialogController extends AbstractDialogController {
     private void handleSelectFile() {
         /* Initialize dialog */
         final FileChooser openDialog = new FileChooser();
-        openDialog.setTitle(translations.getString("dialog.open.title"));
+        openDialog.setTitle(TRANSLATIONS.getString("dialog.open.title"));
         openDialog.getExtensionFilters().addAll(
-                new ExtensionFilter(translations.getString("dialog.open.filetype.text"), "*.txt"),
-                new ExtensionFilter(translations.getString("dialog.open.filetype.all"), "*.*"));
+                new ExtensionFilter(TRANSLATIONS.getString("dialog.open.filetype.text"), "*.txt"),
+                new ExtensionFilter(TRANSLATIONS.getString("dialog.open.filetype.all"), "*.*"));
         openDialog.setInitialDirectory(new File(System.getProperty("user.home")));
 
         /* Show dialog */
@@ -262,7 +269,7 @@ public class SettingsDialogController extends AbstractDialogController {
         stage.hide();
 
         /* Save settings to preferences */
-        UserProperties userProp = UserProperties.getInstance();
+        final UserProperties userProp = UserProperties.getInstance();
         userProp.updateAutomaticSave(checkboxAutoSave.isSelected());
         userProp.updateSaveOnClose(checkboxSaveOnClose.isSelected());
         userProp.updateShowTooltips(checkboxTooltips.isSelected());
@@ -288,7 +295,7 @@ public class SettingsDialogController extends AbstractDialogController {
         userProp.updateAutomaticSaveInterval(minutes);
 
         /* Save shortcuts to preferences */
-        ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
+        final ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
         shortcutProp.updateKeyOpen(getSelectedLetter(comboboxKeyOpen));
         shortcutProp.updateKeySave(getSelectedLetter(comboboxKeySave));
         shortcutProp.updateKeyNew(getSelectedLetter(comboboxKeyNew));
@@ -303,12 +310,43 @@ public class SettingsDialogController extends AbstractDialogController {
 
 
     /**
+     * Reset all properties and shortcuts to their defaults.
+     */
+    @FXML
+    private void handleRestore() {
+        stage.hide();
+
+        /* Save default settings to preferences */
+        final UserProperties userProp = UserProperties.getInstance();
+        userProp.updateAutomaticSave(DefaultProperties.AUTOMATIC_SAVE);
+        userProp.updateSaveOnClose(DefaultProperties.SAVE_ON_CLOSE);
+        userProp.updateShowTooltips(DefaultProperties.SHOW_TOOLTIPS);
+        userProp.updateStandardTasklist(DefaultProperties.STANDARD_TASKLIST);
+        userProp.updateArchiveFile(DefaultProperties.ARCHIVE_FILE);
+        userProp.updateAutomaticSaveInterval(DefaultProperties.AUTOMATIC_SAVE_INTERVAL);
+
+        /* Save default shortcuts to preferences */
+        final ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
+        shortcutProp.updateKeyOpen(DefaultProperties.SHORTCUT_KEY_OPEN);
+        shortcutProp.updateKeySave(DefaultProperties.SHORTCUT_KEY_SAVE);
+        shortcutProp.updateKeyNew(DefaultProperties.SHORTCUT_KEY_NEW);
+        shortcutProp.updateKeyEdit(DefaultProperties.SHORTCUT_KEY_EDIT);
+        shortcutProp.updateKeyDone(DefaultProperties.SHORTCUT_KEY_DONE);
+        shortcutProp.updateKeyDelete(DefaultProperties.SHORTCUT_KEY_DELETE);
+        shortcutProp.updateKeyMove(DefaultProperties.SHORTCUT_KEY_MOVE);
+
+        saved = true;
+    }
+
+
+
+    /**
      * Get the currently selected letter from a ComboBox.
      *
      * @param combobox The ComboBox (source)
      * @return The currently selected letter
      */
-    private String getSelectedLetter(ComboBox<String> combobox) {
+    private String getSelectedLetter(final ComboBox<String> combobox) {
         return combobox.getItems().get(combobox.getSelectionModel().getSelectedIndex());
     }
 

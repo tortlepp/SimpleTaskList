@@ -1,6 +1,6 @@
 package eu.ortlepp.tasklist.gui;
 
-import eu.ortlepp.tasklist.SimpleTaskList;
+import eu.ortlepp.tasklist.model.ParentWindowData;
 import eu.ortlepp.tasklist.model.Task;
 
 import javafx.collections.FXCollections;
@@ -12,20 +12,18 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.MissingResourceException;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 /**
  * Controller for the new task and edit task dialog window.
@@ -117,8 +115,8 @@ public class NewEditDialogController extends AbstractDialogController {
         newTasks = new ArrayList<Task>();
 
         comboboxPriority.setItems(FXCollections.observableArrayList(
-                translations.getString("choice.priority.no"),
-                translations.getString("choice.priority.done"),
+                TRANSLATIONS.getString("choice.priority.no"),
+                TRANSLATIONS.getString("choice.priority.done"),
                 "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
                 "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     }
@@ -137,8 +135,8 @@ public class NewEditDialogController extends AbstractDialogController {
         /* Confirm canceling if there are not yet added tasks */
         if (!newTasks.isEmpty()) {
             final Alert confirmation = new Alert(AlertType.CONFIRMATION);
-            AbstractDialogController.prepareDialog(confirmation, "dialog.cancel.title", "dialog.cancel.header",
-                    "dialog.cancel.content");
+            AbstractDialogController.prepareDialog(confirmation, "dialog.cancel.title",
+                    "dialog.cancel.header", "dialog.cancel.content", getCurrentWindowData());
             final Optional<ButtonType> choice = confirmation.showAndWait();
             if (choice.get() == ButtonType.CANCEL) {
                 cancel = false;
@@ -172,8 +170,8 @@ public class NewEditDialogController extends AbstractDialogController {
         /* At least enter a task description */
         if (textareaDescription.getText().isEmpty()) {
             final Alert message = new Alert(AlertType.WARNING);
-            AbstractDialogController.prepareDialog(message, "dialog.empty.title", "dialog.empty.header",
-                    "dialog.empty.content");
+            AbstractDialogController.prepareDialog(message, "dialog.empty.title",
+                    "dialog.empty.header", "dialog.empty.content", getCurrentWindowData());
             message.showAndWait();
         } else {
             newTasks.add(createTask());
@@ -207,10 +205,11 @@ public class NewEditDialogController extends AbstractDialogController {
     private void handleSelectContext() {
         if (!contexts.isEmpty()) {
             final ChoiceDialog<String> choice = new ChoiceDialog<String>(contexts.get(0), contexts);
-            AbstractDialogController.prepareDialog(choice, "dialog.context.select.title", "dialog.context.select.header",
-                    "dialog.context.select.content");
+            AbstractDialogController.prepareDialog(choice, "dialog.context.select.title",
+                    "dialog.context.select.header", "dialog.context.select.content",
+                    getCurrentWindowData());
             final Optional<String> text = choice.showAndWait();
-            if (text.isPresent()) {
+            if (text.isPresent() && !listviewContext.getItems().contains(text.get())) {
                 listviewContext.getItems().add(text.get());
             }
         }
@@ -225,11 +224,23 @@ public class NewEditDialogController extends AbstractDialogController {
     @FXML
     private void handleAddContext() {
         final TextInputDialog input = new TextInputDialog();
-        AbstractDialogController.prepareDialog(input, "dialog.context.new.title", "dialog.context.new.header",
-                "dialog.context.new.content");
+        AbstractDialogController.prepareDialog(input, "dialog.context.new.title",
+                "dialog.context.new.header", "dialog.context.new.content", getCurrentWindowData());
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
-            listviewContext.getItems().add(text.get());
+            /* Remove whitespaces from String */
+            final String preparedText = text.get().replaceAll("\\s+", "");
+
+            /* Add item if not yet in list */
+            if (!listviewContext.getItems().contains(preparedText)) {
+                listviewContext.getItems().add(preparedText);
+            }
+
+            /* Add item if not yet in selection and keep list sorted */
+            if (!contexts.contains(preparedText)) {
+                contexts.add(preparedText);
+                Collections.sort(contexts, String.CASE_INSENSITIVE_ORDER);
+            }
         }
     }
 
@@ -248,6 +259,20 @@ public class NewEditDialogController extends AbstractDialogController {
 
 
     /**
+     * Handle DEL key pressed for the context list: remove the selected context from the list.
+     *
+     * @param event The KeyEvent that occurred
+     */
+    @FXML
+    private void handleRemoveContextKey(KeyEvent event) {
+        if (event.getCode() == KeyCode.DELETE) {
+            handleRemoveContext();
+        }
+    }
+
+
+
+    /**
      * Handle a click on the "select project" button: open a selection dialog
      * and add the selected project to the list.
      */
@@ -255,10 +280,11 @@ public class NewEditDialogController extends AbstractDialogController {
     private void handleSelectProject() {
         if (!projects.isEmpty()) {
             final ChoiceDialog<String> choice = new ChoiceDialog<String>(projects.get(0), projects);
-            AbstractDialogController.prepareDialog(choice, "dialog.project.select.title", "dialog.project.select.header",
-                    "dialog.project.select.content");
+            AbstractDialogController.prepareDialog(choice, "dialog.project.select.title",
+                    "dialog.project.select.header", "dialog.project.select.content",
+                    getCurrentWindowData());
             final Optional<String> text = choice.showAndWait();
-            if (text.isPresent()) {
+            if (text.isPresent() && !listviewProject.getItems().contains(text.get())) {
                 listviewProject.getItems().add(text.get());
             }
         }
@@ -273,11 +299,23 @@ public class NewEditDialogController extends AbstractDialogController {
     @FXML
     private void handleAddProject() {
         final TextInputDialog input = new TextInputDialog();
-        AbstractDialogController.prepareDialog(input, "dialog.project.new.title", "dialog.project.new.header",
-                "dialog.project.new.content");
+        AbstractDialogController.prepareDialog(input, "dialog.project.new.title",
+                "dialog.project.new.header", "dialog.project.new.content", getCurrentWindowData());
         final Optional<String> text = input.showAndWait();
         if (text.isPresent()) {
-            listviewProject.getItems().add(text.get());
+            /* Remove whitespaces from String */
+            final String preparedText = text.get().replaceAll("\\s+", "");
+
+            /* Add item if not yet in list */
+            if (!listviewProject.getItems().contains(preparedText)) {
+                listviewProject.getItems().add(preparedText);
+            }
+
+            /* Add item if not yet in selection and keep list sorted */
+            if (!projects.contains(preparedText)) {
+                projects.add(preparedText);
+                Collections.sort(projects, String.CASE_INSENSITIVE_ORDER);
+            }
         }
     }
 
@@ -290,6 +328,20 @@ public class NewEditDialogController extends AbstractDialogController {
     private void handleRemoveProject() {
         if (listviewProject.getSelectionModel().getSelectedIndex() != -1) {
             listviewProject.getItems().remove(listviewProject.getSelectionModel().getSelectedIndex());
+        }
+    }
+
+
+
+    /**
+     * Handle DEL key pressed for the project list: remove the selected project from the list.
+     *
+     * @param event The KeyEvent that occurred
+     */
+    @FXML
+    private void handleRemoveProjectKey(KeyEvent event) {
+        if (event.getCode() == KeyCode.DELETE) {
+            handleRemoveProject();
         }
     }
 
@@ -373,7 +425,8 @@ public class NewEditDialogController extends AbstractDialogController {
 
     /**
      * Initialize a choice list with items. The first two items of the source list
-     * (all / no items) are omitted.
+     * ("all" and "no" item) are omitted. (Re-)Sorting the list is not necessary
+     * because it is already sorted.
      *
      * @param source The source list with all items
      * @param target The list to be initialized
@@ -453,8 +506,8 @@ public class NewEditDialogController extends AbstractDialogController {
             task.addToProject(item);
         }
 
-        /* Set text */
-        task.setDescription(textareaDescription.getText());
+        /* Set text, remove line breaks */
+        task.setDescription(textareaDescription.getText().replaceAll("(\\r|\\n)+", " "));
 
         return task;
     }
@@ -471,6 +524,17 @@ public class NewEditDialogController extends AbstractDialogController {
         textareaDescription.setText("");
         listviewContext.getItems().clear();
         listviewProject.getItems().clear();
+    }
+
+
+
+    /**
+     * Create a ParentWindowData object with the current values from the window.
+     *
+     * @return The created ParentWindowData object
+     */
+    private ParentWindowData getCurrentWindowData() {
+        return new ParentWindowData(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
     }
 
 }

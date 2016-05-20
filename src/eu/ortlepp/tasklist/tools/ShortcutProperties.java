@@ -1,5 +1,7 @@
 package eu.ortlepp.tasklist.tools;
 
+import eu.ortlepp.tasklist.SimpleTaskList;
+
 import java.util.prefs.Preferences;
 
 /**
@@ -8,7 +10,7 @@ import java.util.prefs.Preferences;
  *
  * @author Thorsten Ortlepp
  */
-public class ShortcutProperties {
+public final class ShortcutProperties {
 
     /** An object of this class itself. Needed for singleton implementation. */
     private static ShortcutProperties  properties;
@@ -78,7 +80,7 @@ public class ShortcutProperties {
      * Private constructor, initializes access to the preferences API and loads properties.
      */
     private ShortcutProperties() {
-        preferences = Preferences.userRoot().node(this.getClass().getName());
+        preferences = Preferences.userRoot().node(SimpleTaskList.class.getPackage().getName());
 
         /* Load preferences, use defaults if not yet available */
         keyOpen = preferences.get(KEY_OPEN, DefaultProperties.SHORTCUT_KEY_OPEN);
@@ -123,7 +125,7 @@ public class ShortcutProperties {
      *
      * @param keyOpen Shortcut to open a file
      */
-    public void updateKeyOpen(String keyOpen) {
+    public void updateKeyOpen(final String keyOpen) {
         this.keyOpen = keyOpen;
         preferences.put(KEY_OPEN, keyOpen);
     }
@@ -147,7 +149,7 @@ public class ShortcutProperties {
      *
      * @param keySave Shortcut to save the file
      */
-    public void updateKeySave(String keySave) {
+    public void updateKeySave(final String keySave) {
         this.keySave = keySave;
         preferences.put(KEY_SAVE, keySave);
     }
@@ -171,7 +173,7 @@ public class ShortcutProperties {
      *
      * @param keyNew Shortcut to create a new task
      */
-    public void updateKeyNew(String keyNew) {
+    public void updateKeyNew(final String keyNew) {
         this.keyNew = keyNew;
         preferences.put(KEY_NEW, keyNew);
     }
@@ -195,7 +197,7 @@ public class ShortcutProperties {
      *
      * @param keyEdit Shortcut to edit a task
      */
-    public void updateKeyEdit(String keyEdit) {
+    public void updateKeyEdit(final String keyEdit) {
         this.keyEdit = keyEdit;
         preferences.put(KEY_EDIT, keyEdit);
     }
@@ -219,7 +221,7 @@ public class ShortcutProperties {
      *
      * @param keyDone Shortcut to mark a task as done
      */
-    public void updateKeyDone(String keyDone) {
+    public void updateKeyDone(final String keyDone) {
         this.keyDone = keyDone;
         preferences.put(KEY_DONE, keyDone);
     }
@@ -243,7 +245,7 @@ public class ShortcutProperties {
      *
      * @param keyDelete Shortcut to delete a task
      */
-    public void updateKeyDelete(String keyDelete) {
+    public void updateKeyDelete(final String keyDelete) {
         this.keyDelete = keyDelete;
         preferences.put(KEY_DELETE, keyDelete);
     }
@@ -267,7 +269,7 @@ public class ShortcutProperties {
      *
      * @param keyMove Shortcut to move completed tasks to the archive
      */
-    public void updateKeyMove(String keyMove) {
+    public void updateKeyMove(final String keyMove) {
         this.keyMove = keyMove;
         preferences.put(KEY_MOVE, keyMove);
     }

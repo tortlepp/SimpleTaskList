@@ -8,13 +8,17 @@ import eu.ortlepp.tasklist.gui.components.PriorityTableCell;
 import eu.ortlepp.tasklist.logic.DueComperator;
 import eu.ortlepp.tasklist.logic.PriorityComperator;
 import eu.ortlepp.tasklist.logic.TaskController;
+import eu.ortlepp.tasklist.model.ParentWindowData;
 import eu.ortlepp.tasklist.model.Task;
 import eu.ortlepp.tasklist.tools.ShortcutProperties;
 import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -36,11 +40,13 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,6 +127,11 @@ public class MainWindowController {
     private ComboBox<String> comboboxProject;
 
 
+    /** ComboBox to filter which due dates are shown. */
+    @FXML
+    private ComboBox<String> comboboxDue;
+
+
     /** Table to show the task list. */
     @FXML
     private TableView<Task> tableviewTasks;
@@ -179,11 +190,11 @@ public class MainWindowController {
 
 
     /** The dialog window to add new tasks or edit existing tasks. */
-    private Stage newEditDialog;
+    private DialogStage newEditDialog;
 
 
     /** The the about dialog. */
-    private Stage aboutDialog;
+    private DialogStage aboutDialog;
 
 
     /** The controller of the new / edit dialog. */
@@ -191,7 +202,7 @@ public class MainWindowController {
 
 
     /** The dialog window to change settings. */
-    private Stage settingsDialog;
+    private DialogStage settingsDialog;
 
 
     /** The controller of the settings dialog. */
@@ -250,6 +261,12 @@ public class MainWindowController {
         comboboxProject.setItems(tasks.getProjectList());
         comboboxProject.getSelectionModel().clearAndSelect(0);
 
+        /* Initialize due date filter */
+        ObservableList<String> duefilter = FXCollections.observableArrayList();
+        duefilter.addAll(translations.getString("filter.due").split(";"));
+        comboboxDue.setItems(duefilter);
+        comboboxDue.getSelectionModel().clearAndSelect(0);
+
         /* Custom renderers for nonstandard table cells */
         tablecolumnStatus.setCellFactory(CheckBoxTableCell.forTableColumn(tablecolumnStatus));
         tablecolumnPriority.setCellFactory(column -> new PriorityTableCell());
@@ -292,10 +309,18 @@ public class MainWindowController {
             });
         });
 
+        // /* Listener to filter by due date */
+        comboboxDue.valueProperty().addListener((observable, oldValue, newValue) -> {
+            filteredTasks.setPredicate(task -> {
+                return filterTableItem(task);
+            });
+        });
+
         /* Wrap filtered list in sorted list to enable sorting */
         final CustomSortedList<Task> sortedTasks = new CustomSortedList<>(filteredTasks);
         sortedTasks.comparatorProperty().bind(tableviewTasks.comparatorProperty());
 
+        tableviewTasks.setPlaceholder(new Label());
         tableviewTasks.setItems(sortedTasks);
 
         /* Sort columns */
@@ -316,20 +341,22 @@ public class MainWindowController {
      */
     private void initDialogs() {
         /* Initialize new / edit dialog */
-        newEditDialog = new Stage();
-        newEditController = (NewEditDialogController) initDialog(newEditDialog, "NewEditDialog.fxml");
+        newEditDialog = new DialogStage();
+        newEditController =
+                (NewEditDialogController) initDialog(newEditDialog, "NewEditDialog.fxml");
         newEditController.setStage(newEditDialog);
 
         /* Initialize about dialog */
-        aboutDialog = new Stage();
+        aboutDialog = new DialogStage();
         final AboutDialogController aboutController =
                 (AboutDialogController) initDialog(aboutDialog, "AboutDialog.fxml");
         aboutController.setStage(aboutDialog);
         aboutDialog.setTitle(translations.getString("about.title"));
 
         /* Initialize settings dialog */
-        settingsDialog = new Stage();
-        settingsController = (SettingsDialogController) initDialog(settingsDialog, "SettingsDialog.fxml");
+        settingsDialog = new DialogStage();
+        settingsController =
+                (SettingsDialogController) initDialog(settingsDialog, "SettingsDialog.fxml");
         settingsController.setStage(settingsDialog);
         settingsDialog.setTitle(translations.getString("settings.title"));
     }
@@ -343,7 +370,7 @@ public class MainWindowController {
      * @param fxml The FXML file of the GUI
      * @return The initialized controller for the dialog
      */
-    private AbstractDialogController initDialog(final Stage dialog, final String fxml) {
+    private AbstractDialogController initDialog(final DialogStage dialog, final String fxml) {
         AbstractDialogController controller = null;
 
         /* Load FXML */
@@ -363,6 +390,13 @@ public class MainWindowController {
         dialog.initStyle(StageStyle.UTILITY);
         dialog.setResizable(false);
 
+        /* Handler to place the dialog in the center of the main window instead of the screen center */
+        dialog.setOnShown(new EventHandler<WindowEvent>() {
+            public void handle(final WindowEvent event) {
+                dialog.setPosition(getCurrentWindowData());
+            }
+        });
+
         return controller;
     }
 
@@ -375,10 +409,12 @@ public class MainWindowController {
      * @param icon The file name of the icon to be displayed on the button
      * @param tooltip The key for the tooltip in the translation
      */
-    private void initButton(final Button button, final String icon, final String tooltip) {
+    private void initButton(final Button button,
+            final String icon, final String tooltip) {
         button.setText("");
         final String iconfile = "eu/ortlepp/tasklist/icons/" + icon;
-        final Image iconimage = new Image(getClass().getClassLoader().getResourceAsStream(iconfile));
+        final Image iconimage =
+                new Image(getClass().getClassLoader().getResourceAsStream(iconfile));
         button.setGraphic(new ImageView(iconimage));
         if (UserProperties.getInstance().isShowTooltips()) {
             button.setTooltip(new Tooltip(translations.getString(tooltip)));
@@ -391,7 +427,7 @@ public class MainWindowController {
      * Initialize the keyboard shortcuts.
      */
     public void initShortcuts() {
-        ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
+        final ShortcutProperties shortcutProp = ShortcutProperties.getInstance();
 
         /* Open file */
         addShortcut(shortcutProp.getKeyOpen(),
@@ -400,7 +436,7 @@ public class MainWindowController {
                     public void run() {
                         handleFileOpen();
                     }
-                 });
+                });
 
         /* Save file */
         addShortcut(shortcutProp.getKeySave(),
@@ -409,7 +445,7 @@ public class MainWindowController {
                     public void run() {
                         handleFileSave();
                     }
-                 });
+                });
 
         /* New task */
         addShortcut(shortcutProp.getKeyNew(),
@@ -418,7 +454,7 @@ public class MainWindowController {
                     public void run() {
                         handleNewTask();
                     }
-                 });
+                });
 
         /* Edit task */
         addShortcut(shortcutProp.getKeyEdit(),
@@ -427,7 +463,7 @@ public class MainWindowController {
                     public void run() {
                         handleEditTask();
                     }
-                 });
+                });
 
         /* Mark task as done */
         addShortcut(shortcutProp.getKeyDone(),
@@ -436,7 +472,7 @@ public class MainWindowController {
                     public void run() {
                         handleTaskDone();
                     }
-                 });
+                });
 
         /* Delete task */
         addShortcut(shortcutProp.getKeyDelete(),
@@ -445,7 +481,7 @@ public class MainWindowController {
                     public void run() {
                         handleTaskDelete();
                     }
-                 });
+                });
 
         /* Move completed tasks to archive */
         addShortcut(shortcutProp.getKeyMove(),
@@ -454,7 +490,7 @@ public class MainWindowController {
                     public void run() {
                         handleMoveToArchive();
                     }
-                 });
+                });
     }
 
 
@@ -465,8 +501,8 @@ public class MainWindowController {
      * @param key The key that is used to create the shortcut
      * @param action The action that is triggered by the shortcut
      */
-    private void addShortcut(String key, Runnable action) {
-        KeyCodeCombination keycode =
+    private void addShortcut(final String key, final Runnable action) {
+        final KeyCodeCombination keycode =
                 new KeyCodeCombination(KeyCode.getKeyCode(key), KeyCombination.SHORTCUT_DOWN);
         stage.getScene().getAccelerators().put(keycode, action);
     }
@@ -481,10 +517,26 @@ public class MainWindowController {
      * @param event Event that occurred
      */
     @FXML
-    public void handleKeyEvents(KeyEvent event) {
+    private void handleKeyEvents(final KeyEvent event) {
         if (event.getCode() == KeyCode.DELETE) {
             handleTaskDelete();
         } else if (event.getCode() == KeyCode.ENTER) {
+            handleEditTask();
+        }
+    }
+
+
+
+    /**
+     * Handle events when a the mouse is clicked while over the table. Double clicking on
+     * the table opens the editing dialog for the currently selected task. This event is
+     * hard-coded to create a "natural" behavior of the table for the user.
+     *
+     * @param event Event that occurred
+     */
+    @FXML
+    private void handleTableClick(final MouseEvent event) {
+        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
             handleEditTask();
         }
     }
@@ -507,7 +559,7 @@ public class MainWindowController {
      *
      * @param saved Saved status: true = no changes, false = unsaved changes
      */
-    public void setSaved(boolean saved) {
+    public void setSaved(final boolean saved) {
         this.saved = saved;
         labelSaved.setVisible(!saved);
     }
@@ -559,8 +611,8 @@ public class MainWindowController {
                 setSaved(true);
             } else {
                 final Alert message = new Alert(AlertType.ERROR);
-                AbstractDialogController.prepareDialog(message, "dialog.write.title", "dialog.write.header",
-                        "dialog.write.content");
+                AbstractDialogController.prepareDialog(message, "dialog.write.title",
+                        "dialog.write.header", "dialog.write.content", getCurrentWindowData());
                 message.showAndWait();
             }
         }
@@ -583,7 +635,7 @@ public class MainWindowController {
         if (newEditController.isSaved()) {
             for (final Task task : newEditController.getNewTasks()) {
                 /* Add task */
-                Task newTask = new Task(task);
+                final Task newTask = new Task(task);
                 tasks.getTaskList().add(newTask);
 
                 /* Update context and project filters */
@@ -641,6 +693,7 @@ public class MainWindowController {
                     tasks.addProject(item);
                 }
 
+                tableviewTasks.sort();
                 setSaved(false);
             }
         }
@@ -657,6 +710,7 @@ public class MainWindowController {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
             tableviewTasks.getSelectionModel().getSelectedItem().setDone(true);
             setSaved(false);
+            tableviewTasks.sort();
         }
     }
 
@@ -672,8 +726,8 @@ public class MainWindowController {
 
             /* Confirmation dialog */
             final Alert alert = new Alert(AlertType.CONFIRMATION);
-            AbstractDialogController.prepareDialog(alert, "dialog.delete.title", "dialog.delete.header",
-                    "dialog.delete.content");
+            AbstractDialogController.prepareDialog(alert, "dialog.delete.title",
+                    "dialog.delete.header", "dialog.delete.content", getCurrentWindowData());
             final Optional<ButtonType> choice = alert.showAndWait();
 
             /* Confirm deleting of the task */
@@ -711,7 +765,7 @@ public class MainWindowController {
         if (moved > 0) {
             final Alert message = new Alert(AlertType.INFORMATION);
             AbstractDialogController.prepareDialog(message, "dialog.moved.title",
-                    "dialog.moved.header", "dialog.moved.content");
+                    "dialog.moved.header", "dialog.moved.content", getCurrentWindowData());
             message.showAndWait();
             setSaved(false);
         }
@@ -729,7 +783,7 @@ public class MainWindowController {
         if (settingsController.isSaved()) {
             final Alert message = new Alert(AlertType.INFORMATION);
             AbstractDialogController.prepareDialog(message, "dialog.settings.title",
-                    "dialog.settings.header", "dialog.settings.content");
+                    "dialog.settings.header", "dialog.settings.content", getCurrentWindowData());
             message.showAndWait();
         }
     }
@@ -774,10 +828,11 @@ public class MainWindowController {
                 checkboxDone.setDisable(false);
                 comboboxContext.setDisable(false);
                 comboboxProject.setDisable(false);
+                comboboxDue.setDisable(false);
             } else {
                 final Alert message = new Alert(AlertType.ERROR);
-                AbstractDialogController.prepareDialog(message, "dialog.read.title", "dialog.read.header",
-                        "dialog.read.content");
+                AbstractDialogController.prepareDialog(message, "dialog.read.title",
+                        "dialog.read.header", "dialog.read.content", getCurrentWindowData());
                 message.showAndWait();
             }
         }
@@ -836,8 +891,42 @@ public class MainWindowController {
             }
         }
 
+
+        final int selectedDue = comboboxDue.getSelectionModel().getSelectedIndex();
+        boolean due = false;
+        switch (selectedDue) {
+            /* Today */
+            case 1:
+                if (item.getDue().isEqual(LocalDate.now())) {
+                    due = true;
+                }
+                break;
+            /* Tomorrow */
+            case 2:
+                if (item.getDue().isEqual(LocalDate.now().plusDays(1L))) {
+                    due = true;
+                }
+                break;
+            /* Delayed */
+            case 3:
+                if (item.getDue().isBefore(LocalDate.now()) && !item.getDue().equals(LocalDate.MIN)) {
+                    due = true;
+                }
+                break;
+            /* Without due */
+            case 4:
+                if (item.getDue().equals(LocalDate.MIN)) {
+                    due = true;
+                }
+                break;
+            /* All dues (= case 0) */
+            default:
+                due = true;
+                break;
+        }
+
         /* Combine the three filters and get final filter result */
-        return done && context && project;
+        return done && context && project && due;
     }
 
 
@@ -849,6 +938,17 @@ public class MainWindowController {
      */
     private void addCompletionListener(final BooleanProperty property) {
         property.addListener(completionListener);
+    }
+
+
+
+    /**
+     * Create a ParentWindowData object with the current values from the window.
+     *
+     * @return The created ParentWindowData object
+     */
+    private ParentWindowData getCurrentWindowData() {
+        return new ParentWindowData(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
     }
 
 

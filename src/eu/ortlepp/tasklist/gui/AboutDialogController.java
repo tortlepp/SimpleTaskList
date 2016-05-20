@@ -28,6 +28,10 @@ public class AboutDialogController extends AbstractDialogController {
     private static final String URL_PROJECT = "https://github.com/tortlepp/SimpleTaskList";
 
 
+    /** URL to the format / about. */
+    private static final String URL_FORMAT = "http://todotxt.com";
+
+
     /** URL to the license. */
     private static final String URL_LICENSE = "https://opensource.org/licenses/MIT";
 
@@ -51,6 +55,11 @@ public class AboutDialogController extends AbstractDialogController {
     private Hyperlink urlProject;
 
 
+    /** The clickable URL of the format / about shown in the GUI. */
+    @FXML
+    private Hyperlink urlFormat;
+
+
     /** The clickable URL to the license shown in the GUI. */
     @FXML
     private Hyperlink urlLicense;
@@ -71,9 +80,9 @@ public class AboutDialogController extends AbstractDialogController {
         imgvLogo.setImage(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList.png"));
         lblVersion.setText(SimpleTaskList.VERSION);
         urlProject.setText(URL_PROJECT);
+        urlFormat.setText(URL_FORMAT);
         urlLicense.setText(URL_LICENSE);
         urlIcons.setText(URL_ICONS);
-
     }
 
 
@@ -84,6 +93,16 @@ public class AboutDialogController extends AbstractDialogController {
     @FXML
     private void handleUrlOpenProject() {
         openBrowser(URL_PROJECT);
+    }
+
+
+
+    /**
+     * Open the URL of the format / about in the default browser.
+     */
+    @FXML
+    private void handleUrlFormat() {
+        openBrowser(URL_FORMAT);
     }
 
 
