@@ -64,7 +64,7 @@ public final class DefaultProperties {
 
 
     /** Default width of the main window. Value is given in pixels. */
-    public static final int WINDOW_WIDTH = 800;
+    public static final int WINDOW_WIDTH = 1000;
 
 
     /** Default height of the main window. Value is given in pixels. */

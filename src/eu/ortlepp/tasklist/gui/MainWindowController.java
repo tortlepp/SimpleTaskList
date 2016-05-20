@@ -15,6 +15,8 @@ import eu.ortlepp.tasklist.tools.UserProperties;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -122,6 +124,11 @@ public class MainWindowController {
     /** ComboBox to filter which project(s) are shown. */
     @FXML
     private ComboBox<String> comboboxProject;
+
+
+    /** ComboBox to filter which due dates are shown. */
+    @FXML
+    private ComboBox<String> comboboxDue;
 
 
     /** Table to show the task list. */
@@ -253,6 +260,12 @@ public class MainWindowController {
         comboboxProject.setItems(tasks.getProjectList());
         comboboxProject.getSelectionModel().clearAndSelect(0);
 
+        /* Initialize due date filter */
+        ObservableList<String> duefilter = FXCollections.observableArrayList();
+        duefilter.addAll(translations.getString("filter.due").split(";"));
+        comboboxDue.setItems(duefilter);
+        comboboxDue.getSelectionModel().clearAndSelect(0);
+
         /* Custom renderers for nonstandard table cells */
         tablecolumnStatus.setCellFactory(CheckBoxTableCell.forTableColumn(tablecolumnStatus));
         tablecolumnPriority.setCellFactory(column -> new PriorityTableCell());
@@ -290,6 +303,13 @@ public class MainWindowController {
 
         /* Listener to filter by project */
         comboboxProject.valueProperty().addListener((observable, oldValue, newValue) -> {
+            filteredTasks.setPredicate(task -> {
+                return filterTableItem(task);
+            });
+        });
+
+        // /* Listener to filter by due date */
+        comboboxDue.valueProperty().addListener((observable, oldValue, newValue) -> {
             filteredTasks.setPredicate(task -> {
                 return filterTableItem(task);
             });
@@ -790,6 +810,7 @@ public class MainWindowController {
                 checkboxDone.setDisable(false);
                 comboboxContext.setDisable(false);
                 comboboxProject.setDisable(false);
+                comboboxDue.setDisable(false);
             } else {
                 final Alert message = new Alert(AlertType.ERROR);
                 AbstractDialogController.prepareDialog(message, "dialog.read.title",
@@ -852,8 +873,42 @@ public class MainWindowController {
             }
         }
 
+
+        final int selectedDue = comboboxDue.getSelectionModel().getSelectedIndex();
+        boolean due = false;
+        switch (selectedDue) {
+            /* Today */
+            case 1:
+                if (item.getDue().isEqual(LocalDate.now())) {
+                    due = true;
+                }
+                break;
+            /* Tomorrow */
+            case 2:
+                if (item.getDue().isEqual(LocalDate.now().plusDays(1L))) {
+                    due = true;
+                }
+                break;
+            /* Delayed */
+            case 3:
+                if (item.getDue().isBefore(LocalDate.now()) && !item.getDue().equals(LocalDate.MIN)) {
+                    due = true;
+                }
+                break;
+            /* Without due */
+            case 4:
+                if (item.getDue().equals(LocalDate.MIN)) {
+                    due = true;
+                }
+                break;
+            /* All dues (= case 0) */
+            default:
+                due = true;
+                break;
+        }
+
         /* Combine the three filters and get final filter result */
-        return done && context && project;
+        return done && context && project && due;
     }
 
 
