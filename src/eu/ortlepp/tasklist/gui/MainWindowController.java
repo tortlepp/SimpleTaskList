@@ -841,6 +841,29 @@ public class MainWindowController {
 
 
     /**
+     * Opens a choice dialog and asks if the user would like to save the file. If the user
+     * decides to save the file the saving is done. This method is designed to be called
+     * when the program is closing.
+     */
+    public void saveOnExit() {
+        /* Create dialog */
+        final Alert alert = new Alert(AlertType.CONFIRMATION);
+        AbstractDialogController.prepareDialog(alert, "dialog.exitsave.title",
+                "dialog.exitsave.header", "dialog.exitsave.content", getCurrentWindowData());
+        final ButtonType buttonTypeYes = new ButtonType(translations.getString("dialog.exitsave.yes"));
+        final ButtonType buttonTypeNo = new ButtonType(translations.getString("dialog.exitsave.no"));
+        alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+
+        /* Show dialog and react on choice */
+        final Optional<ButtonType> choice = alert.showAndWait();
+        if (choice.get() == buttonTypeYes){
+            handleFileSave();
+        }
+    }
+
+
+
+    /**
      * Filter an item (= task) in the table and check if should be visible or hidden.
      *
      * @param item The item (= task) to check
