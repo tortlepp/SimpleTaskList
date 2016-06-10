@@ -320,12 +320,7 @@ public class TaskController {
                         StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 
                 /* Remove tasks from the list */
-                tasklist.removeIf(new Predicate<Task>() {
-                    @Override
-                    public boolean test(final Task task) {
-                        return task.isDone();
-                    }
-                });
+                tasklist.removeIf(new FilterDone());
 
             } catch (IOException ex) {
                 LOGGER.severe("Error while writing the file " + filename + ": " + ex.getMessage());
@@ -384,6 +379,33 @@ public class TaskController {
         }
 
         return strBuilder.toString().trim();
+    }
+
+
+
+    ///// ----- Inner classes ----- \\\\\
+
+
+
+    /**
+     * Inner class: An implementation of Predicate for Tasks to check if a task is
+     * already completed / marked as done.
+     *
+     * @author Thorsten Ortlepp
+     */
+    private static class FilterDone implements Predicate<Task> {
+
+        /**
+         * Implementation of the test. Checks if the task is already completed.
+         *
+         * @param task The task to test
+         * @return Result of the test; true in case the task is completed,
+         *     false in case the task is not yet completed
+         */
+        @Override
+        public boolean test(final Task task) {
+            return task.isDone();
+        }
     }
 
 }

@@ -32,7 +32,7 @@ public final class SimpleTaskList extends Application {
 
 
     /** The current version of the program. */
-    public static final String VERSION = "Version 0.9 beta";
+    public static final String VERSION = "Version 1.0 beta";
 
 
     /** The stage for the window. Contains all components of the window. */
@@ -165,9 +165,13 @@ public final class SimpleTaskList extends Application {
             autosave.interrupt();
         }
 
-        /* Automatic save if enabled */
+        /* Automatic save if enabled or ask if file is not yet saved */
         if (UserProperties.getInstance().isSaveOnClose()) {
             controller.handleFileSave();
+        } else {
+            if (!controller.isSaved()) {
+                controller.saveOnExit();
+            }
         }
 
         /* Save properties of the main window */

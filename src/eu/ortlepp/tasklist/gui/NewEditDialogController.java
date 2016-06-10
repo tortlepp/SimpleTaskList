@@ -264,7 +264,7 @@ public class NewEditDialogController extends AbstractDialogController {
      * @param event The KeyEvent that occurred
      */
     @FXML
-    private void handleRemoveContextKey(KeyEvent event) {
+    private void handleRemoveContextKey(final KeyEvent event) {
         if (event.getCode() == KeyCode.DELETE) {
             handleRemoveContext();
         }
@@ -339,7 +339,7 @@ public class NewEditDialogController extends AbstractDialogController {
      * @param event The KeyEvent that occurred
      */
     @FXML
-    private void handleRemoveProjectKey(KeyEvent event) {
+    private void handleRemoveProjectKey(final KeyEvent event) {
         if (event.getCode() == KeyCode.DELETE) {
             handleRemoveProject();
         }
