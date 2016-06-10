@@ -694,6 +694,7 @@ public class MainWindowController {
                 }
 
                 tableviewTasks.sort();
+                tableviewTasks.refresh();
                 setSaved(false);
             }
         }
