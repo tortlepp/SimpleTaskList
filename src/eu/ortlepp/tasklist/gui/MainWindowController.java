@@ -262,7 +262,7 @@ public class MainWindowController {
         comboboxProject.getSelectionModel().clearAndSelect(0);
 
         /* Initialize due date filter */
-        ObservableList<String> duefilter = FXCollections.observableArrayList();
+        final ObservableList<String> duefilter = FXCollections.observableArrayList();
         duefilter.addAll(translations.getString("filter.due").split(";"));
         comboboxDue.setItems(duefilter);
         comboboxDue.getSelectionModel().clearAndSelect(0);
@@ -857,7 +857,7 @@ public class MainWindowController {
 
         /* Show dialog and react on choice */
         final Optional<ButtonType> choice = alert.showAndWait();
-        if (choice.get() == buttonTypeYes){
+        if (choice.get() == buttonTypeYes) {
             handleFileSave();
         }
     }
@@ -933,7 +933,8 @@ public class MainWindowController {
                 break;
             /* Delayed */
             case 3:
-                if (item.getDue().isBefore(LocalDate.now()) && !item.getDue().equals(LocalDate.MIN)) {
+                if (item.getDue().isBefore(LocalDate.now())
+                        && !item.getDue().equals(LocalDate.MIN)) {
                     due = true;
                 }
                 break;
