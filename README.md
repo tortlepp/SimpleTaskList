@@ -7,7 +7,33 @@ SimpleTaskList is a graphical manager and editor for task lists which use the [t
 * Filter displayed tasks by context / project / due date
 * Move completed tasks to a done.txt file
 * Save the task list automatically
+* Multilingual user interface
 * ...
+
+![The main window of SimpleTaskList](https://tortlepp.github.io/SimpleTaskList/SimpleTaskList.png)
+
+
+Download
+========
+
+
+FAQ
+===
+
+How to load a todo.txt file when SimpleTaskList starts?
+-------------------------------------------------------
+There are two ways to load a file when the application is started: In the settings dialog you can set a *standard task list*. This list will be loaded when the application starts. You can also use the command line an pass the filename to SimpleTaskList: `java -jar SimpleTaskList.jar /home/user/todo.txt`.
+
+How to change the user interface to English / French / ... ?
+------------------------------------------------------------
+At the moment there are translations for English and German. SimpleTaskList detects the language of your operating system. If it is set to German you will get the German captions, otherwise you will get the English captions. If you want to force the use of the English translation, you can start SimpleTaskList from the command line using this command: `java -Duser.language=en -jar SimpleTaskList.jar` (use `de` to force the German translation).
+
+
+Development & Contributions
+===========================
+SimpleTaskList is entirely written in Java, the user interface was created with JavaFX. Gradle is used to build the application.
+
+At the moment SimpleTaskList is considered as "feature completed". That means all important features are implemented and there are no known bugs. But if you find a bug or have an idea for a new cool feature, feel free to create an issue and then I can see how to deal with it.
 
 
 License
