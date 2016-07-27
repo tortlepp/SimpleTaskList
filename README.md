@@ -15,6 +15,7 @@ SimpleTaskList is a graphical manager and editor for task lists which use the [t
 
 Download
 ========
+The most recent version of SimpleTaskList is version 1.0 beta. You can download it here: https://github.com/tortlepp/SimpleTaskList/releases
 
 
 FAQ
