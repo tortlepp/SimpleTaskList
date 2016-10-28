@@ -170,7 +170,7 @@ public final class SimpleTaskList extends Application {
             controller.handleFileSave();
         } else {
             if (!controller.isSaved()) {
-                controller.saveOnExit();
+                controller.confirmSave();
             }
         }
 
