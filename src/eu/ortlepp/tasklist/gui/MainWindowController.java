@@ -67,7 +67,12 @@ public class MainWindowController {
     private static final Logger LOGGER = Logger.getLogger(MainWindowController.class.getName());
 
 
-    /** Button to open a new task list. */
+    /** Button to create a new task list. */
+    @FXML
+    private Button buttonCreate;
+
+
+    /** Button to open an existing task list. */
     @FXML
     private Button buttonOpen;
 
@@ -239,6 +244,7 @@ public class MainWindowController {
     @FXML
     private void initialize() {
         /* Initialize buttons with icons and tooltips */
+        initButton(buttonCreate, "create.png", "tooltip.button.create");
         initButton(buttonOpen, "open.png", "tooltip.button.open");
         initButton(buttonSave, "save.png", "tooltip.button.save");
         initButton(buttonNew, "new.png", "tooltip.button.new");
@@ -578,6 +584,50 @@ public class MainWindowController {
 
 
     /**
+     * Handle to creation of a new task list file: Show save dialog, create an empty task list,
+     * load the empty file file.
+     */
+    @FXML
+    private void handleFileCreate() {
+        /* Initialize dialog */
+        final FileChooser createDialog = new FileChooser();
+        createDialog.setTitle(translations.getString("dialog.create.title"));
+        createDialog.getExtensionFilters().addAll(
+                new ExtensionFilter(translations.getString("dialog.create.filetype.text"), "*.txt")
+                );
+        createDialog.setInitialDirectory(new File(System.getProperty("user.home")));
+        createDialog.setInitialFileName("todo.txt");
+
+        /* Show dialog */
+        final File file = createDialog.showSaveDialog(stage);
+
+        /* Load selected file */
+        if (file != null) {
+
+            /* Are there unsaved changes? -> Ask, if the changes should be saved */
+            if (!saved) {
+                confirmSave();
+            }
+
+            try  {
+                /* Create an empty file */
+                file.createNewFile();
+
+                /* Load the empty file */
+                loadTaskList(file.getAbsolutePath());
+
+            } catch (IOException e) {
+                final Alert message = new Alert(AlertType.ERROR);
+                AbstractDialogController.prepareDialog(message, "dialog.createerror.title",
+                        "dialog.createerror.header", "dialog.createerror.content", getCurrentWindowData());
+                message.showAndWait();
+            }
+        }
+    }
+
+
+
+    /**
      * Handle to open a task list file: Show open dialog, load selected file.
      */
     @FXML
@@ -595,6 +645,12 @@ public class MainWindowController {
 
         /* Load selected file */
         if (file != null) {
+
+            /* Are there unsaved changes? -> Ask, if the changes should be saved */
+            if (!saved) {
+                confirmSave();
+            }
+
             loadTaskList(file.getAbsolutePath());
         }
     }
@@ -843,16 +899,15 @@ public class MainWindowController {
 
     /**
      * Opens a choice dialog and asks if the user would like to save the file. If the user
-     * decides to save the file the saving is done. This method is designed to be called
-     * when the program is closing.
+     * decides to save the file the saving is done.
      */
-    public void saveOnExit() {
+    public void confirmSave() {
         /* Create dialog */
         final Alert alert = new Alert(AlertType.CONFIRMATION);
-        AbstractDialogController.prepareDialog(alert, "dialog.exitsave.title",
-                "dialog.exitsave.header", "dialog.exitsave.content", getCurrentWindowData());
-        final ButtonType buttonTypeYes = new ButtonType(translations.getString("dialog.exitsave.yes"));
-        final ButtonType buttonTypeNo = new ButtonType(translations.getString("dialog.exitsave.no"));
+        AbstractDialogController.prepareDialog(alert, "dialog.confirmsave.title",
+                "dialog.confirmsave.header", "dialog.confirmsave.content", getCurrentWindowData());
+        final ButtonType buttonTypeYes = new ButtonType(translations.getString("dialog.confirmsave.yes"));
+        final ButtonType buttonTypeNo = new ButtonType(translations.getString("dialog.confirmsave.no"));
         alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
 
         /* Show dialog and react on choice */

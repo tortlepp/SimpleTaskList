@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="550.0" minWidth="950.0" prefHeight="550.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.ortlepp.tasklist.gui.MainWindowController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="550.0" minWidth="950.0" prefHeight="550.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.ortlepp.tasklist.gui.MainWindowController">
    <center>
       <TableView fx:id="tableviewTasks" editable="true" onKeyPressed="#handleKeyEvents" onMousePressed="#handleTableClick" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
@@ -31,6 +31,7 @@
    <top>
       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
+            <Button fx:id="buttonCreate" mnemonicParsing="false" onAction="#handleFileCreate" text="NEW" />
           <Button fx:id="buttonOpen" mnemonicParsing="false" onAction="#handleFileOpen" text="OPEN" />
             <Button fx:id="buttonSave" disable="true" mnemonicParsing="false" onAction="#handleFileSave" text="SAVE" />
             <Separator orientation="VERTICAL" />
