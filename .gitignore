@@ -4,4 +4,10 @@ build
 .externalToolBuilders
 .project
 .settings
-/bin/
+bin
+fxbuild/build
+fxbuild/deploy
+fxbuild/dist
+fxbuild/package
+fxbuild/project
+Thumbs.db

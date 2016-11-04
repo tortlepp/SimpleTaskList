@@ -3,6 +3,9 @@ apply plugin: "findbugs"
 apply plugin: "pmd"
 apply plugin: "checkstyle"
 
+// Ant tasks for JavaFX deployment
+ant.importBuild "fxbuild/build.xml"
+
 // Use Java 8
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
