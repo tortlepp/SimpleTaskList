@@ -594,7 +594,7 @@ public class MainWindowController {
         createDialog.setTitle(translations.getString("dialog.create.title"));
         createDialog.getExtensionFilters().addAll(
                 new ExtensionFilter(translations.getString("dialog.create.filetype.text"), "*.txt")
-                );
+        );
         createDialog.setInitialDirectory(new File(System.getProperty("user.home")));
         createDialog.setInitialFileName("todo.txt");
 
@@ -616,7 +616,7 @@ public class MainWindowController {
                 /* Load the empty file */
                 loadTaskList(file.getAbsolutePath());
 
-            } catch (IOException e) {
+            } catch (IOException ex) {
                 final Alert message = new Alert(AlertType.ERROR);
                 AbstractDialogController.prepareDialog(message, "dialog.createerror.title",
                         "dialog.createerror.header", "dialog.createerror.content", getCurrentWindowData());
