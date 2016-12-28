@@ -77,7 +77,7 @@ public class AboutDialogController extends AbstractDialogController {
     @FXML
     @Override
     protected void initialize() {
-        imgvLogo.setImage(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList.png"));
+        imgvLogo.setImage(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList-64.png"));
         lblVersion.setText(SimpleTaskList.VERSION);
         urlProject.setText(URL_PROJECT);
         urlFormat.setText(URL_FORMAT);

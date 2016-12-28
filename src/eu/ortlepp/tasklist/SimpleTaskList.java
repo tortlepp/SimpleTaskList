@@ -85,7 +85,10 @@ public final class SimpleTaskList extends Application {
         /* Initialize main window */
         this.primaryStage = primaryStage;
         this.primaryStage.setResizable(true);
-        this.primaryStage.getIcons().add(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList.png"));
+        this.primaryStage.getIcons().add(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList-16.png"));
+        this.primaryStage.getIcons().add(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList-32.png"));
+        this.primaryStage.getIcons().add(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList-48.png"));
+        this.primaryStage.getIcons().add(new Image("eu/ortlepp/tasklist/icons/SimpleTaskList-64.png"));
         this.primaryStage.setMaximized(properties.isMaximizedWindow());
         this.primaryStage.setWidth(properties.getWidth());
         this.primaryStage.setHeight(properties.getHeight());
