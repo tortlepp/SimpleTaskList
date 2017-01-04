@@ -1,22 +1,22 @@
 package eu.ortlepp.tasklist.gui.components;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
 import eu.ortlepp.tasklist.SimpleTaskList;
 import eu.ortlepp.tasklist.gui.MainWindowController;
 import eu.ortlepp.tasklist.model.Task;
-import javafx.scene.control.TableView;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.util.Callback;
+
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * Custom row factory for rows in a TableView. Adds a context menu to the rows
@@ -26,7 +26,7 @@ import javafx.util.Callback;
  *
  * @author Thorsten Ortlepp
  */
-public class ContextMenuTableRowFactory implements Callback<TableView<Task>, TableRow<Task>>{
+public class ContextMenuTableRowFactory implements Callback<TableView<Task>, TableRow<Task>> {
 
     /** Translated captions for menu items. */
     private final ResourceBundle translations;
@@ -40,7 +40,7 @@ public class ContextMenuTableRowFactory implements Callback<TableView<Task>, Tab
      *
      * @param controller Reference to the controller of the main window
      */
-    public ContextMenuTableRowFactory(MainWindowController controller) {
+    public ContextMenuTableRowFactory(final MainWindowController controller) {
         this.controller = controller;
 
         try {
@@ -58,7 +58,7 @@ public class ContextMenuTableRowFactory implements Callback<TableView<Task>, Tab
      * @return The created row
      */
     @Override
-    public TableRow<Task> call(TableView<Task> table) {
+    public TableRow<Task> call(final TableView<Task> table) {
         final TableRow<Task> row = new TableRow<Task>();
         final ContextMenu contextMenu = new ContextMenu();
 
@@ -66,7 +66,7 @@ public class ContextMenuTableRowFactory implements Callback<TableView<Task>, Tab
         final MenuItem menuItemEdit = new MenuItem(translations.getString("context.edit"));
         menuItemEdit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent event) {
+            public void handle(final ActionEvent event) {
                 controller.editTask(row.getIndex());
             }
         });
@@ -75,7 +75,7 @@ public class ContextMenuTableRowFactory implements Callback<TableView<Task>, Tab
         final MenuItem menuItemDone = new MenuItem(translations.getString("context.done"));
         menuItemDone.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent event) {
+            public void handle(final ActionEvent event) {
                 controller.setTaskDone(row.getIndex());
             }
         });
@@ -84,9 +84,9 @@ public class ContextMenuTableRowFactory implements Callback<TableView<Task>, Tab
         final MenuItem menuItemCopy = new MenuItem(translations.getString("context.copy"));
         menuItemCopy.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent event) {
-                StringSelection copyText = new StringSelection(row.getItem().getDescription());
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            public void handle(final ActionEvent event) {
+                final StringSelection copyText = new StringSelection(row.getItem().getDescription());
+                final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clipboard.setContents(copyText, copyText);
             }
         });
@@ -95,7 +95,7 @@ public class ContextMenuTableRowFactory implements Callback<TableView<Task>, Tab
         final MenuItem menuItemDelete = new MenuItem(translations.getString("context.delete"));
         menuItemDelete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent event) {
+            public void handle(final ActionEvent event) {
                 controller.deleteTask(row.getIndex());
             }
         });

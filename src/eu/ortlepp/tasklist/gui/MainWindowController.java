@@ -734,7 +734,7 @@ public class MainWindowController {
      *
      * @param row The id (index number) of the row
      */
-    public void editTask(int row) {
+    public void editTask(final int row) {
         /* Open edit dialog */
         newEditController.setEditDialog(tableviewTasks.getItems().get(row),
                 tasks.getContextList(), tasks.getProjectList());
@@ -793,7 +793,7 @@ public class MainWindowController {
      *
      * @param row The id (index number) of the row
      */
-    public void setTaskDone(int row) {
+    public void setTaskDone(final int row) {
         tableviewTasks.getItems().get(row).setDone(true);
         setSaved(false);
         tableviewTasks.sort();
@@ -821,7 +821,7 @@ public class MainWindowController {
      *
      * @param row The id (index number) of the row
      */
-    public void deleteTask(int row) {
+    public void deleteTask(final int row) {
         /* Confirmation dialog */
         final Alert alert = new Alert(AlertType.CONFIRMATION);
         AbstractDialogController.prepareDialog(alert, "dialog.delete.title",
