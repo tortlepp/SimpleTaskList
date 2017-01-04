@@ -32,7 +32,7 @@ public final class SimpleTaskList extends Application {
 
 
     /** The current version of the program. */
-    public static final String VERSION = "Version 1.0";
+    public static final String VERSION = "Version 1.1";
 
 
     /** The stage for the window. Contains all components of the window. */
