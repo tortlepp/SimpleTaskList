@@ -2,6 +2,7 @@ package eu.ortlepp.tasklist.gui;
 
 import eu.ortlepp.tasklist.SimpleTaskList;
 import eu.ortlepp.tasklist.extra.CustomSortedList;
+import eu.ortlepp.tasklist.gui.components.ContextMenuTableRowFactory;
 import eu.ortlepp.tasklist.gui.components.DateTableCell;
 import eu.ortlepp.tasklist.gui.components.DescriptionTableCell;
 import eu.ortlepp.tasklist.gui.components.PriorityTableCell;
@@ -272,6 +273,9 @@ public class MainWindowController {
         duefilter.addAll(translations.getString("filter.due").split(";"));
         comboboxDue.setItems(duefilter);
         comboboxDue.getSelectionModel().clearAndSelect(0);
+
+        /* Custom row factory to show a context menu for table rows */
+        tableviewTasks.setRowFactory(new ContextMenuTableRowFactory(this));
 
         /* Custom renderers for nonstandard table cells */
         tablecolumnStatus.setCellFactory(CheckBoxTableCell.forTableColumn(tablecolumnStatus));
@@ -718,41 +722,53 @@ public class MainWindowController {
     @FXML
     private void handleEditTask() {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
-            /* Open edit dialog */
-            newEditController.setEditDialog(tableviewTasks.getSelectionModel().getSelectedItem(),
-                    tasks.getContextList(), tasks.getProjectList());
-            newEditDialog.setTitle(translations.getString("dialog.edit.title"));
-            newEditDialog.showAndWait();
+            editTask(tableviewTasks.getSelectionModel().getSelectedIndex());
+        }
+    }
 
-            /* If editing was not aborted */
-            if (newEditController.isSaved()) {
-                final Task temp = newEditController.getEditedTask();
 
-                /* Update values */
-                tableviewTasks.getSelectionModel().getSelectedItem().setDone(temp.isDone());
-                tableviewTasks.getSelectionModel().getSelectedItem().setPriority(temp.getPriority());
-                tableviewTasks.getSelectionModel().getSelectedItem().setCreation(temp.getCreation());
-                tableviewTasks.getSelectionModel().getSelectedItem().setDue(temp.getDue());
-                tableviewTasks.getSelectionModel().getSelectedItem().setDescription(temp.getDescription());
 
-                /* Update contexts */
-                tableviewTasks.getSelectionModel().getSelectedItem().clearContext();
-                for (final String item : temp.getContext()) {
-                    tableviewTasks.getSelectionModel().getSelectedItem().addToContext(item);
-                    tasks.addContext(item);
-                }
+    /**
+     * Edit a task. The task to edit is selected by the given id / row
+     * index number, which has to be a valid row number.
+     *
+     * @param row The id (index number) of the row
+     */
+    public void editTask(int row) {
+        /* Open edit dialog */
+        newEditController.setEditDialog(tableviewTasks.getItems().get(row),
+                tasks.getContextList(), tasks.getProjectList());
+        newEditDialog.setTitle(translations.getString("dialog.edit.title"));
+        newEditDialog.showAndWait();
 
-                /* Update projects */
-                tableviewTasks.getSelectionModel().getSelectedItem().clearProject();
-                for (final String item : temp.getProject()) {
-                    tableviewTasks.getSelectionModel().getSelectedItem().addToProject(item);
-                    tasks.addProject(item);
-                }
+        /* If editing was not aborted */
+        if (newEditController.isSaved()) {
+            final Task temp = newEditController.getEditedTask();
 
-                tableviewTasks.sort();
-                tableviewTasks.refresh();
-                setSaved(false);
+            /* Update values */
+            tableviewTasks.getItems().get(row).setDone(temp.isDone());
+            tableviewTasks.getItems().get(row).setPriority(temp.getPriority());
+            tableviewTasks.getItems().get(row).setCreation(temp.getCreation());
+            tableviewTasks.getItems().get(row).setDue(temp.getDue());
+            tableviewTasks.getItems().get(row).setDescription(temp.getDescription());
+
+            /* Update contexts */
+            tableviewTasks.getItems().get(row).clearContext();
+            for (final String item : temp.getContext()) {
+                tableviewTasks.getItems().get(row).addToContext(item);
+                tasks.addContext(item);
             }
+
+            /* Update projects */
+            tableviewTasks.getItems().get(row).clearProject();
+            for (final String item : temp.getProject()) {
+                tableviewTasks.getItems().get(row).addToProject(item);
+                tasks.addProject(item);
+            }
+
+            tableviewTasks.sort();
+            tableviewTasks.refresh();
+            setSaved(false);
         }
     }
 
@@ -765,10 +781,22 @@ public class MainWindowController {
     @FXML
     private void handleTaskDone() {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
-            tableviewTasks.getSelectionModel().getSelectedItem().setDone(true);
-            setSaved(false);
-            tableviewTasks.sort();
+            setTaskDone(tableviewTasks.getSelectionModel().getSelectedIndex());
         }
+    }
+
+
+
+    /**
+     * Mark a single task as done. The task to mark as done is selected by the
+     * given id / row index number, which has to be a valid row number.
+     *
+     * @param row The id (index number) of the row
+     */
+    public void setTaskDone(int row) {
+        tableviewTasks.getItems().get(row).setDone(true);
+        setSaved(false);
+        tableviewTasks.sort();
     }
 
 
@@ -780,32 +808,43 @@ public class MainWindowController {
     @FXML
     private void handleTaskDelete() {
         if (tableviewTasks.getSelectionModel().getSelectedIndex() != -1) {
+            deleteTask(tableviewTasks.getSelectionModel().getSelectedIndex());
+        }
+    }
 
-            /* Confirmation dialog */
-            final Alert alert = new Alert(AlertType.CONFIRMATION);
-            AbstractDialogController.prepareDialog(alert, "dialog.delete.title",
-                    "dialog.delete.header", "dialog.delete.content", getCurrentWindowData());
-            final Optional<ButtonType> choice = alert.showAndWait();
 
-            /* Confirm deleting of the task */
-            if (choice.get() == ButtonType.OK) {
-                final long deleteTaskId =
-                        tableviewTasks.getSelectionModel().getSelectedItem().getTaskId();
-                int deleteListId = -1;
 
-                /* Find the correct task */
-                for (int i = 0; i < tasks.getTaskList().size(); i++) {
-                    if (tasks.getTaskList().get(i).getTaskId() == deleteTaskId) {
-                        deleteListId = i;
-                        break;
-                    }
+    /**
+     * Delete a single task from the task list / out of the table. The task to
+     * delete is selected by the given id / row index number, which has to be a
+     * valid row number.
+     *
+     * @param row The id (index number) of the row
+     */
+    public void deleteTask(int row) {
+        /* Confirmation dialog */
+        final Alert alert = new Alert(AlertType.CONFIRMATION);
+        AbstractDialogController.prepareDialog(alert, "dialog.delete.title",
+                "dialog.delete.header", "dialog.delete.content", getCurrentWindowData());
+        final Optional<ButtonType> choice = alert.showAndWait();
+
+        /* Confirm deleting of the task */
+        if (choice.get() == ButtonType.OK) {
+            final long deleteTaskId = tableviewTasks.getItems().get(row).getTaskId();
+            int deleteListId = -1;
+
+            /* Find the correct task */
+            for (int i = 0; i < tasks.getTaskList().size(); i++) {
+                if (tasks.getTaskList().get(i).getTaskId() == deleteTaskId) {
+                    deleteListId = i;
+                    break;
                 }
-
-                /* Delete task from list */
-                tasks.getTaskList().remove(deleteListId);
-
-                setSaved(false);
             }
+
+            /* Delete task from list */
+            tasks.getTaskList().remove(deleteListId);
+
+            setSaved(false);
         }
     }
 
