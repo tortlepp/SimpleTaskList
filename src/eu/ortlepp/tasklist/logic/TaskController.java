@@ -56,7 +56,7 @@ public class TaskController {
 
 
     /**
-     * Initialize the task list, an empty list ist created.
+     * Initialize the task list, an empty list is created.
      */
     public TaskController() {
         tasklist = FXCollections.observableArrayList();

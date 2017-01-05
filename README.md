@@ -15,14 +15,14 @@ SimpleTaskList is a graphical manager and editor for task lists which use the [t
 
 Download & Install
 ==================
-The most recent version of SimpleTaskList is version 1.0. You can download it here:
+The most recent version of SimpleTaskList is version 1.1. You can download it here:
 
-https://github.com/tortlepp/SimpleTaskList/releases/tag/v1.0
+https://github.com/tortlepp/SimpleTaskList/releases/tag/v1.1
 
 There are two different downloads:
 
-* SimpleTaskList-1.0.jar - A runnable Java Archive for all operating systems; you need an installation of a recent version of Oracle Java 8 on your computer to run it
-* SimpleTaskList-1.0-Setup.exe - An installer for Windows which contains everything that is necessary to run SimpleTaskList (a Java runtime is included, you do not have to install Java separately on your computer)
+* SimpleTaskList-1.1.jar - A runnable Java Archive for all operating systems; you need an installation of a recent version of Java 8 on your computer to run it
+* SimpleTaskList-1.1-Setup.exe - An installer for Windows which contains everything that is necessary to run SimpleTaskList (a Java runtime is included, you do not have to install Java separately on your computer)
 
 
 FAQ
@@ -38,7 +38,7 @@ At the moment there are translations for English and German. SimpleTaskList dete
 
 Why does SimpleTaskList not launch on Linux?
 --------------------------------------------
-JavaFX was used to create the user interface of SimpleTaskList. Unfortunately this feature is not included in the OpenJDK, which is usually installed when you use the package manager of your distribution. Please install and activate the original [Oracle Java](http://www.oracle.com/technetwork/java/javase/downloads/index.html) instead.
+JavaFX was used to create the user interface of SimpleTaskList. The OpenJDK, which is usually installed when you use the package manager of your distribution, usually does not contain JavaFX. You have to install OpenJFX as well in order to get JavaFX support. If OpenJFX is not available for your distribution, please install and activate the original [Oracle Java](http://www.oracle.com/technetwork/java/javase/downloads/index.html) instead.
 
 Where does the Setup install SimpleTaskList?
 --------------------------------------------
