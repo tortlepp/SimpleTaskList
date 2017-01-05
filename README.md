@@ -21,7 +21,7 @@ https://github.com/tortlepp/SimpleTaskList/releases/tag/v1.1
 
 There are two different downloads:
 
-* SimpleTaskList-1.1.jar - A runnable Java Archive for all operating systems; you need an installation of a recent version of Oracle Java 8 on your computer to run it
+* SimpleTaskList-1.1.jar - A runnable Java Archive for all operating systems; you need an installation of a recent version of Java 8 on your computer to run it
 * SimpleTaskList-1.1-Setup.exe - An installer for Windows which contains everything that is necessary to run SimpleTaskList (a Java runtime is included, you do not have to install Java separately on your computer)
 
 
