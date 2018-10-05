@@ -1,0 +1,20 @@
+SimpleTaskList
+==============
+
+SimpleTaskList is a graphical manager and editor for task lists which use the todo.txt format. 
+It is easy to use, but still fully featured:
+
+* Comfortable creation and editing of tasks 
+* Filter displayed tasks by context / project / due date
+* Move completed tasks to a done.txt file
+* Save the task list automatically
+* Multilingual user interface
+
+
+Links
+=====
+
+* Project Website: https://ortlepp.eu/projects/simpletasklist.html
+* Original Git Repository: https://git.ortlepp.eu/stagit/simpletasklist
+* Download Releases: https://files.ortlepp.eu/simpletasklist/
+
